@@ -2,6 +2,7 @@ import { api } from './httpClient'
 import { branchManagementService } from './branchManagementService'
 import { cityManagementService } from './cityManagementService'
 import { reservationManagementService } from './reservationManagementService'
+import i18n from '@/i18n'
 
 export const VEHICLE_STATES = Object.freeze({ AVAILABLE: 'disponible', RESERVED: 'reservado', MAINTENANCE: 'mantenimiento' })
 
@@ -34,10 +35,19 @@ export function getPicoYPlacaInfo(plate, branchName) {
 const reservasActivas = (vehicleId) => reservationManagementService.list()
   .filter((r) => String(r.vehiculoId) === String(vehicleId) && !ESTADOS_RESERVA_FINAL.has(r.estado)).length
 
+// El vehículo está "reservado" solo mientras se está usando: reserva en curso (entrega ya registrada) o reserva
+// confirmada cuyas fechas cubren hoy. Las reservas futuras o aún sin pago/documentos no lo bloquean.
+const enUsoAhora = (vehicleId) => {
+  const hoy = new Date().toLocaleDateString('en-CA')
+  return reservationManagementService.list().some((r) => String(r.vehiculoId) === String(vehicleId) && (
+    r.estado === 'en_curso' || (r.estado === 'confirmada' && r.fechaInicio <= hoy && hoy <= r.fechaFin)
+  ))
+}
+
 function mapear(v) {
   const estadoFlota = v.isActive ? (ESTADO_POR_CODIGO[v.statusCode] || 'disponible') : 'inactivo'
   const activas = reservasActivas(v.id)
-  const estadoEfectivo = activas ? VEHICLE_STATES.RESERVED : estadoFlota
+  const estadoEfectivo = enUsoAhora(v.id) ? VEHICLE_STATES.RESERVED : estadoFlota
   return {
     id: v.id,
     nombre: `${v.brandName} ${v.model}`.trim(),
@@ -74,7 +84,7 @@ function mapear(v) {
 }
 
 function toError(error) {
-  const result = new Error(error?.response?.data?.detail || error?.message || 'No fue posible completar la operación.')
+  const result = new Error(error?.response?.data?.detail || error?.message || i18n.t('hc2.no_fue_posible_completar_la_operacion', 'No fue posible completar la operación.'))
   result.status = error?.response?.status
   const errors = error?.response?.data?.errors
   if (Array.isArray(errors) && errors.length) result.message = errors.map((e) => e.message || e.field).join(' · ')

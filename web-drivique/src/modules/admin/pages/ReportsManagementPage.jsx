@@ -266,17 +266,17 @@ export default function ReportsManagementPage({ branchOnly = false }) {
 
   // Exporta (o imprime) la tabla de desempeño por sucursal con los mismos datos que se ven en pantalla
   const datosTablaDesempeno = () => ({
-    title: 'Desempeño Operativo y Financiero por Sucursal',
-    subtitle: 'Sistema Operativo de Gestión e Inspección de Alquiler de Vehículos',
-    headers: ['Sucursal', 'Ciudad', 'Vehículo más demandado', 'Reservas', 'Días alquilados', 'Ingresos netos (COP)', 'Ocupación (%)', 'Incidencias', 'Calificación'],
+    title: t('hc.desempeno_operativo_y_financiero_por_s', 'Desempeño Operativo y Financiero por Sucursal'),
+    subtitle: t('hc2.sistema_operativo_de_gestion_e_inspecc', 'Sistema Operativo de Gestión e Inspección de Alquiler de Vehículos'),
+    headers: [t('hc4.sucursal', 'Sucursal'), t('hc4.ciudad', 'Ciudad'), t('hc2.vehiculo_mas_demandado', 'Vehículo más demandado'), t('hc4.reservas', 'Reservas'), t('hc2.dias_alquilados', 'Días alquilados'), t('hc2.ingresos_netos_cop', 'Ingresos netos (COP)'), t('hc2.ocupacion', 'Ocupación (%)'), t('hc4.incidencias', 'Incidencias'), t('hc2.calificacion_113', 'Calificación')],
     rows: (dashboard?.sucursales || []).map((f) => [
       f.sucursal, f.ciudad, f.vehiculoTop || '—', f.reservas, f.dias, formatCurrency(f.ingresos, 'COP'),
       `${f.ocupacion}%`, f.incidencias, f.totalResenas > 0 ? f.calificacion.toFixed(1) : '—',
     ]),
     kpis: dashboard ? [
-      { label: 'Ingresos totales netos', value: formatCurrency(dashboard.ingresos, 'COP') },
-      { label: 'Reservas facturadas', value: String(dashboard.reservasFacturadas) },
-      { label: 'Ocupación de flota', value: `${dashboard.ocupacion}%` },
+      { label: t('hc2.ingresos_totales_netos', 'Ingresos totales netos'), value: formatCurrency(dashboard.ingresos, 'COP') },
+      { label: t('hc.reservas_facturadas', 'Reservas facturadas'), value: String(dashboard.reservasFacturadas) },
+      { label: t('hc.ocupacion_de_flota', 'Ocupación de flota'), value: `${dashboard.ocupacion}%` },
     ] : [],
     filtersSummary: [],
     filename: `desempeno-sucursales-${new Date().toISOString().slice(0, 10)}`,
@@ -446,7 +446,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
       showAlert({
         icon: 'error',
         title: t('admin.reports.errorDownload', 'Error de descarga'),
-        text: error.message || 'No se pudo descargar el reporte seleccionado.',
+        text: error.message || t('hc2.no_se_pudo_descargar_el_reporte_selecc', 'No se pudo descargar el reporte seleccionado.'),
       })
     }
   }
@@ -461,7 +461,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
       showAlert({
         icon: 'error',
         title: t('admin.reports.errorPrint', 'Error al imprimir'),
-        text: 'No se pudo abrir el diálogo de impresión.',
+        text: t('hc.no_se_pudo_abrir_el_dialogo_de_impresi', 'No se pudo abrir el diálogo de impresión.'),
       })
     }
   }
@@ -627,13 +627,13 @@ export default function ReportsManagementPage({ branchOnly = false }) {
               </div>
 
               <div className="cash-kpi-item-light">
-                <div className="cash-kpi-header-light" style={{ color: '#2563eb' }}>
+                <div className="cash-kpi-header-light" style={{ color: 'var(--brand-text)' }}>
                   <FaClipboardList />
                   <span>{t('admin.reports.kpi.totalReservations', 'RESERVAS FACTURADAS')}</span>
                 </div>
                 <strong className="cash-kpi-val-light">{dashboard.reservasFacturadas} {t('admin.reports.kpi.reservationsUnit', 'reservas')}</strong>
                 <div className="cash-kpi-progress-bg">
-                  <div className="cash-kpi-progress-fill" style={{ width: `${dashboard.tasaCompletadas}%`, background: '#2563eb' }}></div>
+                  <div className="cash-kpi-progress-fill" style={{ width: `${dashboard.tasaCompletadas}%`, background: 'var(--brand-primary)' }}></div>
                 </div>
                 <span className="cash-kpi-subtitle-light">{dashboard.tasaCompletadas}% {t('admin.reports.kpi.completedRateShort', 'completadas')}</span>
               </div>
@@ -684,7 +684,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                       <div className="reports-bar-fill-wrap">
                         <div
                           className="reports-bar-fill"
-                          style={{ height: `${bar.altura}%`, background: idx === dashboard.meses.length - 1 ? '#2563eb' : '#3b82f6' }}
+                          style={{ height: `${bar.altura}%`, background: idx === dashboard.meses.length - 1 ? 'var(--brand-primary)' : 'var(--brand-primary)' }}
                         />
                       </div>
                       <span className="reports-bar-label">{bar.label}</span>
@@ -697,7 +697,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
               <div className="reports-chart-card">
                 <div className="reports-chart-header">
                   <h3 className="reports-chart-title">
-                    <FaCar style={{ color: '#2563eb' }} />
+                    <FaCar style={{ color: 'var(--brand-text)' }} />
                     {t('admin.reports.chart.fleetTitle', 'Estado Actual de la Flota')}
                   </h3>
                   <span className="reports-chart-badge">{dashboard.flota.total} {t('admin.reports.chart.vehicles', 'Vehículos')}</span>
@@ -712,7 +712,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                   </svg>
                   <div className="reports-donut-legend">
                     <div className="reports-legend-item">
-                      <div className="reports-legend-dot" style={{ background: '#2563eb' }} />
+                      <div className="reports-legend-dot" style={{ background: 'var(--brand-primary)' }} />
                       <span>{t('admin.reports.chart.rentedLabel', 'En Alquiler')} ({dashboard.flota.alquilados} · {dashboard.flota.pctAlquilados}%)</span>
                     </div>
                     <div className="reports-legend-item">
@@ -739,16 +739,16 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingTop: 8 }}>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, marginBottom: 4 }}>
-                      <span>💳 Wompi / Tarjetas de Crédito / PSE</span>
-                      <span style={{ color: '#2563eb' }}>{dashboard.pagos.pctWompi}%</span>
+                      <span>{t('hc.wompi_tarjetas_de_credito_pse', '💳 Wompi / Tarjetas de Crédito / PSE')}</span>
+                      <span style={{ color: 'var(--brand-text)' }}>{dashboard.pagos.pctWompi}%</span>
                     </div>
                     <div className="cash-kpi-progress-bg">
-                      <div className="cash-kpi-progress-fill" style={{ width: `${dashboard.pagos.pctWompi}%`, background: '#2563eb' }} />
+                      <div className="cash-kpi-progress-fill" style={{ width: `${dashboard.pagos.pctWompi}%`, background: 'var(--brand-primary)' }} />
                     </div>
                   </div>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, marginBottom: 4 }}>
-                      <span>💵 Pago en Caja (Efectivo en Sucursal)</span>
+                      <span>{t('hc.pago_en_caja_efectivo_en_sucursal', '💵 Pago en Caja (Efectivo en Sucursal)')}</span>
                       <span style={{ color: '#10b981' }}>{dashboard.pagos.pctEfectivo}%</span>
                     </div>
                     <div className="cash-kpi-progress-bg">
@@ -764,7 +764,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
               <div className="cash-toolbar-container">
                 <div className="cash-toolbar-row1" style={{ width: '100%', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <FaBuilding style={{ color: '#2563eb', fontSize: 18 }} />
+                    <FaBuilding style={{ color: 'var(--brand-text)', fontSize: 18 }} />
                     <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800 }}>
                       {t('admin.reports.performanceTableTitle', 'Desempeño Operativo y Financiero por Sucursal')}
                     </h3>
@@ -777,7 +777,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                       <FaFilePdf /> <span>PDF</span>
                     </button>
                     <button type="button" className="cash-btn-pill-export cash-btn-print" onClick={handlePrintReport}>
-                      <FaPrint /> <span>Imprimir</span>
+                      <FaPrint /> <span>{t('hc4.imprimir', 'Imprimir')}</span>
                     </button>
                   </div>
                 </div>
@@ -808,12 +808,12 @@ export default function ReportsManagementPage({ branchOnly = false }) {
                         <td style={{ fontWeight: 600, color: 'var(--adm-text)' }}>{idx + 1}</td>
                         <td style={{ fontWeight: 700, color: '#0f172a' }}>{row.sucursal}</td>
                         <td style={{ color: '#475569' }}>{row.ciudad}</td>
-                        <td style={{ color: '#2563eb', fontWeight: 600 }}>{row.vehiculoTop || '—'}</td>
+                        <td style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{row.vehiculoTop || '—'}</td>
                         <td style={{ fontWeight: 600 }}>{row.reservas}</td>
                         <td style={{ color: '#64748b' }}>{row.dias} {t('admin.reports.table.days', 'días')}</td>
                         <td style={{ fontWeight: 800, color: '#10b981' }}>{formatCurrency(row.ingresos, 'COP')}</td>
                         <td>
-                          <span style={{ padding: '3px 10px', borderRadius: 999, background: '#dbeafe', color: '#1e40af', fontWeight: 700, fontSize: 12 }}>
+                          <span style={{ padding: '3px 10px', borderRadius: 999, background: 'var(--brand-soft-strong)', color: 'var(--brand-text)', fontWeight: 700, fontSize: 12 }}>
                             {row.ocupacion}%
                           </span>
                         </td>

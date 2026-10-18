@@ -55,7 +55,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
 
   const TIPOS_EVENTO = [
     { value: 'all', label: t('admin.audit_module.types.all', 'Todos los tipos de evento') },
-    { value: 'COBRO_SUCURSAL', label: 'Cobro en Mostrador / Sucursal' },
+    { value: 'COBRO_SUCURSAL', label: t('hc.cobro_en_mostrador_sucursal', 'Cobro en Mostrador / Sucursal') },
     { value: 'GESTION_RESERVAS', label: t('admin.audit_module.types.reservations', 'Gestión de Reservas') },
     { value: 'AUTENTICACION', label: t('admin.audit_module.types.auth', 'Autenticación y Acceso') },
     { value: 'SEGURIDAD_2FA', label: t('admin.audit_module.types.security2fa', 'Seguridad y 2FA') },
@@ -353,7 +353,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
         : t('admin.audit_module.title', 'Auditoría Centralizada y Registro de Actividad'),
       headers,
       rows,
-      subtitle: `Generado por ${user?.nombre || 'Administrador'} (${user?.correo}) - ${new Date().toLocaleString()}`,
+      subtitle: t('hc3.audit_generated_by', { defaultValue: 'Generado por {{usuario}} ({{correo}}) - {{fecha}}', usuario: user?.nombre || t('hc3.administrator', 'Administrador'), correo: user?.correo, fecha: new Date().toLocaleString() }),
     })
   }
 
@@ -409,7 +409,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
           <div className="audit-scope-text">
             <strong>
               {esEncargado
-                ? t('admin.audit_module.branchScope', { branch: sucursalEncargado || 'Sucursal Autorizada' })
+                ? t('admin.audit_module.branchScope', { branch: sucursalEncargado || t('hc2.sucursal_autorizada', 'Sucursal Autorizada') })
                 : t('admin.audit_module.globalScope', 'Alcance Global del Sistema (Supervisión Total)')}
             </strong>
             <p>
@@ -497,7 +497,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 type="button"
                 className="audit-btn-action audit-btn-action--excel"
                 onClick={handleExportExcel}
-                title="Exportar a Microsoft Excel"
+                title={t('hc4.exportar_a_microsoft_excel', 'Exportar a Microsoft Excel')}
               >
                 <FaFileExcel size={12} /> {t('admin.audit_module.exportExcel', 'Excel')}
               </button>
@@ -506,7 +506,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 type="button"
                 className="audit-btn-action audit-btn-action--pdf"
                 onClick={handleExportPdf}
-                title="Exportar a PDF"
+                title={t('hc4.exportar_a_pdf', 'Exportar a PDF')}
               >
                 <FaFilePdf size={12} /> {t('admin.audit_module.exportPdf', 'PDF')}
               </button>
@@ -515,7 +515,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 type="button"
                 className="audit-btn-action audit-btn-action--print"
                 onClick={handlePrint}
-                title="Imprimir listado"
+                title={t('hc4.imprimir_listado', 'Imprimir listado')}
               >
                 <FaPrint size={12} /> {t('admin.audit_module.print', 'Imprimir')}
               </button>
@@ -648,7 +648,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 type="button"
                 className="audit-btn-reset"
                 onClick={handleResetFilters}
-                title="Restablecer todos los filtros"
+                title={t('hc.restablecer_todos_los_filtros', 'Restablecer todos los filtros')}
               >
                 <FaRedo size={11} /> {t('admin.audit_module.resetFilters', 'Limpiar')}
               </button>
@@ -808,7 +808,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                         <span><FaBuilding size={10} /> {log.sucursal}</span>
                         <span><FaDesktop size={10} /> {log.ip}</span>
                       </div>
-                      <button type="button" className="audit-mobile-btn-view" title="Ver detalle">
+                      <button type="button" className="audit-mobile-btn-view" title={t('hc.ver_detalle', 'Ver detalle')}>
                         <FaEye size={11} /> {t('admin.audit_module.table.detail', 'Detalle')}
                       </button>
                     </div>

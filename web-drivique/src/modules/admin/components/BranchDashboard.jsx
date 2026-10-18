@@ -422,7 +422,7 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
                   y={marginTop}
                   width={slotWidth - 4}
                   height={chartHeight}
-                  fill="rgba(37, 99, 235, 0.04)"
+                  fill="rgba(var(--brand-primary-rgb), 0.04)"
                   rx="4"
                 />
               )}
@@ -645,7 +645,7 @@ export default function BranchDashboard({ branchOnly = true }) {
         ],
         rows: vehiculos.map((v) => {
           const activa = reservas.find((r) => String(r.vehiculoId) === String(v.id) && r.estado !== 'cancelada' && r.estado !== 'finalizada')
-          return [v.placa, v.nombre, v.categoria, v.sucursal, estadoTexto(v.estadoEfectivo), activa ? activa.codigo : 'Sin reserva']
+          return [v.placa, v.nombre, v.categoria, v.sucursal, estadoTexto(v.estadoEfectivo), activa ? activa.codigo : t('hc2.sin_reserva', 'Sin reserva')]
         }),
         kpis: [
           { label: t('dashboard.export.occupancyRate', 'Tasa de Ocupación'), value: `${f.occupancyRate ?? 0}%` },
@@ -656,7 +656,7 @@ export default function BranchDashboard({ branchOnly = true }) {
       }
     }
 
-    return { title: 'Métrica Operativa', filename: 'reporte', headers: [], rows: [], kpis: [] }
+    return { title: t('hc.metrica_operativa', 'Métrica Operativa'), filename: 'reporte', headers: [], rows: [], kpis: [] }
   }
 
   const handleOpenKpiDetail = (metricKey) => {
@@ -682,7 +682,7 @@ export default function BranchDashboard({ branchOnly = true }) {
     const data = getKpiDataForExport(metricKey)
     exportPdf({
       title: `Reporte Oficial — ${data.title}`,
-      subtitle: `Sucursal: ${dashboardData?.branchName || ''}`,
+      subtitle: t('hc3.branch_subtitle', { defaultValue: 'Sucursal: {{sucursal}}', sucursal: dashboardData?.branchName || '' }),
       headers: data.headers,
       rows: data.rows,
       kpis: data.kpis,
@@ -878,8 +878,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 className={`branch-icon-btn branch-notification-btn ${
                   isNotificationsOpen ? 'branch-icon-btn--active' : ''
                 }`}
-                title="Notificaciones y Alertas"
-                aria-label="Notificaciones y Alertas"
+                title={t('hc.notificaciones_y_alertas', 'Notificaciones y Alertas')}
+                aria-label={t('hc.notificaciones_y_alertas', 'Notificaciones y Alertas')}
                 aria-expanded={isNotificationsOpen}
                 onClick={(e) => {
                   e.preventDefault()
@@ -977,8 +977,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <button
                   type="button"
                   className="branch-kpi-menu-btn"
-                  title="Opciones de métrica"
-                  aria-label="Opciones de métrica"
+                  title={t('hc.opciones_de_metrica', 'Opciones de métrica')}
+                  aria-label={t('hc.opciones_de_metrica', 'Opciones de métrica')}
                   onClick={(e) => handleToggleKpiMenu('kpi-1', e)}
                 >
                   <FaEllipsisV aria-hidden="true" />
@@ -1056,8 +1056,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <button
                   type="button"
                   className="branch-kpi-menu-btn"
-                  title="Opciones de métrica"
-                  aria-label="Opciones de métrica"
+                  title={t('hc.opciones_de_metrica', 'Opciones de métrica')}
+                  aria-label={t('hc.opciones_de_metrica', 'Opciones de métrica')}
                   onClick={(e) => handleToggleKpiMenu('kpi-2', e)}
                 >
                   <FaEllipsisV aria-hidden="true" />
@@ -1132,8 +1132,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <button
                   type="button"
                   className="branch-kpi-menu-btn"
-                  title="Opciones de métrica"
-                  aria-label="Opciones de métrica"
+                  title={t('hc.opciones_de_metrica', 'Opciones de métrica')}
+                  aria-label={t('hc.opciones_de_metrica', 'Opciones de métrica')}
                   onClick={(e) => handleToggleKpiMenu('kpi-3', e)}
                 >
                   <FaEllipsisV aria-hidden="true" />
@@ -1208,8 +1208,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <button
                   type="button"
                   className="branch-kpi-menu-btn"
-                  title="Opciones de métrica"
-                  aria-label="Opciones de métrica"
+                  title={t('hc.opciones_de_metrica', 'Opciones de métrica')}
+                  aria-label={t('hc.opciones_de_metrica', 'Opciones de métrica')}
                   onClick={(e) => handleToggleKpiMenu('kpi-4', e)}
                 >
                   <FaEllipsisV aria-hidden="true" />
@@ -1823,7 +1823,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <div className="branch-drawer-vehicle-banner">
                   <img
                     src={getVehicleImage(selectedScheduleItem)}
-                    alt={selectedScheduleItem.vehiculoNombre || selectedScheduleItem.vehiculo || 'Vehículo'}
+                    alt={selectedScheduleItem.vehiculoNombre || selectedScheduleItem.vehiculo || t('hc2.vehiculo', 'Vehículo')}
                     className="branch-drawer-vehicle-img"
                   />
                   <div className="branch-drawer-vehicle-banner-overlay">

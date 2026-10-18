@@ -26,6 +26,7 @@ import {
 } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { useAuthStore } from '@/store/authStore'
+import { showAlert } from '@/utils/swalConfig'
 import { useHistorialReservas } from '@/modules/reservations/hooks/useReservations'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
 import { useSupportStore } from '../store/useSupportStore'
@@ -52,7 +53,7 @@ export default function SupportPage() {
       id: String(r.id),
       reservaId: r.id,
       vehiculoId: r.vehiculo?.id || r.vehicleId || null,
-      nombre: r.vehiculo?.nombre || `Reserva #${r.id}`,
+      nombre: r.vehiculo?.nombre || t('hc3.reservation_hash', { defaultValue: 'Reserva #{{id}}', id: r.id }),
       placa: r.vehiculo?.placa || '',
       estado: r.estado,
     }))
@@ -127,7 +128,12 @@ export default function SupportPage() {
 
   const handleAdjuntarEvidencia = () => {
     if (archivos.length >= 3) {
-      alert(t('soporte.maxEvidencias', 'Máximo 3 fotos o evidencias permitidas.'))
+      showAlert({
+        icon: 'warning',
+        title: t('soporte.evidenciasTitulo', 'Límite de evidencias'),
+        text: t('soporte.maxEvidencias', 'Máximo 3 fotos o evidencias permitidas.'),
+        confirmButtonText: t('common.accept', 'Aceptar'),
+      })
       return
     }
     inputEvidenciasRef.current?.click()
@@ -145,22 +151,35 @@ export default function SupportPage() {
     e.preventDefault()
 
     if (vehiculosElegibles.length === 0 && !formData.vehiculo) {
-      alert(
-        t(
+      showAlert({
+        icon: 'warning',
+        title: t('soporte.avisoReporteTitulo', 'Revisa tu reporte'),
+        text: t(
           'soporte.sinReservasConfirmadasErr',
-          'No tienes ninguna reserva confirmada o en curso activa para realizar un reporte de incidencia.'
-        )
-      )
+          t('hc2.no_tienes_ninguna_reserva_confirmada_o', 'No tienes ninguna reserva confirmada o en curso activa para realizar un reporte de incidencia.')
+        ),
+        confirmButtonText: t('common.accept', 'Aceptar'),
+      })
       return
     }
 
     if (!formData.descripcion.trim()) {
-      alert(t('soporte.errorDescripcion', 'Por favor describe el problema sucedido.'))
+      showAlert({
+        icon: 'warning',
+        title: t('soporte.avisoReporteTitulo', 'Revisa tu reporte'),
+        text: t('soporte.errorDescripcion', 'Por favor describe el problema sucedido.'),
+        confirmButtonText: t('common.accept', 'Aceptar'),
+      })
       return
     }
 
     if (!formData.contactoNombre.trim() || !formData.contactoTelefono.trim()) {
-      alert(t('soporte.errorContacto', 'Por favor ingresa tus datos de contacto para seguimiento.'))
+      showAlert({
+        icon: 'warning',
+        title: t('soporte.avisoReporteTitulo', 'Revisa tu reporte'),
+        text: t('soporte.errorContacto', 'Por favor ingresa tus datos de contacto para seguimiento.'),
+        confirmButtonText: t('common.accept', 'Aceptar'),
+      })
       return
     }
 
@@ -173,18 +192,28 @@ export default function SupportPage() {
         archivos
       )
     } catch (error) {
-      alert(error.message || t('soporte.errorEnviar', 'No fue posible registrar el reporte. Inténtalo de nuevo.'))
+      showAlert({
+        icon: 'error',
+        title: t('soporte.errorEnviarTitulo', 'No se pudo registrar el reporte'),
+        text: error.message || t('soporte.errorEnviar', 'No fue posible registrar el reporte. Inténtalo de nuevo.'),
+        confirmButtonText: t('common.accept', 'Aceptar'),
+      })
       return
     } finally {
       setEnviando(false)
     }
 
-    alert(
-      t(
-        'soporte.reporteCreadoExito',
-        `¡Reporte ${reporteCreado.codigo} registrado exitosamente!\nTiempo estimado de atención: ${reporteCreado.tiempoEstimado}. Recibirás las actualizaciones por correo y en la aplicación.`
-      )
-    )
+    const escapar = (valor) => String(valor ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+    await showAlert({
+      icon: 'success',
+      title: t('soporte.reporteCreadoTitulo', '¡Reporte registrado!'),
+      html: [
+        `<strong>${escapar(reporteCreado.codigo)}</strong>`,
+        t('soporte.reporteCreadoTiempo', { defaultValue: 'Tiempo estimado de atención: {{tiempo}}.', tiempo: escapar(reporteCreado.tiempoEstimado), interpolation: { escapeValue: false } }),
+        t('soporte.reporteCreadoAviso', 'Recibirás las actualizaciones por correo y en la aplicación.'),
+      ].join('<br/>'),
+      confirmButtonText: t('common.accept', 'Aceptar'),
+    })
 
     // Resetea formulario y pasa a pestaña Informes erróneos
     setFormData((prev) => ({
@@ -274,7 +303,7 @@ export default function SupportPage() {
               <p>
                 {t(
                   'soporte.centroSub',
-                  'Asistencia personalizada para tus alquileres de vehículos en Drivique.'
+                  t('hc2.asistencia_personalizada_para_tus_alqu', 'Asistencia personalizada para tus alquileres de vehículos en Drivique.')
                 )}
               </p>
               <button
@@ -354,7 +383,7 @@ export default function SupportPage() {
               <span>
                 {t(
                   'soporte.formBanner',
-                  'Complete el formulario para reportar cualquier problema técnico o mecánico durante su reserva.'
+                  t('hc2.complete_el_formulario_para_reportar_c', 'Complete el formulario para reportar cualquier problema técnico o mecánico durante su reserva.')
                 )}
               </span>
             </div>
@@ -404,7 +433,7 @@ export default function SupportPage() {
                     disabled={enviando || (vehiculosElegibles.length === 0 && !formData.vehiculo)}
                   >
                     {vehiculosElegibles.length === 0 ? (
-                      <option value="">No tienes reservas confirmadas para reportar</option>
+                      <option value="">{t('hc.no_tienes_reservas_confirmadas_para_re', 'No tienes reservas confirmadas para reportar')}</option>
                     ) : (
                       vehiculosElegibles.map((item) => (
                         <option key={item.id} value={item.nombre}>
@@ -422,7 +451,7 @@ export default function SupportPage() {
                   <input
                     type="text"
                     className="form-input-text"
-                    placeholder="Placa (ej: KLS-849)"
+                    placeholder={t('hc2.placa_ej_kls_849', 'Placa (ej: KLS-849)')}
                     value={formData.placa}
                     onChange={(e) => setFormData({ ...formData, placa: e.target.value })}
                   />
@@ -473,7 +502,7 @@ export default function SupportPage() {
                   className="form-textarea"
                   placeholder={t(
                     'soporte.descripcionPlaceholder',
-                    'Describe lo sucedido, ruidos, testigos en tablero o ubicación actual...'
+                    t('hc2.describe_lo_sucedido_ruidos_testigos_e', 'Describe lo sucedido, ruidos, testigos en tablero o ubicación actual...')
                   )}
                   value={formData.descripcion}
                   onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
@@ -494,7 +523,7 @@ export default function SupportPage() {
                 <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                   <div className="evidencias-upload-box" onClick={handleAdjuntarEvidencia}>
                     <FaCamera style={{ fontSize: 22 }} />
-                    <span>+ Adjunto</span>
+                    <span>{t('hc4.adjunto', '+ Adjunto')}</span>
                   </div>
                   <input
                     ref={inputEvidenciasRef}
@@ -522,7 +551,7 @@ export default function SupportPage() {
                 <p>
                   {t(
                     'soporte.contactoSub',
-                    'Precargados automáticamente desde tu perfil registrado (puedes editarlos si lo requieres).'
+                    t('hc2.precargados_automaticamente_desde_tu_p', 'Precargados automáticamente desde tu perfil registrado (puedes editarlos si lo requieres).')
                   )}
                 </p>
               </div>
@@ -597,14 +626,14 @@ export default function SupportPage() {
                   const getEstadoPill = (estado) => {
                     switch (estado) {
                       case 'resuelto':
-                        return { text: 'Resuelto', bg: '#dcfce7', color: '#15803d', dot: '#16a34a' }
+                        return { text: t('hc4.resuelto', 'Resuelto'), bg: '#dcfce7', color: '#15803d', dot: '#16a34a' }
                       case 'en_atencion':
-                        return { text: 'En atención', bg: '#e0f2fe', color: '#0369a1', dot: '#0284c7' }
+                        return { text: t('hc.en_atencion', 'En atención'), bg: '#e0f2fe', color: '#0369a1', dot: 'var(--brand-primary)' }
                       case 'en_revision':
-                        return { text: 'En revisión', bg: '#fef3c7', color: '#b45309', dot: '#d97706' }
+                        return { text: t('hc.en_revision', 'En revisión'), bg: '#fef3c7', color: '#b45309', dot: '#d97706' }
                       case 'recibido':
                       default:
-                        return { text: 'Recibido', bg: 'var(--brand-soft-strong-light)', color: 'var(--brand-text-light)', dot: 'var(--brand-primary)' }
+                        return { text: t('hc4.recibido', 'Recibido'), bg: 'var(--brand-soft-strong-light)', color: 'var(--brand-text-light)', dot: 'var(--brand-primary)' }
                     }
                   }
 
@@ -634,7 +663,7 @@ export default function SupportPage() {
 
                       <div className="reporte-tipo-vehiculo">{rep.tipoIncidenciaNombre}</div>
                       <div className="reporte-vehiculo-sub">
-                        {rep.vehiculo} {rep.placa && `(Placa: ${rep.placa})`}
+                        {rep.vehiculo} {rep.placa && t('hc3.plate_paren', { defaultValue: '(Placa: {{placa}})', placa: rep.placa })}
                       </div>
 
                       <p className="reporte-desc-snippet">{rep.descripcion}</p>

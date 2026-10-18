@@ -77,7 +77,7 @@ export default function BranchManagementPage() {
     let active = true
     branchManagementService.refresh()
       .then((list) => active && setBranches(list))
-      .catch(() => active && setError('No fue posible cargar las sucursales.'))
+      .catch(() => active && setError(t('hc.no_fue_posible_cargar_las_sucursales', 'No fue posible cargar las sucursales.')))
       .finally(() => active && setLoadingBranches(false))
     return () => { active = false }
   }, [])
@@ -104,8 +104,8 @@ export default function BranchManagementPage() {
   const headers = [
     'Sucursal',
     'Ciudad',
-    'Dirección / Contacto',
-    'Horario Atención',
+    t('hc2.direccion_contacto', 'Dirección / Contacto'),
+    t('hc2.horario_atencion', 'Horario Atención'),
     'Encargado Asignado',
     'Capacidad Flota',
     'Cobro Efectivo',
@@ -119,15 +119,15 @@ export default function BranchManagementPage() {
       branch.ciudad,
       `${branch.direccion} (Tel: ${branch.telefono || 'N/A'})`,
       branch.horario,
-      branchManagementService.managerName(branch) || 'Sin asignar',
+      branchManagementService.managerName(branch) || t('hc2.sin_asignar', 'Sin asignar'),
       `${linked.vehicles} / ${branch.capacidadVehiculos} autos`,
       branch.autorizadoPagoEfectivo ? 'Autorizado' : 'No autorizado',
-      (branch.estado || 'activa') === 'activa' ? 'Activa' : 'Inactiva',
+      (branch.estado || 'activa') === 'activa' ? t('hc5.active_f', 'Activa') : t('hc5.inactive_f', 'Inactiva'),
     ]
   })
 
   const exportData = {
-    title: 'Gestión Administrativa de Sucursales - Drivique',
+    title: t('hc.gestion_administrativa_de_sucursales_d', 'Gestión Administrativa de Sucursales - Drivique'),
     headers,
     rows,
     filename: 'sucursales-drivique',
@@ -174,10 +174,10 @@ export default function BranchManagementPage() {
         await branchManagementService.create(form, user)
       }
       setBranches(branchManagementService.list())
-      setNotice(modal.branch ? 'Sucursal actualizada exitosamente.' : 'Nueva sucursal creada con éxito.')
+      setNotice(modal.branch ? t('hc2.sucursal_actualizada_exitosamente', 'Sucursal actualizada exitosamente.') : t('hc2.nueva_sucursal_creada_con_exito', 'Nueva sucursal creada con éxito.'))
       close()
     } catch (caught) {
-      setError(caught.message ? `Error: ${caught.message}` : 'Error al guardar la sucursal.')
+      setError(caught.message ? t('hc3.error_prefix', { defaultValue: 'Error: {{mensaje}}', mensaje: caught.message }) : t('hc2.error_al_guardar_la_sucursal', 'Error al guardar la sucursal.'))
     }
   }
 
@@ -185,7 +185,7 @@ export default function BranchManagementPage() {
     try {
       await branchManagementService.remove(modal.branch.id, user)
       setBranches(branchManagementService.list())
-      setNotice('Sucursal eliminada exitosamente.')
+      setNotice(t('hc.sucursal_eliminada_exitosamente', 'Sucursal eliminada exitosamente.'))
       close()
     } catch (caught) {
       setModal(null)
@@ -202,7 +202,7 @@ export default function BranchManagementPage() {
           <header className="cities-topbar">
             <div>
               <p className="cities-eyebrow">{t('admin.management', 'Gestión Operativa')}</p>
-              <h1>Gestión de Sucursales</h1>
+              <h1>{t('hc.gestion_de_sucursales', 'Gestión de Sucursales')}</h1>
               <p className="cities-subtitle">
                 Administración integral de sedes, encargados, horarios, capacidad de vehículos y cobro en efectivo.
               </p>
@@ -233,12 +233,12 @@ export default function BranchManagementPage() {
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar sucursal, ciudad, dirección..."
+                  placeholder={t('hc.buscar_sucursal_ciudad_direccion', 'Buscar sucursal, ciudad, dirección...')}
                 />
               </label>
 
               <select value={cityFilter} onChange={(e) => setCityFilter(e.target.value)}>
-                <option value="all">Todas las ciudades</option>
+                <option value="all">{t('hc.todas_las_ciudades', 'Todas las ciudades')}</option>
                 {cities.map((city) => (
                   <option key={city.id} value={city.nombre}>
                     {city.nombre}
@@ -247,15 +247,15 @@ export default function BranchManagementPage() {
               </select>
 
               <select value={cashFilter} onChange={(e) => setCashFilter(e.target.value)}>
-                <option value="all">Todos los cobros</option>
-                <option value="true">Cobro en efectivo autorizado</option>
-                <option value="false">Solo pagos online</option>
+                <option value="all">{t('hc.todos_los_cobros', 'Todos los cobros')}</option>
+                <option value="true">{t('hc.cobro_en_efectivo_autorizado', 'Cobro en efectivo autorizado')}</option>
+                <option value="false">{t('hc4.solo_pagos_online', 'Solo pagos online')}</option>
               </select>
 
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                <option value="all">Todos los estados</option>
-                <option value="activa">Sedes Activas</option>
-                <option value="inactiva">Sedes Inactivas</option>
+                <option value="all">{t('hc.todos_los_estados', 'Todos los estados')}</option>
+                <option value="activa">{t('hc4.sedes_activas', 'Sedes Activas')}</option>
+                <option value="inactiva">{t('hc4.sedes_inactivas', 'Sedes Inactivas')}</option>
               </select>
 
               <div className="cities-export">
@@ -277,26 +277,26 @@ export default function BranchManagementPage() {
             </div>
 
             {/* Tabla */}
-            {loadingBranches ? (<div className="cities-empty"><p>Cargando sucursales...</p></div>) : filtered.length === 0 ? (
+            {loadingBranches ? (<div className="cities-empty"><p>{t('hc.cargando_sucursales', 'Cargando sucursales...')}</p></div>) : filtered.length === 0 ? (
               <div className="cities-empty">
                 <FaBuilding />
-                <h2>No se encontraron sucursales</h2>
-                <p>Intenta ajustar los filtros de búsqueda o registra una nueva sede.</p>
+                <h2>{t('hc.no_se_encontraron_sucursales', 'No se encontraron sucursales')}</h2>
+                <p>{t('hc.intenta_ajustar_los_filtros_de_busqued', 'Intenta ajustar los filtros de búsqueda o registra una nueva sede.')}</p>
               </div>
             ) : (
               <div className="cities-table-wrap">
                 <table className="branches-table">
                   <thead>
                     <tr>
-                      <th>Sucursal</th>
-                      <th>Ciudad</th>
-                      <th>Dirección y Contacto</th>
-                      <th>Horario Atención</th>
-                      <th>Encargado</th>
-                      <th>Cobro Efectivo</th>
-                      <th>Flota / Capacidad</th>
-                      <th>Estado</th>
-                      <th>Acciones</th>
+                      <th>{t('hc4.sucursal', 'Sucursal')}</th>
+                      <th>{t('hc4.ciudad', 'Ciudad')}</th>
+                      <th>{t('hc.direccion_y_contacto', 'Dirección y Contacto')}</th>
+                      <th>{t('hc.horario_atencion', 'Horario Atención')}</th>
+                      <th>{t('hc4.encargado', 'Encargado')}</th>
+                      <th>{t('hc4.cobro_efectivo', 'Cobro Efectivo')}</th>
+                      <th>{t('hc4.flota_capacidad', 'Flota / Capacidad')}</th>
+                      <th>{t('hc4.estado', 'Estado')}</th>
+                      <th>{t('hc4.acciones', 'Acciones')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -340,7 +340,7 @@ export default function BranchManagementPage() {
 
                           <td>
                             <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--city-text, #0f172a)' }}>
-                              {branchManagementService.managerName(branch) || 'Sin asignar'}
+                              {branchManagementService.managerName(branch) || t('hc2.sin_asignar', 'Sin asignar')}
                             </span>
                           </td>
 
@@ -378,16 +378,16 @@ export default function BranchManagementPage() {
                               }}
                             >
                               {esActiva ? <FaCheckCircle /> : <FaTimesCircle />}
-                              {esActiva ? 'Activa' : 'Inactiva'}
+                              {esActiva ? t('hc5.active_f', 'Activa') : t('hc5.inactive_f', 'Inactiva')}
                             </span>
                           </td>
 
                           <td>
                             <div className="cities-row-actions">
-                              <button type="button" onClick={() => openEdit(branch)} title="Editar Sucursal">
+                              <button type="button" onClick={() => openEdit(branch)} title={t('hc.editar_sucursal', 'Editar Sucursal')}>
                                 <FaEdit />
                               </button>
-                              <button className="is-danger" type="button" onClick={() => setModal({ type: 'delete', branch })} title="Eliminar Sucursal">
+                              <button className="is-danger" type="button" onClick={() => setModal({ type: 'delete', branch })} title={t('hc.eliminar_sucursal', 'Eliminar Sucursal')}>
                                 <FaTrash />
                               </button>
                             </div>
@@ -414,8 +414,8 @@ export default function BranchManagementPage() {
                 <>
                   <div className="cities-modal__head">
                     <div>
-                      <p className="cities-eyebrow">Formulario de Sede</p>
-                      <h2>{modal.branch ? 'Editar Sucursal' : 'Registrar Nueva Sucursal'}</h2>
+                      <p className="cities-eyebrow">{t('hc.formulario_de_sede', 'Formulario de Sede')}</p>
+                      <h2>{modal.branch ? t('hc2.editar_sucursal', 'Editar Sucursal') : t('hc2.registrar_nueva_sucursal', 'Registrar Nueva Sucursal')}</h2>
                     </div>
                     <button type="button" onClick={close}>
                       á—
@@ -430,7 +430,7 @@ export default function BranchManagementPage() {
                         required
                         value={form.nombre}
                         onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                        placeholder="Ej: Drivique Bogotá Norte"
+                        placeholder={t('hc.ej_drivique_bogota_norte', 'Ej: Drivique Bogotá Norte')}
                       />
                     </label>
 
@@ -449,7 +449,7 @@ export default function BranchManagementPage() {
                       <label>
                         Encargado Asignado
                         <select value={form.encargadoId} onChange={(e) => setForm({ ...form, encargadoId: e.target.value })}>
-                          <option value="">Sin encargado asignado (asignar luego)</option>
+                          <option value="">{t('hc.sin_encargado_asignado_asignar_luego', 'Sin encargado asignado (asignar luego)')}</option>
                           {managers.map((manager) => (
                             <option key={manager.correo} value={manager.correo}>
                               {`${manager.nombre || ''} ${manager.apellido || ''}`.trim() || manager.correo}
@@ -465,7 +465,7 @@ export default function BranchManagementPage() {
                         required
                         value={form.direccion}
                         onChange={(e) => setForm({ ...form, direccion: e.target.value })}
-                        placeholder="Ej: Av. Calle 100 # 15-20, Chicó"
+                        placeholder={t('hc.ej_av_calle_100_15_20_chico', 'Ej: Av. Calle 100 # 15-20, Chicó')}
                       />
                     </label>
 
@@ -503,8 +503,8 @@ export default function BranchManagementPage() {
                       <label>
                         Estado de la Sede
                         <select value={form.estado} onChange={(e) => setForm({ ...form, estado: e.target.value })}>
-                          <option value="activa">Activa / Operativa</option>
-                          <option value="inactiva">Inactiva / Cerrada</option>
+                          <option value="activa">{t('hc4.activa_operativa', 'Activa / Operativa')}</option>
+                          <option value="inactiva">{t('hc4.inactiva_cerrada', 'Inactiva / Cerrada')}</option>
                         </select>
                       </label>
                     </div>
@@ -516,8 +516,8 @@ export default function BranchManagementPage() {
                         onChange={(e) => setForm({ ...form, autorizadoPagoEfectivo: e.target.checked })}
                       />
                       <span>
-                        <strong>Autorizar Cobro en Efectivo en Sucursal</strong>
-                        <small>Permite que esta sede reciba dinero en caja para reservaciones en mostrador.</small>
+                        <strong>{t('hc.autorizar_cobro_en_efectivo_en_sucursa', 'Autorizar Cobro en Efectivo en Sucursal')}</strong>
+                        <small>{t('hc.permite_que_esta_sede_reciba_dinero_en', 'Permite que esta sede reciba dinero en caja para reservaciones en mostrador.')}</small>
                       </span>
                     </label>
 
@@ -538,8 +538,8 @@ export default function BranchManagementPage() {
                   <div className="cities-delete-icon">
                     <FaTrash />
                   </div>
-                  <h2>¿Eliminar Sucursal?</h2>
-                  <p>¿Estás seguro de eliminar la sucursal <strong>{modal.branch.nombre}</strong>?</p>
+                  <h2>{t('hc.eliminar_sucursal_59', '¿Eliminar Sucursal?')}</h2>
+                  <p>{t('hc.estas_seguro_de_eliminar_la_sucursal', '¿Estás seguro de eliminar la sucursal')} <strong>{modal.branch.nombre}</strong>?</p>
                   <div className="cities-modal__actions">
                     <button type="button" onClick={close}>
                       Cancelar

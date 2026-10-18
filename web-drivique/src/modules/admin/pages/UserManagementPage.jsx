@@ -101,7 +101,7 @@ export default function UserManagementPage() {
     try {
       setErrorModal('')
       await userManagementService.create(formCrear)
-      setNotice(t('admin.users.createdSuccess', `Usuario ${formCrear.nombre} creado con éxito.`))
+      setNotice(t('admin.users.createdSuccess', { defaultValue: 'Usuario {{nombre}} creado con éxito.', nombre: formCrear.nombre }))
       setModalCrear(false)
       setFormCrear({ nombre: '', correo: '', telefono: '', cedula: '', rol: 'cliente', sucursal: '' })
       cargarUsuarios()
@@ -129,7 +129,7 @@ export default function UserManagementPage() {
     try {
       setErrorModal('')
       await userManagementService.update(formEditar.id, formEditar)
-      setNotice(t('admin.users.updatedSuccess', `Datos de ${formEditar.nombre} actualizados.`))
+      setNotice(t('admin.users.updatedSuccess', { defaultValue: 'Datos de {{nombre}} actualizados.', nombre: formEditar.nombre }))
       setModalEditar(null)
       cargarUsuarios()
     } catch (err) {
@@ -147,7 +147,7 @@ export default function UserManagementPage() {
     setNotice(
       t(
         u.activo ? 'admin.users.deactivatedSuccess' : 'admin.users.activatedSuccess',
-        `Cuenta de ${u.nombre} ${u.activo ? 'desactivada' : 'activada'}.`
+        (u.activo ? t('hc3.account_deactivated', { defaultValue: 'Cuenta de {{nombre}} desactivada.', nombre: u.nombre }) : t('hc3.account_activated', { defaultValue: 'Cuenta de {{nombre}} activada.', nombre: u.nombre }))
       )
     )
     cargarUsuarios()
@@ -170,10 +170,11 @@ export default function UserManagementPage() {
       return
     }
     setNotice(
-      t(
-        'admin.users.docVerifiedSuccess',
-        `Documentos de ${modalDocumentos.nombre} marcados como ${nuevoEstado.toUpperCase()}.`
-      )
+      t('admin.users.docVerifiedSuccess', {
+        defaultValue: 'Documentos de {{nombre}} marcados como {{estado}}.',
+        nombre: modalDocumentos.nombre,
+        estado: nuevoEstado.toUpperCase(),
+      })
     )
     setModalDocumentos(null)
     cargarUsuarios()
@@ -182,7 +183,7 @@ export default function UserManagementPage() {
   const handleEliminarUsuario = async (u) => {
     try {
       await userManagementService.remove(u.id)
-      setNotice(t('admin.users.deletedSuccess', `Usuario ${u.nombre} eliminado.`))
+      setNotice(t('admin.users.deletedSuccess', { defaultValue: 'Usuario {{nombre}} eliminado.', nombre: u.nombre }))
       setModalEliminar(null)
       cargarUsuarios()
     } catch (err) {
@@ -191,7 +192,7 @@ export default function UserManagementPage() {
   }
 
   // --- Exportaciones ---
-  const headersExport = ['Nombre', 'Correo', 'Teléfono', 'Cédula', 'Rol', 'Sucursal', 'Estado Cuenta', 'Verificación Documentos', 'Reservas Activas']
+  const headersExport = ['Nombre', 'Correo', t('hc2.telefono', 'Teléfono'), t('hc2.cedula', 'Cédula'), 'Rol', 'Sucursal', t('hc2.estado_cuenta', 'Estado Cuenta'), t('hc2.verificacion_documentos', 'Verificación Documentos'), t('hc2.reservas_activas', 'Reservas Activas')]
   const rowsExport = filtrados.map((u) => [
     u.nombre,
     u.correo,
@@ -205,7 +206,7 @@ export default function UserManagementPage() {
   ])
 
   const exportData = {
-    title: `Gestión de Usuarios — Plataforma ${brand?.name || 'Drivique'}`,
+    title: t('hc3.users_export_title', { defaultValue: 'Gestión de Usuarios — Plataforma {{marca}}', marca: brand?.name || 'Drivique' }),
     headers: headersExport,
     rows: rowsExport,
     items: filtrados,
@@ -370,7 +371,7 @@ export default function UserManagementPage() {
                         <td>
                           <div style={{ fontSize: 12.5, display: 'inline-flex', alignItems: 'center', flexWrap: 'nowrap', gap: '8px', whiteSpace: 'nowrap' }}>
                             <span style={{ textTransform: 'capitalize', color: 'var(--city-text, #0f172a)', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                              {u.rol === 'encargado_sucursal' ? 'Encargado Sucursal' : u.rol?.replace(/_/g, ' ') || 'Usuario'}
+                              {u.rol === 'encargado_sucursal' ? t('hc2.encargado_sucursal', 'Encargado Sucursal') : u.rol?.replace(/_/g, ' ') || t('hc5.user_word', 'Usuario')}
                             </span>
                             {u.sucursal ? (
                               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: 'var(--city-muted, #64748b)', fontSize: 12, whiteSpace: 'nowrap' }}>
@@ -488,7 +489,7 @@ export default function UserManagementPage() {
                 <div className="user-doc-card">
                   <strong>{t('admin.usersPage.idOrPassport')}</strong>
                   {modalDocumentos.documentoCedula ? (
-                    <img src={modalDocumentos.documentoCedula} alt="Cédula" className="user-doc-preview" />
+                    <img src={modalDocumentos.documentoCedula} alt={t('hc.cedula', 'Cédula')} className="user-doc-preview" />
                   ) : (
                     <div className="user-doc-placeholder">{t('admin.usersPage.noIdAttached')}</div>
                   )}
@@ -497,7 +498,7 @@ export default function UserManagementPage() {
                 <div className="user-doc-card">
                   <strong>{t('admin.usersPage.driverLicense')}</strong>
                   {modalDocumentos.documentoLicencia ? (
-                    <img src={modalDocumentos.documentoLicencia} alt="Licencia" className="user-doc-preview" />
+                    <img src={modalDocumentos.documentoLicencia} alt={t('hc4.licencia', 'Licencia')} className="user-doc-preview" />
                   ) : (
                     <div className="user-doc-placeholder">{t('admin.usersPage.noLicenseAttached')}</div>
                   )}
@@ -508,7 +509,7 @@ export default function UserManagementPage() {
                 Observaciones o motivo de rechazo:
                 <input
                   type="text"
-                  placeholder="Ej: Licencia vigente aprobada / Foto borrosa..."
+                  placeholder={t('hc4.ej_licencia_vigente_aprobada_foto_borr', 'Ej: Licencia vigente aprobada / Foto borrosa...')}
                   value={observacionDoc}
                   onChange={(e) => setObservacionDoc(e.target.value)}
                   style={{
@@ -759,7 +760,7 @@ export default function UserManagementPage() {
               <div className="cities-delete-icon">
                 <FaTrash />
               </div>
-              <h2>Confirmar Eliminación de Usuario</h2>
+              <h2>{t('hc.confirmar_eliminacion_de_usuario', 'Confirmar Eliminación de Usuario')}</h2>
               <p>
                 ¿Estás seguro de que deseas eliminar a <strong>{modalEliminar.nombre}</strong> (
                 {modalEliminar.correo})?

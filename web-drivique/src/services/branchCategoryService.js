@@ -1,5 +1,6 @@
 import { api } from './httpClient'
 import { branchManagementService } from './branchManagementService'
+import i18n from '@/i18n'
 
 let categorias = []
 let porSucursal = {}
@@ -21,7 +22,7 @@ const mapCategoria = (c) => ({
 })
 
 function toError(error) {
-  return new Error(error?.response?.data?.detail || error?.message || 'No fue posible completar la operación.')
+  return new Error(error?.response?.data?.detail || error?.message || i18n.t('hc2.no_fue_posible_completar_la_operacion', 'No fue posible completar la operación.'))
 }
 
 const sucursalPorNombre = (nombre) => branchManagementService.list().find((b) => normalize(b.nombre) === normalize(nombre))

@@ -234,7 +234,7 @@ export default function PromotionManagementPage() {
     refresh()
     showAlert({
       icon: 'info',
-      title: promotion.destacada ? 'Quitada de destacadas' : 'Marcada como destacada'
+      title: promotion.destacada ? 'Quitada de destacadas' : t('hc2.marcada_como_destacada', 'Marcada como destacada')
     })
   }
 
@@ -299,7 +299,7 @@ export default function PromotionManagementPage() {
           {/* KPI CARDS BAR */}
           <div className="cash-kpi-bar">
             {[
-              { icon: FaTag, color: '#3b82f6', label: t('admin.promotions.kpi.total', 'Total Ofertas'), value: totalPromociones, desc: t('admin.promotions.kpi.totalDesc', 'Cupones y promociones registradas') },
+              { icon: FaTag, color: 'var(--brand-text)', label: t('admin.promotions.kpi.total', 'Total Ofertas'), value: totalPromociones, desc: t('admin.promotions.kpi.totalDesc', 'Cupones y promociones registradas') },
               { icon: FaCheckCircle, color: '#10b981', label: t('admin.promotions.kpi.active', 'Ofertas Activas'), value: totalActivas, desc: t('admin.promotions.kpi.activeDesc', 'Disponibles para clientes') },
               { icon: FaStar, color: '#f59e0b', label: t('admin.promotions.kpi.featured', 'Destacadas'), value: totalDestacadas, desc: t('admin.promotions.kpi.featuredDesc', 'Visibilidad prioritaria en catálogo') },
               { icon: FaGift, color: '#8b5cf6', label: t('admin.promotions.kpi.coupons', 'Cupones Directos'), value: totalCupones, desc: t('admin.promotions.kpi.couponsDesc', 'Códigos de canje comercial') },
@@ -383,7 +383,7 @@ export default function PromotionManagementPage() {
                     alignItems: 'center',
                     gap: '6px',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                    boxShadow: '0 4px 12px rgba(var(--brand-primary-rgb), 0.25)',
                     whiteSpace: 'nowrap',
                   }}
                 >
@@ -407,9 +407,9 @@ export default function PromotionManagementPage() {
               gap: 14,
               color: '#334155'
             }}>
-              <FaBuilding style={{ color: '#2563eb', fontSize: 20, flexShrink: 0 }} />
+              <FaBuilding style={{ color: 'var(--brand-text)', fontSize: 20, flexShrink: 0 }} />
               <div style={{ fontSize: 13 }}>
-                <strong style={{ display: 'block', color: '#0f172a', marginBottom: 2 }}>Modo Supervisión Global (Solo Lectura)</strong>
+                <strong style={{ display: 'block', color: '#0f172a', marginBottom: 2 }}>{t('hc.modo_supervision_global_solo_lectura', 'Modo Supervisión Global (Solo Lectura)')}</strong>
                 Como Administrador General puedes visualizar y auditar las promociones de todas las sucursales. La creación, activación y modificación es gestionada de manera autónoma por el Encargado de cada sede.
               </div>
             </div>
@@ -435,21 +435,21 @@ export default function PromotionManagementPage() {
                 onChange={(e) => setDiscountTypeFilter(e.target.value)}
                 style={{ padding: '8px 12px', borderRadius: 8, border: '1.5px solid var(--city-border, #cbd5e1)', fontSize: 13, background: 'var(--city-bg, #f8fafc)', color: 'var(--city-text, #0f172a)', outline: 'none' }}
               >
-                <option value="all">Todos los descuentos</option>
-                <option value="porcentaje">Porcentaje (%)</option>
-                <option value="fijo">Monto Fijo ($)</option>
+                <option value="all">{t('hc.todos_los_descuentos', 'Todos los descuentos')}</option>
+                <option value="porcentaje">{t('hc4.porcentaje', 'Porcentaje (%)')}</option>
+                <option value="fijo">{t('hc4.monto_fijo', 'Monto Fijo ($)')}</option>
               </select>
 
               <div className="doc-branch-badge">
                 <FaBuilding style={{ color: 'var(--city-muted, #64748b)' }} />
-                <span>{user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Todas las sucursales'}</span>
+                <span>{user?.sucursalAsignada || user?.sucursalId || user?.sucursal || t('hc2.todas_las_sucursales', 'Todas las sucursales')}</span>
               </div>
 
               <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
                 <button
                   type="button"
                   className="export-pill export-pill--excel"
-                  onClick={() => exportExcel({ title: 'Promociones - Drivique', headers: ['ID', 'TIPO', 'CÓDIGO', 'NOMBRE', 'AUDIENCIA', 'DESCUENTO', 'RES MÍNIMA', 'ALCANCE', 'INICIO', 'FIN', 'CONDICIONES', 'DESTACADA', 'ESTADO'], rows: exportData })}
+                  onClick={() => exportExcel({ title: t('hc4.promociones_drivique', 'Promociones - Drivique'), headers: ['ID', 'TIPO', t('hc2.codigo', 'CÓDIGO'), 'NOMBRE', 'AUDIENCIA', 'DESCUENTO', t('hc2.res_minima', 'RES MÍNIMA'), 'ALCANCE', 'INICIO', 'FIN', 'CONDICIONES', 'DESTACADA', 'ESTADO'], rows: exportData })}
                   title="Excel"
                 >
                   <FaFileExcel aria-hidden="true" /> Excel
@@ -457,7 +457,7 @@ export default function PromotionManagementPage() {
                 <button
                   type="button"
                   className="export-pill export-pill--pdf"
-                  onClick={() => exportPdf({ title: 'Promociones - Drivique', headers: ['ID', 'TIPO', 'CÓDIGO', 'NOMBRE', 'AUDIENCIA', 'DESCUENTO', 'RES MÍNIMA', 'ALCANCE', 'INICIO', 'FIN', 'CONDICIONES', 'DESTACADA', 'ESTADO'], rows: exportData })}
+                  onClick={() => exportPdf({ title: t('hc4.promociones_drivique', 'Promociones - Drivique'), headers: ['ID', 'TIPO', t('hc2.codigo', 'CÓDIGO'), 'NOMBRE', 'AUDIENCIA', 'DESCUENTO', t('hc2.res_minima', 'RES MÍNIMA'), 'ALCANCE', 'INICIO', 'FIN', 'CONDICIONES', 'DESTACADA', 'ESTADO'], rows: exportData })}
                   title="PDF"
                 >
                   <FaFilePdf aria-hidden="true" /> PDF
@@ -465,8 +465,8 @@ export default function PromotionManagementPage() {
                 <button
                   type="button"
                   className="export-pill export-pill--print"
-                  onClick={() => printTable({ title: 'Promociones - Drivique', headers: ['ID', 'TIPO', 'CÓDIGO', 'NOMBRE', 'AUDIENCIA', 'DESCUENTO', 'RES MÍNIMA', 'ALCANCE', 'INICIO', 'FIN', 'CONDICIONES', 'DESTACADA', 'ESTADO'], rows: exportData })}
-                  title="Imprimir"
+                  onClick={() => printTable({ title: t('hc4.promociones_drivique', 'Promociones - Drivique'), headers: ['ID', 'TIPO', t('hc2.codigo', 'CÓDIGO'), 'NOMBRE', 'AUDIENCIA', 'DESCUENTO', t('hc2.res_minima', 'RES MÍNIMA'), 'ALCANCE', 'INICIO', 'FIN', 'CONDICIONES', 'DESTACADA', 'ESTADO'], rows: exportData })}
+                  title={t('hc4.imprimir', 'Imprimir')}
                 >
                   <FaPrint aria-hidden="true" /> Imprimir
                 </button>
@@ -604,7 +604,7 @@ export default function PromotionManagementPage() {
                               <button
                                 type="button"
                                 onClick={() => toggleFeatured(item)}
-                                title={item.destacada ? 'Quitar de destacadas' : 'Marcar como destacada'}
+                                title={item.destacada ? 'Quitar de destacadas' : t('hc2.marcar_como_destacada', 'Marcar como destacada')}
                                 style={{
                                   background: 'transparent',
                                   border: 'none',
@@ -671,7 +671,7 @@ export default function PromotionManagementPage() {
                                 <button
                                   type="button"
                                   onClick={() => openEdit(item)}
-                                  title="Editar"
+                                  title={t('hc4.editar', 'Editar')}
                                   style={{
                                     padding: '5px 10px',
                                     borderRadius: '8px',
@@ -691,7 +691,7 @@ export default function PromotionManagementPage() {
                                 <button
                                   type="button"
                                   onClick={() => handleDelete(item)}
-                                  title="Eliminar"
+                                  title={t('hc4.eliminar', 'Eliminar')}
                                   style={{
                                     padding: '5px 10px',
                                     borderRadius: '8px',
@@ -714,7 +714,7 @@ export default function PromotionManagementPage() {
                                 <button
                                   type="button"
                                   onClick={() => setConditionsModal(item)}
-                                  title="Ver Detalle"
+                                  title={t('hc.ver_detalle_131', 'Ver Detalle')}
                                   style={{
                                     padding: '5px 12px',
                                     borderRadius: '8px',
@@ -762,7 +762,7 @@ export default function PromotionManagementPage() {
 
                         <div className="doc-mobile-data-item">
                           <span className="doc-mobile-data-label">{t('admin.promotions.table.offerType', 'TIPO OFERTA')}</span>
-                          <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{item.tipoOferta === 'promocion' ? 'Promoción' : 'Cupón'}</span>
+                          <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{item.tipoOferta === 'promocion' ? t('hc2.promocion', 'Promoción') : t('hc2.cupon', 'Cupón')}</span>
                         </div>
 
                         <div className="doc-mobile-data-item">
@@ -860,12 +860,12 @@ export default function PromotionManagementPage() {
           <section className="cities-modal" style={{ maxWidth: 480, width: '100%', background: 'var(--city-card)', borderRadius: 16, overflow: 'hidden' }}>
             <div style={modalHeadStyle}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(37,99,235,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-primary, #2563eb)' }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(var(--brand-primary-rgb),0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-primary, #2563eb)' }}>
                   <FaFileAlt size={18} />
                 </div>
                 <div>
-                  <p style={{ color: 'var(--city-muted)', margin: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>TÉRMINOS Y CONDICIONES</p>
-                  <h2 style={{ color: 'var(--city-text)', margin: 0, fontSize: 18, fontWeight: 800 }}>Detalle de la Oferta</h2>
+                  <p style={{ color: 'var(--city-muted)', margin: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>{t('hc.terminos_y_condiciones', 'TÉRMINOS Y CONDICIONES')}</p>
+                  <h2 style={{ color: 'var(--city-text)', margin: 0, fontSize: 18, fontWeight: 800 }}>{t('hc.detalle_de_la_oferta', 'Detalle de la Oferta')}</h2>
                 </div>
               </div>
               <button type="button" onClick={() => setConditionsModal(null)} style={closeBtnStyle}>&times;</button>
@@ -894,20 +894,20 @@ export default function PromotionManagementPage() {
                   <strong style={{ color: 'var(--city-text)' }}>{conditionsModal.fechaInicio} al {conditionsModal.fechaFin}</strong>
                 </div>
                 <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-bg, #f8fafc)', border: '1px solid var(--city-border, #cbd5e1)' }}>
-                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Monto Mínimo:</span>
-                  <strong style={{ color: 'var(--city-text)' }}>{conditionsModal.reservaMinima > 0 ? formatCurrency(conditionsModal.reservaMinima, moneda, tasaUSD) : 'Sin mínimo'}</strong>
+                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>{t('hc.monto_minimo', 'Monto Mínimo:')}</span>
+                  <strong style={{ color: 'var(--city-text)' }}>{conditionsModal.reservaMinima > 0 ? formatCurrency(conditionsModal.reservaMinima, moneda, tasaUSD) : t('hc2.sin_minimo', 'Sin mínimo')}</strong>
                 </div>
                 <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-bg, #f8fafc)', border: '1px solid var(--city-border, #cbd5e1)' }}>
                   <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Alcance:</span>
                   <strong style={{ color: 'var(--city-text)' }}>{labelTarget(conditionsModal)}</strong>
                 </div>
                 <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-bg, #f8fafc)', border: '1px solid var(--city-border, #cbd5e1)' }}>
-                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Clasificación:</span>
-                  <strong style={{ color: 'var(--city-text)' }}>{conditionsModal.tipoOferta === 'promocion' ? 'Promoción' : 'Cupón'} {conditionsModal.destacada ? '• Destacada' : ''}</strong>
+                  <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>{t('hc.clasificacion', 'Clasificación:')}</span>
+                  <strong style={{ color: 'var(--city-text)' }}>{conditionsModal.tipoOferta === 'promocion' ? t('hc2.promocion', 'Promoción') : t('hc2.cupon', 'Cupón')} {conditionsModal.destacada ? '• Destacada' : ''}</strong>
                 </div>
                 {conditionsModal.branchName && (
                   <div style={{ padding: 10, borderRadius: 8, background: 'var(--city-bg, #f8fafc)', border: '1px solid var(--city-border, #cbd5e1)', gridColumn: 'span 2' }}>
-                    <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>Sucursal Asignada:</span>
+                    <span style={{ color: 'var(--city-muted, #64748b)', display: 'block' }}>{t('hc.sucursal_asignada', 'Sucursal Asignada:')}</span>
                     <strong style={{ color: 'var(--brand-primary, #2563eb)' }}>{conditionsModal.branchName}</strong>
                   </div>
                 )}
@@ -936,7 +936,7 @@ export default function PromotionManagementPage() {
                   {t('admin.promotions.modal.eyebrow', 'GESTIÓN DE CAMPAÑA')}
                 </p>
                 <h2 style={{ color: 'var(--city-text)', margin: 0, fontSize: 18, fontWeight: 800 }}>
-                  {t(modal.promotion ? 'admin.promotions.modal.editTitle' : 'admin.promotions.modal.createTitle', modal.promotion ? 'Editar Oferta' : 'Crear Nueva Oferta')}
+                  {t(modal.promotion ? 'admin.promotions.modal.editTitle' : 'admin.promotions.modal.createTitle', modal.promotion ? t('hc2.editar_oferta', 'Editar Oferta') : t('hc2.crear_nueva_oferta', 'Crear Nueva Oferta'))}
                 </h2>
               </div>
               <button type="button" onClick={closeModal} style={closeBtnStyle}>&times;</button>
@@ -1048,8 +1048,8 @@ export default function PromotionManagementPage() {
                     onChange={(e) => setForm({ ...form, tipoDescuento: e.target.value })}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
                   >
-                    <option value="porcentaje">Porcentaje (%)</option>
-                    <option value="fijo">Monto Fijo ($ COP)</option>
+                    <option value="porcentaje">{t('hc4.porcentaje', 'Porcentaje (%)')}</option>
+                    <option value="fijo">{t('hc4.monto_fijo_cop', 'Monto Fijo ($ COP)')}</option>
                   </select>
                 </div>
 
@@ -1108,7 +1108,7 @@ export default function PromotionManagementPage() {
                     }}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
                   >
-                    <option value="">Cualquier vehículo</option>
+                    <option value="">{t('hc.cualquier_vehiculo', 'Cualquier vehículo')}</option>
                     {vehiculosFiltrados.map((v) => (
                       <option key={v.id} value={v.id}>{v.nombre} ({v.categoria})</option>
                     ))}
@@ -1153,7 +1153,7 @@ export default function PromotionManagementPage() {
                     min="0"
                     value={form.reservaMinima}
                     onChange={(e) => setForm({ ...form, reservaMinima: e.target.value })}
-                    placeholder="0 para sin mínimo"
+                    placeholder={t('hc.0_para_sin_minimo', '0 para sin mínimo')}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
                   />
                 </div>
@@ -1168,9 +1168,9 @@ export default function PromotionManagementPage() {
                     onChange={(e) => setForm({ ...form, audiencia: e.target.value })}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
                   >
-                    <option value="todos">Todos los usuarios</option>
-                    <option value="nuevos">Nuevos usuarios</option>
-                    <option value="frecuentes">Clientes frecuentes</option>
+                    <option value="todos">{t('hc.todos_los_usuarios', 'Todos los usuarios')}</option>
+                    <option value="nuevos">{t('hc4.nuevos_usuarios', 'Nuevos usuarios')}</option>
+                    <option value="frecuentes">{t('hc4.clientes_frecuentes', 'Clientes frecuentes')}</option>
                   </select>
                 </div>
 
@@ -1214,7 +1214,7 @@ export default function PromotionManagementPage() {
                     rows={3}
                     value={form.condiciones}
                     onChange={(e) => setForm({ ...form, condiciones: e.target.value })}
-                    placeholder="Escribe los términos y condiciones de la oferta..."
+                    placeholder={t('hc.escribe_los_terminos_y_condiciones_de_', 'Escribe los términos y condiciones de la oferta...')}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none', resize: 'vertical' }}
                   />
                 </div>
@@ -1234,7 +1234,7 @@ export default function PromotionManagementPage() {
               <button
                 type="submit"
                 form="promo-form"
-                style={{ padding: '8px 22px', borderRadius: 9999, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800, boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}
+                style={{ padding: '8px 22px', borderRadius: 9999, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800, boxShadow: '0 4px 12px rgba(var(--brand-primary-rgb), 0.3)' }}
               >
                 {t('admin.promotions.modal.saveBtn', 'Guardar Oferta')}
               </button>

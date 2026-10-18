@@ -217,7 +217,7 @@ export default function ContractManagementPage() {
                   type="text"
                   placeholder={t(
                     "admin.contractsPage.search",
-                    "Buscar por reserva o documento...",
+                    t('hc2.buscar_por_reserva_o_documento', 'Buscar por reserva o documento...'),
                   )}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -381,7 +381,7 @@ export default function ContractManagementPage() {
                             };
                             printTable(singleData);
                           }}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? 'var(--city-soft, #eff6ff)' : '#e5e7eb', color: c.isSigned ? '#2563eb' : '#9ca3af', border: c.isSigned ? '1px solid #bfdbfe' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? 'var(--city-soft, #eff6ff)' : '#e5e7eb', color: c.isSigned ? 'var(--brand-primary)' : '#9ca3af', border: c.isSigned ? '1px solid var(--brand-border)' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
                           <FaPrint /> {t('admin.print', 'Imprimir')}
                         </button>
@@ -402,7 +402,7 @@ export default function ContractManagementPage() {
                         <p>
                           {t(
                             "admin.contractsPage.emptySubtitle",
-                            "Intenta ajustar los criterios de búsqueda.",
+                            t('hc2.intenta_ajustar_los_criterios_de_busqu', 'Intenta ajustar los criterios de búsqueda.'),
                           )}
                         </p>
                       </div>

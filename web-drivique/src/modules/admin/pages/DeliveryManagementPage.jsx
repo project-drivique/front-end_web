@@ -115,7 +115,7 @@ export default function DeliveryManagementPage() {
         showAlert({ icon: 'success', title: t('admin.delivery.modal.createSuccess', 'Conductor creado exitosamente.') })
       }
     } catch (err) {
-      return showAlert({ icon: 'error', title: 'Error', text: err.message })
+      return showAlert({ icon: 'error', title: t('hc4.error', 'Error'), text: err.message })
     }
 
     setNuevoConductor(INITIAL_CONDUCTOR)
@@ -154,7 +154,7 @@ export default function DeliveryManagementPage() {
         setConductores(await deliveryService.remove(id))
         showAlert({ icon: 'success', title: t('admin.delivery.deleteSuccess', 'Conductor eliminado') })
       } catch (err) {
-        showAlert({ icon: 'error', title: 'Error', text: err.message })
+        showAlert({ icon: 'error', title: t('hc4.error', 'Error'), text: err.message })
       }
     }
   }
@@ -168,11 +168,11 @@ export default function DeliveryManagementPage() {
       showAlert({
         icon: 'success',
         title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'),
-        text: `Conductor: ${nombreConductor}. El cliente y el conductor reciben el PIN por correo; el conductor confirma o rechaza desde su correo.`
+        text: t('hc3.driver_assigned_msg', { defaultValue: 'Conductor: {{conductor}}. El cliente y el conductor reciben el PIN por correo; el conductor confirma o rechaza desde su correo.', conductor: nombreConductor })
       })
       loadReservations()
     } catch (err) {
-      showAlert({ icon: 'error', title: 'Error', text: err.message })
+      showAlert({ icon: 'error', title: t('hc4.error', 'Error'), text: err.message })
     }
   }
 
@@ -210,10 +210,10 @@ export default function DeliveryManagementPage() {
       const conductorObj = conductores.find(c => c.nombre === conductorSeleccionado)
       await deliveryService.assign(modalAsignar.id, modalAsignar.puntoTipo, conductorObj.id)
       await reservationManagementService.refresh()
-      showAlert({ icon: 'success', title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'), text: 'El cliente y el conductor reciben el PIN por correo; el conductor confirma o rechaza desde su correo.' })
+      showAlert({ icon: 'success', title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'), text: t('hc.el_cliente_y_el_conductor_reciben_el_p', 'El cliente y el conductor reciben el PIN por correo; el conductor confirma o rechaza desde su correo.') })
       setModalAsignar(null)
       loadReservations()
-    } catch (err) { showAlert({ icon: 'error', title: 'Error', text: err.message }) }
+    } catch (err) { showAlert({ icon: 'error', title: t('hc4.error', 'Error'), text: err.message }) }
   }
 
   const handleVerificar = async (e) => {
@@ -241,7 +241,7 @@ export default function DeliveryManagementPage() {
     }
     if (norm === 'ASIGNADO') {
       return (
-        <span className="doc-status-badge pendiente" style={{ background: '#eff6ff', color: '#1d4ed8', borderColor: '#bfdbfe' }}>
+        <span className="doc-status-badge pendiente" style={{ background: 'var(--brand-soft)', color: 'var(--brand-text)', borderColor: 'var(--brand-border)' }}>
           <FaUserTie style={{ fontSize: 11 }} />
           {t('admin.delivery.status.asignado', 'En Camino')}
         </span>
@@ -266,7 +266,7 @@ export default function DeliveryManagementPage() {
     }
     if (norm === 'en_servicio') {
       return (
-        <span className="doc-status-badge pendiente" style={{ background: '#eff6ff', color: '#1d4ed8', borderColor: '#bfdbfe' }}>
+        <span className="doc-status-badge pendiente" style={{ background: 'var(--brand-soft)', color: 'var(--brand-text)', borderColor: 'var(--brand-border)' }}>
           {t('admin.delivery.driverStatus.enServicio', 'En Ruta')}
         </span>
       )
@@ -294,7 +294,7 @@ export default function DeliveryManagementPage() {
         c.categoriaLic || '-',
         c.vencimientoLic || '-',
         c.telefono || '-',
-        c.vehiculo || 'Sin asignar',
+        c.vehiculo || t('hc2.sin_asignar', 'Sin asignar'),
         c.estado || 'disponible'
       ])
     }
@@ -348,7 +348,7 @@ export default function DeliveryManagementPage() {
           <div className="cash-kpi-bar">
             {[
               { icon: FaExclamationCircle, color: '#f59e0b', label: t('admin.delivery.kpi.pending', 'Pendientes de Asignar'), value: totalPendientes, desc: t('admin.delivery.kpi.pendingDesc', 'Sin conductor asignado') },
-              { icon: FaRoute, color: '#3b82f6', label: t('admin.delivery.kpi.assigned', 'En Camino'), value: totalAsignados, desc: t('admin.delivery.kpi.assignedDesc', 'Con conductor asignado') },
+              { icon: FaRoute, color: 'var(--brand-text)', label: t('admin.delivery.kpi.assigned', 'En Camino'), value: totalAsignados, desc: t('admin.delivery.kpi.assignedDesc', 'Con conductor asignado') },
               { icon: FaCheckCircle, color: '#10b981', label: t('admin.delivery.kpi.completed', 'Entregados'), value: totalCompletados, desc: t('admin.delivery.kpi.completedDesc', 'Servicios finalizados') },
               { icon: FaUserTie, color: '#8b5cf6', label: t('admin.delivery.kpi.drivers', 'Conductores Registrados'), value: conductores.length, desc: t('admin.delivery.kpi.driversDesc', 'Personal disponible en sucursal') },
             ].map(({ icon: Icon, color, label, value, desc }) => (
@@ -423,7 +423,7 @@ export default function DeliveryManagementPage() {
                   alignItems: 'center',
                   gap: '6px',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                  boxShadow: '0 4px 12px rgba(var(--brand-primary-rgb), 0.25)',
                   whiteSpace: 'nowrap',
                 }}
               >
@@ -453,7 +453,7 @@ export default function DeliveryManagementPage() {
 
               <div className="doc-branch-badge">
                 <FaBuilding style={{ color: 'var(--city-muted, #64748b)' }} />
-                <span>{user?.sucursalAsignada || user?.sucursalId || user?.sucursal || 'Todas las sucursales'}</span>
+                <span>{user?.sucursalAsignada || user?.sucursalId || user?.sucursal || t('hc2.todas_las_sucursales', 'Todas las sucursales')}</span>
               </div>
 
               <div className="export-pills-group" style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
@@ -865,7 +865,7 @@ export default function DeliveryManagementPage() {
                       required
                       value={nuevoConductor.nombre}
                       onChange={e => setNuevoConductor({ ...nuevoConductor, nombre: e.target.value })}
-                      placeholder="Ej: Carlos Eduardo Ramírez"
+                      placeholder={t('hc.ej_carlos_eduardo_ramirez', 'Ej: Carlos Eduardo Ramírez')}
                       style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
                     />
                   </div>
@@ -910,8 +910,8 @@ export default function DeliveryManagementPage() {
                       onChange={e => setNuevoConductor({ ...nuevoConductor, tipoDoc: e.target.value })}
                       style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
                     >
-                      <option value="CC">Cédula de Ciudadanía (CC)</option>
-                      <option value="CE">Cédula de Extranjería (CE)</option>
+                      <option value="CC">{t('hc.cedula_de_ciudadania_cc', 'Cédula de Ciudadanía (CC)')}</option>
+                      <option value="CE">{t('hc.cedula_de_extranjeria_ce', 'Cédula de Extranjería (CE)')}</option>
                       <option value="PAS">Pasaporte (PAS)</option>
                     </select>
                   </div>
@@ -956,11 +956,11 @@ export default function DeliveryManagementPage() {
                       onChange={e => setNuevoConductor({ ...nuevoConductor, categoriaLic: e.target.value })}
                       style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
                     >
-                      <option value="A2">A2 (Motocicletas)</option>
-                      <option value="B1">B1 (Automóviles y Camionetas particulares)</option>
-                      <option value="B2">B2 (Camiones particulares)</option>
-                      <option value="C1">C1 (Automóviles y Camionetas servicio público)</option>
-                      <option value="C2">C2 (Camiones servicio público)</option>
+                      <option value="A2">{t('hc4.a2_motocicletas', 'A2 (Motocicletas)')}</option>
+                      <option value="B1">{t('hc.b1_automoviles_y_camionetas_particular', 'B1 (Automóviles y Camionetas particulares)')}</option>
+                      <option value="B2">{t('hc4.b2_camiones_particulares', 'B2 (Camiones particulares)')}</option>
+                      <option value="C1">{t('hc.c1_automoviles_y_camionetas_servicio_p', 'C1 (Automóviles y Camionetas servicio público)')}</option>
+                      <option value="C2">{t('hc.c2_camiones_servicio_publico', 'C2 (Camiones servicio público)')}</option>
                     </select>
                   </div>
 
@@ -1003,7 +1003,7 @@ export default function DeliveryManagementPage() {
                       type="text"
                       value={nuevoConductor.vehiculo}
                       onChange={e => setNuevoConductor({ ...nuevoConductor, vehiculo: e.target.value })}
-                      placeholder="Ej: Moto Yamaha NMAX 155 (Placa ABC-12D) o Renault Kangoo"
+                      placeholder={t('hc2.ej_moto_yamaha_nmax_155_placa_abc_12d_', 'Ej: Moto Yamaha NMAX 155 (Placa ABC-12D) o Renault Kangoo')}
                       style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
                     />
                   </div>
@@ -1022,7 +1022,7 @@ export default function DeliveryManagementPage() {
                 <button
                   type="submit"
                   form="conductor-form"
-                  style={{ padding: '8px 22px', borderRadius: 9999, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800, boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}
+                  style={{ padding: '8px 22px', borderRadius: 9999, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800, boxShadow: '0 4px 12px rgba(var(--brand-primary-rgb), 0.3)' }}
                 >
                   {editingConductor ? t('common.saveChanges', 'Guardar Cambios') : t('admin.delivery.modal.saveBtn', 'Crear Conductor')}
                 </button>

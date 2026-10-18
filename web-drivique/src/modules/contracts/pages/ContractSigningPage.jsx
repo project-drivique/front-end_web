@@ -210,9 +210,9 @@ export default function ContractSigningPage() {
   const handleFirmado = async (contrato) => {
     await showAlert({
       icon: 'success',
-      title: '¡Contrato Firmado con Éxito!',
-      text: 'Tu contrato de alquiler ha sido firmado digitalmente y asegurado en tu cuenta. Ya puedes ver o descargar tu copia protegida en Mis Reservas.',
-      confirmButtonText: 'Ir a Mis Reservas',
+      title: t('hc.contrato_firmado_con_exito', '¡Contrato Firmado con Éxito!'),
+      text: t('hc.tu_contrato_de_alquiler_ha_sido_firmad', 'Tu contrato de alquiler ha sido firmado digitalmente y asegurado en tu cuenta. Ya puedes ver o descargar tu copia protegida en Mis Reservas.'),
+      confirmButtonText: t('hc2.ir_a_mis_reservas', 'Ir a Mis Reservas'),
     })
     navigate(`/reservas?detalle=${encodeURIComponent(targetId)}`, {
       state: { detalleId: targetId }
@@ -222,7 +222,7 @@ export default function ContractSigningPage() {
   if (cargando) {
     return (
       <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: esModoOscuro ? '#0f172a' : '#f8fafc', color: esModoOscuro ? '#fff' : '#0f172a' }}>
-        <p style={{ fontSize: 16, fontWeight: 700 }}>Cargando contrato de reserva...</p>
+        <p style={{ fontSize: 16, fontWeight: 700 }}>{t('hc.cargando_contrato_de_reserva', 'Cargando contrato de reserva...')}</p>
       </div>
     )
   }
@@ -245,7 +245,7 @@ export default function ContractSigningPage() {
             color: 'var(--brand-on-primary, #fff)',
             fontWeight: 700,
             textDecoration: 'none',
-            boxShadow: '0 4px 12px var(--brand-shadow, rgba(37,99,235,0.25))'
+            boxShadow: '0 4px 12px var(--brand-shadow, rgba(var(--brand-primary-rgb),0.25))'
           }}
         >
           Volver a Mis Reservas
@@ -336,7 +336,7 @@ export default function ContractSigningPage() {
             }}
           >
             {esSoloLectura ? <FaCheckCircle size={13} /> : <FaShieldAlt size={13} />}
-            <span>{esSoloLectura ? 'Contrato Oficial Firmado' : 'Firma Digital Oficial'}</span>
+            <span>{esSoloLectura ? t('hc2.contrato_oficial_firmado', 'Contrato Oficial Firmado') : t('hc5.official_digital_signature', 'Firma Digital Oficial')}</span>
           </div>
 
           <h1
@@ -348,7 +348,7 @@ export default function ContractSigningPage() {
               letterSpacing: '-0.02em'
             }}
           >
-            {esSoloLectura ? 'Contrato de Alquiler Registrado' : 'Lectura y Firma de Contrato de Alquiler'}
+            {esSoloLectura ? t('hc2.contrato_de_alquiler_registrado', 'Contrato de Alquiler Registrado') : t('hc2.lectura_y_firma_de_contrato_de_alquile', 'Lectura y Firma de Contrato de Alquiler')}
           </h1>
           <p
             style={{
@@ -361,8 +361,8 @@ export default function ContractSigningPage() {
             }}
           >
             {esSoloLectura
-              ? `Documento oficial firmado para la reserva ${targetId}. Puedes revisar los datos registrados, las cláusulas legales y descargar una copia en PDF.`
-              : `Tu reserva ${targetId} ya fue confirmada. Lee detenidamente los términos y condiciones de alquiler y dibuja tu firma digital en el recuadro inferior para completar el proceso.`}
+              ? t('hc3.contract_signed_desc', { defaultValue: 'Documento oficial firmado para la reserva {{codigo}}. Puedes revisar los datos registrados, las cláusulas legales y descargar una copia en PDF.', codigo: targetId })
+              : t('hc3.contract_sign_desc', { defaultValue: 'Tu reserva {{codigo}} ya fue confirmada. Lee detenidamente los términos y condiciones de alquiler y dibuja tu firma digital en el recuadro inferior para completar el proceso.', codigo: targetId })}
           </p>
         </div>
 
