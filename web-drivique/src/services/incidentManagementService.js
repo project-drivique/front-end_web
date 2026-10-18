@@ -309,6 +309,12 @@ export const incidentManagementService = {
     try {
       let creada = await incidentService.create(payload)
       if (files.length) creada = await incidentService.uploadAttachments(creada.id, files)
+      if (!creada.vehiclePlate && (data.placa || data.vehiclePlate)) {
+        creada.vehiclePlate = data.placa || data.vehiclePlate
+      }
+      if (!creada.vehicleModel && (data.vehiculo || data.vehicleModel)) {
+        creada.vehicleModel = data.vehiculo || data.vehicleModel
+      }
       const item = conRaw(creada)
       cache = [item, ...cache.filter((r) => r.id !== item.id)]
       guardarStorage(cache)

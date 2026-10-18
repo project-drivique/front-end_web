@@ -404,6 +404,35 @@ export function useReservationFlow() {
         mostrarAlerta(t('reservas.errorHoraDevolucion', 'Por favor selecciona la hora de devolución del vehículo.'));
         return;
       }
+
+      const ahoraDate = new Date();
+      const hoyLocalStr = `${ahoraDate.getFullYear()}-${String(ahoraDate.getMonth() + 1).padStart(2, '0')}-${String(ahoraDate.getDate()).padStart(2, '0')}`;
+      const ahoraMins = ahoraDate.getHours() * 60 + ahoraDate.getMinutes();
+
+      if (reserva.fechaInicio === hoyLocalStr && reserva.horaInicio) {
+        const [hR, mR] = reserva.horaInicio.split(':').map(Number);
+        if (hR * 60 + mR <= ahoraMins) {
+          mostrarAlerta(t('reservas.errorHoraRetiroPasada', 'La hora de retiro seleccionada ya ha transcurrido. Por favor selecciona una hora posterior.'));
+          return;
+        }
+      }
+
+      if (reserva.fechaFin === hoyLocalStr && reserva.horaFin) {
+        const [hD, mD] = reserva.horaFin.split(':').map(Number);
+        if (hD * 60 + mD <= ahoraMins) {
+          mostrarAlerta(t('reservas.errorHoraDevolucionPasada', 'La hora de devolución seleccionada ya ha transcurrido. Por favor selecciona una hora posterior.'));
+          return;
+        }
+      }
+
+      if (reserva.fechaInicio === reserva.fechaFin && reserva.horaInicio && reserva.horaFin) {
+        const [hR, mR] = reserva.horaInicio.split(':').map(Number);
+        const [hD, mD] = reserva.horaFin.split(':').map(Number);
+        if (hD * 60 + mD < hR * 60 + mR) {
+          mostrarAlerta(t('reservas.errorDevolucionAntesRetiro', 'La hora de devolución no puede ser anterior a la hora de retiro para el mismo día.'));
+          return;
+        }
+      }
       if (reserva.sucursalRetiro === 'domicilio' || reserva.sucursalDevolucion === 'domicilio') {
         if (!reserva.domicilioBarrio?.trim() || !reserva.domicilioDireccion?.trim()) {
           mostrarAlerta(t('reservas.errorDomicilio', 'Para el servicio a domicilio, debes ingresar el barrio y la dirección de entrega/devolución.'));
