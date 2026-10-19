@@ -1,6 +1,7 @@
 import { api } from './httpClient'
 import { SUCURSALES, cargarUbicaciones } from '../modules/catalog/constants'
 import { cityManagementService } from './cityManagementService'
+import i18n from '@/i18n'
 
 const hhmm = (time) => String(time || '').slice(0, 5)
 
@@ -25,7 +26,7 @@ const mapBranch = (b, encargadoId = '') => ({
 })
 
 function toError(error) {
-  const result = new Error(error?.response?.data?.detail || error?.response?.data?.title || 'No fue posible guardar los cambios.')
+  const result = new Error(error?.response?.data?.detail || error?.response?.data?.title || i18n.t('hc2.no_fue_posible_guardar_los_cambios', 'No fue posible guardar los cambios.'))
   result.status = error?.response?.status
   return result
 }

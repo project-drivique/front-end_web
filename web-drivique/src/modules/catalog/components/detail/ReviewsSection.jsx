@@ -33,7 +33,7 @@ export default function ReviewsSection({ vehiculoId = null, c, embedded = false 
           const reviews = Array.isArray(data?.reviews) ? data.reviews : (Array.isArray(data) ? data : [])
           
           const mapped = reviews.map(r => ({
-            autor: r.authorName || r.autor || 'Cliente Drivique',
+            autor: r.customerName || r.authorName || r.autor || t('hc2.cliente_drivique', 'Cliente Drivique'),
             calificacion: Number(r.rating || r.calificacion || 5),
             texto: r.comment || r.texto || '',
             fecha: r.createdAt || r.fecha || new Date().toISOString().split('T')[0],
@@ -206,7 +206,7 @@ export default function ReviewsSection({ vehiculoId = null, c, embedded = false 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13.5, fontWeight: 600, color: isDark ? '#f1f5f9' : '#334155', marginBottom: 2 }}>
-                        {item.autor} {item.esPropia && <span style={{ fontSize: 11, fontWeight: 600, color: textSecondary, marginLeft: 4 }}>(Tu reseña)</span>}
+                        {item.autor} {item.esPropia && <span style={{ fontSize: 11, fontWeight: 600, color: textSecondary, marginLeft: 4 }}>{t('hc.tu_resena', '(Tu reseña)')}</span>}
                       </div>
                       <div style={{ fontSize: 11.5, color: textSecondary, marginBottom: 6 }}>{fechaFormateada}</div>
                       <p style={{ fontSize: 13, color: isDark ? '#e2e8f0' : '#334155', margin: 0, lineHeight: 1.5 }}>
@@ -230,7 +230,7 @@ export default function ReviewsSection({ vehiculoId = null, c, embedded = false 
                               alt={`Foto adjunta ${imgIdx + 1}`}
                               onClick={() => setFotoAmpliada(imgSrc)}
                               style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover', border: `1px solid ${border}`, cursor: 'pointer', transition: 'transform 0.15s ease, border-color 0.15s ease' }}
-                              title="Haz clic para ver imagen"
+                              title={t('hc.haz_clic_para_ver_imagen', 'Haz clic para ver imagen')}
                             />
                           ))}
                         </div>
@@ -251,7 +251,7 @@ export default function ReviewsSection({ vehiculoId = null, c, embedded = false 
                 onKeyDown={e => e.key === 'Enter' && setMostrarTodas(v => !v)}
                 style={{ color: 'var(--brand-primary, #2563eb)', fontSize: 13, fontWeight: 600, cursor: 'pointer', userSelect: 'none' }}
               >
-                {mostrarTodas ? 'Ver menos' : 'Ver más'}
+                {mostrarTodas ? t('hc2.ver_menos', 'Ver menos') : t('hc2.ver_mas', 'Ver más')}
               </span>
             </div>
           )}
@@ -264,7 +264,7 @@ export default function ReviewsSection({ vehiculoId = null, c, embedded = false 
             <button type="button" onClick={() => setFotoAmpliada(null)} style={{ position: 'absolute', top: 16, right: 16, width: 34, height: 34, borderRadius: '50%', background: 'rgba(15, 23, 42, 0.7)', color: '#ffffff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, zIndex: 2, transition: 'background 0.2s ease' }}>
               <FaTimes />
             </button>
-            <img src={fotoAmpliada} alt="Foto del vehículo ampliada" style={{ maxWidth: '100%', maxHeight: '75vh', objectFit: 'contain', borderRadius: 10, display: 'block' }} />
+            <img src={fotoAmpliada} alt={t('hc.foto_del_vehiculo_ampliada', 'Foto del vehículo ampliada')} style={{ maxWidth: '100%', maxHeight: '75vh', objectFit: 'contain', borderRadius: 10, display: 'block' }} />
           </div>
         </div>
       )}

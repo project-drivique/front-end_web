@@ -517,7 +517,7 @@
 }
 
 .branch-profile-directions-link:hover {
-  background: #eff6ff;
+  background: var(--brand-soft);
   border-color: var(--brand-primary-dark, #1d4ed8);
   color: var(--brand-primary-dark, #1d4ed8);
   transform: translateY(-1px);
@@ -531,8 +531,8 @@
   align-items: flex-start;
   gap: 12px;
   padding: 14px 16px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-border);
   border-radius: 14px;
 }
 
@@ -546,7 +546,7 @@
 .branch-profile-info-text {
   margin: 0;
   font-size: 12.5px;
-  color: #1e40af;
+  color: var(--brand-text);
   line-height: 1.5;
 }
 
@@ -769,8 +769,8 @@
 .branch-payment-deadline-section {
   padding: 16px 18px;
   border-radius: 14px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-border);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -790,13 +790,13 @@
 .branch-payment-deadline-title {
   font-size: 13px;
   font-weight: 700;
-  color: #1e40af;
+  color: var(--brand-text);
 }
 
 .branch-payment-deadline-text {
   margin: 0;
   font-size: 12.5px;
-  color: #1e40af;
+  color: var(--brand-text);
   line-height: 1.5;
 }
 
@@ -958,12 +958,12 @@ body.dark .branch-payment-deadline-section,
 
 body.dark .branch-payment-deadline-title,
 .management-shell--dark .branch-payment-deadline-title {
-  color: #93c5fd !important;
+  color: var(--brand-text) !important;
 }
 
 body.dark .branch-payment-deadline-text,
 .management-shell--dark .branch-payment-deadline-text {
-  color: #bfdbfe !important;
+  color: var(--brand-border) !important;
 }
 
 body.dark .branch-delivery-table-wrap,

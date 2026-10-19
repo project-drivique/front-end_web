@@ -33,9 +33,9 @@ input:focus, select:focus, textarea:focus, input:focus-visible, select:focus-vis
 
 /* ── Modo claro (defecto) ── */
 :root {
-  --brand-primary: #2563eb;
-  --brand-secondary: #1e3a8a;
-  --brand-accent: #60a5fa;
+  --brand-primary: var(--brand-primary);
+  --brand-secondary: var(--brand-secondary);
+  --brand-accent: var(--brand-accent);
   --brand-primary-soft: rgba(var(--brand-primary-rgb), 0.1);
   --bg-page:       #eaeff8;
   --bg-nav:        rgba(255,255,255,0.98);

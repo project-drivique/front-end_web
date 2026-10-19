@@ -52,7 +52,7 @@ export default function NotificationDetailModal({
         if (activo) {
           // Si falla endpoint detalle, usamos la previa
           if (!notificacionPrevia) {
-            setError(err?.response?.data?.detail || err?.response?.data?.message || 'No se pudo cargar el detalle.')
+            setError(err?.response?.data?.detail || err?.response?.data?.message || t('hc2.no_se_pudo_cargar_el_detalle', 'No se pudo cargar el detalle.'))
           }
         }
       } finally {
@@ -75,43 +75,43 @@ export default function NotificationDetailModal({
     const raw = String(tipo).toLowerCase()
     if (raw.includes('cancel') || raw.includes('vencim') || raw.includes('expir')) {
       return {
-        etiqueta: 'Cancelación / Vencimiento',
+        etiqueta: t('hc2.cancelacion_vencimiento', 'Cancelación / Vencimiento'),
         icono: <FaCalendarAlt />,
         color: '#dc2626',
         bg: 'rgba(220, 38, 38, 0.12)',
-        accion: { texto: 'Explorar catálogo', ruta: '/catalogo' },
+        accion: { texto: t('hc2.explorar_catalogo', 'Explorar catálogo'), ruta: '/catalogo' },
       }
     }
     if (raw.includes('reserva') || raw.includes('booking')) {
       return {
-        etiqueta: 'Reserva de Vehículo',
+        etiqueta: t('hc2.reserva_de_vehiculo', 'Reserva de Vehículo'),
         icono: <FaCar />,
-        color: '#2563eb',
-        bg: 'rgba(37, 99, 235, 0.12)',
-        accion: { texto: 'Ver mis reservas', ruta: '/reservas' },
+        color: 'var(--brand-text)',
+        bg: 'rgba(var(--brand-primary-rgb), 0.12)',
+        accion: { texto: t('hc2.ver_mis_reservas', 'Ver mis reservas'), ruta: '/reservas' },
       }
     }
     if (raw.includes('pago') || raw.includes('payment') || raw.includes('wompi')) {
       return {
-        etiqueta: 'Pago Confirmado',
+        etiqueta: t('hc2.pago_confirmado', 'Pago Confirmado'),
         icono: <FaCreditCard />,
         color: '#10b981',
         bg: 'rgba(16, 185, 129, 0.12)',
-        accion: { texto: 'Ver reservas y pagos', ruta: '/reservas' },
+        accion: { texto: t('hc2.ver_reservas_y_pagos', 'Ver reservas y pagos'), ruta: '/reservas' },
       }
     }
     if (raw.includes('contrato') || raw.includes('contract')) {
       return {
-        etiqueta: 'Contrato de Alquiler',
+        etiqueta: t('hc2.contrato_de_alquiler', 'Contrato de Alquiler'),
         icono: <FaFileContract />,
         color: '#8b5cf6',
         bg: 'rgba(139, 92, 246, 0.12)',
-        accion: { texto: 'Ver reservas', ruta: '/reservas' },
+        accion: { texto: t('hc2.ver_reservas', 'Ver reservas'), ruta: '/reservas' },
       }
     }
     if (raw.includes('entrega') || raw.includes('delivery')) {
       return {
-        etiqueta: 'Entrega de Vehículo',
+        etiqueta: t('hc2.entrega_de_vehiculo', 'Entrega de Vehículo'),
         icono: <FaCar />,
         color: '#06b6d4',
         bg: 'rgba(6, 182, 212, 0.12)',
@@ -119,7 +119,7 @@ export default function NotificationDetailModal({
     }
     if (raw.includes('devolucion') || raw.includes('return')) {
       return {
-        etiqueta: 'Devolución de Vehículo',
+        etiqueta: t('hc2.devolucion_de_vehiculo', 'Devolución de Vehículo'),
         icono: <FaCheckCircle />,
         color: '#10b981',
         bg: 'rgba(16, 185, 129, 0.12)',
@@ -127,18 +127,18 @@ export default function NotificationDetailModal({
     }
     if (raw.includes('documento') || raw.includes('kyc') || raw.includes('licencia')) {
       return {
-        etiqueta: 'Verificación de Documentos',
+        etiqueta: t('hc2.verificacion_de_documentos', 'Verificación de Documentos'),
         icono: <FaIdCard />,
         color: '#059669',
         bg: 'rgba(5, 150, 105, 0.12)',
-        accion: { texto: 'Ver perfil y documentos', ruta: '/perfil' },
+        accion: { texto: t('hc2.ver_perfil_y_documentos', 'Ver perfil y documentos'), ruta: '/perfil' },
       }
     }
     if (raw.includes('soporte') || raw.includes('incidencia') || raw.includes('support')) {
       return {
-        etiqueta: 'Soporte y Atención',
+        etiqueta: t('hc2.soporte_y_atencion', 'Soporte y Atención'),
         icono: <FaComments />,
-        color: '#0284c7',
+        color: 'var(--brand-text)',
         bg: 'rgba(2, 132, 199, 0.12)',
         accion: { texto: 'Ir a Centro de Soporte', ruta: '/soporte' },
       }
@@ -149,14 +149,14 @@ export default function NotificationDetailModal({
         icono: <FaShieldAlt />,
         color: '#6366f1',
         bg: 'rgba(99, 102, 241, 0.12)',
-        accion: { texto: 'Ver mi perfil', ruta: '/perfil' },
+        accion: { texto: t('hc2.ver_mi_perfil', 'Ver mi perfil'), ruta: '/perfil' },
       }
     }
     return {
-      etiqueta: 'Notificación General',
+      etiqueta: t('hc2.notificacion_general', 'Notificación General'),
       icono: <FaBell />,
       color: 'var(--brand-primary, #2563eb)',
-      bg: 'var(--brand-soft, rgba(37,99,235,0.1))',
+      bg: 'var(--brand-soft, rgba(var(--brand-primary-rgb),0.1))',
     }
   }
 
@@ -167,7 +167,7 @@ export default function NotificationDetailModal({
     const c = String(crit).toUpperCase()
     if (c === 'HIGH' || c === 'CRITICAL' || c === 'ALTA' || c === 'URGENTE') {
       return {
-        texto: 'Prioridad Alta',
+        texto: t('hc4.prioridad_alta', 'Prioridad Alta'),
         icono: <FaExclamationTriangle />,
         color: '#ef4444',
         bg: 'rgba(239, 68, 68, 0.12)',
@@ -176,7 +176,7 @@ export default function NotificationDetailModal({
     }
     if (c === 'LOW' || c === 'BAJA') {
       return {
-        texto: 'Informativa',
+        texto: t('hc4.informativa', 'Informativa'),
         icono: <FaInfoCircle />,
         color: '#64748b',
         bg: 'rgba(100, 116, 139, 0.1)',
@@ -184,7 +184,7 @@ export default function NotificationDetailModal({
       }
     }
     return {
-      texto: 'Importante',
+      texto: t('hc4.importante', 'Importante'),
       icono: <FaInfoCircle />,
       color: '#f59e0b',
       bg: 'rgba(245, 158, 11, 0.12)',
@@ -214,7 +214,7 @@ export default function NotificationDetailModal({
     : null
 
   const metaActionPath = notif.metadata?.actionPath || (notif.metadata?.actionUrl && notif.metadata.actionUrl.startsWith('/') ? notif.metadata.actionUrl : (notif.metadata?.reservationId ? `/reservas?detalle=${notif.metadata.reservationId}` : null))
-  const metaActionLabel = notif.metadata?.actionLabel || (metaActionPath ? 'Continuar con mi reserva' : null)
+  const metaActionLabel = notif.metadata?.actionLabel || (metaActionPath ? t('hc2.continuar_con_mi_reserva', 'Continuar con mi reserva') : null)
   const accionFinal = metaActionPath ? { texto: metaActionLabel, ruta: metaActionPath } : infoEvento.accion
 
   return (
@@ -248,7 +248,7 @@ export default function NotificationDetailModal({
             type="button"
             className="notif-detail-close-btn"
             onClick={onClose}
-            aria-label="Cerrar"
+            aria-label={t('hc4.cerrar', 'Cerrar')}
           >
             <FaTimes />
           </button>
@@ -259,7 +259,7 @@ export default function NotificationDetailModal({
           {cargando && !detalle ? (
             <div className="notif-detail-loading">
               <div className="notif-detail-spinner" />
-              <p>Cargando detalles de la notificación...</p>
+              <p>{t('hc.cargando_detalles_de_la_notificacion', 'Cargando detalles de la notificación...')}</p>
             </div>
           ) : (
             <>
@@ -343,29 +343,29 @@ export default function NotificationDetailModal({
                           letterSpacing: '0.3px',
                         }}
                       >
-                        {esRechazado ? '✕ TRANSACCIÓN DECLINADA' : '✓ PAGO EXITOSO · APROBADO'}
+                        {esRechazado ? t('hc2.transaccion_declinada', '✕ TRANSACCIÓN DECLINADA') : t('hc2.pago_exitoso_aprobado', '✓ PAGO EXITOSO · APROBADO')}
                       </span>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', fontSize: '12px' }}>
                       {monto && (
                         <div>
-                          <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>Monto de Transacción</span>
+                          <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>{t('hc.monto_de_transaccion', 'Monto de Transacción')}</span>
                           <span style={{ fontWeight: 800, fontSize: '15px', color: 'var(--texto-primary, #0f172a)' }}>$ {monto} {moneda}</span>
                         </div>
                       )}
                       {bookingCode && (
                         <div>
-                          <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>Código de Reserva</span>
+                          <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>{t('hc.codigo_de_reserva', 'Código de Reserva')}</span>
                           <span style={{ fontWeight: 800, fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{bookingCode}</span>
                         </div>
                       )}
                       <div>
-                        <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>Pasarela de Pago</span>
+                        <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>{t('hc.pasarela_de_pago', 'Pasarela de Pago')}</span>
                         <span style={{ fontWeight: 600, color: 'var(--texto-primary, #0f172a)' }}>Wompi Colombia (Segura)</span>
                       </div>
                       <div>
-                        <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>Comercio</span>
+                        <span style={{ color: 'var(--texto-muted, #64748b)', display: 'block', fontSize: '11px' }}>{t('hc4.comercio', 'Comercio')}</span>
                         <span style={{ fontWeight: 600, color: 'var(--texto-primary, #0f172a)' }}>Drivique S.A.S.</span>
                       </div>
                     </div>
@@ -381,8 +381,8 @@ export default function NotificationDetailModal({
                       }}
                     >
                       {esRechazado
-                        ? 'Tu banco no autorizó la operación. No se realizó ningún cargo a tu cuenta. Puedes intentar de nuevo con otra tarjeta o PSE para asegurar tu vehículo.'
-                        : 'El pago ha sido acreditado exitosamente. Ya puedes continuar con la revisión y firma digital de tu contrato de alquiler para la entrega.'}
+                        ? t('hc2.tu_banco_no_autorizo_la_operacion_no_s', 'Tu banco no autorizó la operación. No se realizó ningún cargo a tu cuenta. Puedes intentar de nuevo con otra tarjeta o PSE para asegurar tu vehículo.')
+                        : t('hc2.el_pago_ha_sido_acreditado_exitosament', 'El pago ha sido acreditado exitosamente. Ya puedes continuar con la revisión y firma digital de tu contrato de alquiler para la entrega.')}
                     </div>
                   </div>
                 );
@@ -391,7 +391,7 @@ export default function NotificationDetailModal({
               {/* Metadatos asociados */}
               {metadata && (
                 <div className="notif-detail-metadata-section">
-                  <h4 className="notif-detail-metadata-title">Información adicional</h4>
+                  <h4 className="notif-detail-metadata-title">{t('hc.informacion_adicional', 'Información adicional')}</h4>
                   <div className="notif-detail-metadata-grid">
                     {Object.entries(metadata).map(([key, value]) => {
                       if (typeof value === 'object' && value !== null) {

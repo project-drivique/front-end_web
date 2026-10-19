@@ -30,6 +30,7 @@ function mapVehicle(vehicle) {
     nombre: vehicle.nombre || [vehicle.brandName, vehicle.model].filter(Boolean).join(' '),
     marca: vehicle.marca || vehicle.brandName,
     modelo: vehicle.modelo || vehicle.model,
+    placa: vehicle.placa || vehicle.plate || vehicle.licensePlate || '',
     categoria: vehicle.categoria || vehicle.categoryName,
     categoriaId: vehicle.categoriaId || vehicle.categoryId,
     transmision: vehicle.transmision || vehicle.transmissionName || vehicle.transmissionCode,
@@ -43,9 +44,13 @@ function mapVehicle(vehicle) {
     kilometraje: vehicle.kilometraje ?? vehicle.mileage,
     precio: Number(vehicle.precio ?? vehicle.dailyRate ?? 0),
     imagen: mainImage,
-    imagenes: Array.isArray(vehicle.imagenes)
-      ? vehicle.imagenes
-      : (mainImage ? [mainImage] : []),
+    imagenes: Array.isArray(vehicle.imageUrls) && vehicle.imageUrls.length
+      ? vehicle.imageUrls
+      : (Array.isArray(vehicle.imagenes)
+        ? vehicle.imagenes
+        : (mainImage ? [mainImage] : [])),
+    calificacion: Number(vehicle.calificacion ?? vehicle.averageRating ?? 0),
+    totalResenas: Number(vehicle.totalResenas ?? vehicle.reviewCount ?? 0),
     destacado: vehicle.destacado ?? vehicle.isFeatured ?? false,
     activo: vehicle.activo ?? vehicle.isActive ?? true,
     disponible: vehicle.disponible ?? vehicle.allowsReservation ?? false,

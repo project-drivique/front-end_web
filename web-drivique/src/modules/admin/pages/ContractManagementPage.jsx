@@ -1,30 +1,17 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  FaFileContract,
-  FaEye,
-  FaFileExcel,
-  FaFilePdf,
-  FaPrint,
-  FaSearch,
-  FaTimes,
-  FaUser,
-  FaBuilding,
-  FaCalendarAlt,
-  FaDownload,
-  FaCar,
-  FaReceipt,
-} from "react-icons/fa";
+import { FaFileContract, FaFileExcel, FaFilePdf, FaPrint, FaSearch, FaTimes, FaReceipt } from "react-icons/fa";
 import { useLanding } from "../../landing/LandingContext";
 import { useAuthStore } from "../../../store/authStore";
 import { useBrand } from "../../../contexts/BrandContext";
 import { contractManagementService } from "../../../services/contractManagementService";
+import { contractService } from "../../../services/contractService";
 import {
   exportExcel,
   exportPdf,
   printTable,
 } from "../../../utils/listExportUtils";
-import { formatCurrency } from "../../../utils/currencyUtils";
+
 import MenuConfiguracion from "../../../components/MenuConfiguracion";
 import FirmaContrato from '@/modules/contracts/components/ContractSignature';
 import ManagementSidebar from "../components/ManagementSidebar";
@@ -32,7 +19,7 @@ import "./CityManagementPage.css";
 import "./ContractManagementPage.css";
 
 export default function ContractManagementPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { tema } = useLanding();
   const user = useAuthStore((state) => state.usuario);
   const { brand } = useBrand();
@@ -52,7 +39,6 @@ export default function ContractManagementPage() {
   const [modalDetalle, setModalDetalle] = useState(null);
   const [notice, setNotice] = useState("");
 
-  const getVehiculoImagen = (c) => c?.vehiculoImagen || "";
 
   useEffect(() => {
     contractManagementService.refresh().then(setContratos).catch((error) => console.error('No se pudieron cargar los contratos:', error));
@@ -124,7 +110,25 @@ export default function ContractManagementPage() {
     printTable(exportData);
   };
 
-  const handleDownloadSinglePdf = (contrato) => {
+  const handleDownloadSinglePdf = async (contrato) => {
+    try {
+      if (contrato?.id) {
+        const blob = await contractService.descargarPdf(contrato.id);
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `Contrato-${contrato.contratoNumero || contrato.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        setNotice(t("admin.contractsPage.downloadSuccess", { contract: contrato.contratoNumero, defaultValue: `Contrato ${contrato.contratoNumero} descargado.` }));
+        return;
+      }
+    } catch (err) {
+      console.warn("Fallo al descargar PDF de backend, usando fallback:", err);
+    }
+
     const singleData = {
       title: `${t("admin.contractsPage.detailsTitle", "Detalle de Contrato")} - ${contrato.contratoNumero}`,
       headers: headersExport,
@@ -198,7 +202,7 @@ export default function ContractManagementPage() {
                   type="text"
                   placeholder={t(
                     "admin.contractsPage.search",
-                    "Buscar por reserva o documento...",
+                    t('hc2.buscar_por_reserva_o_documento', 'Buscar por reserva o documento...'),
                   )}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -362,7 +366,7 @@ export default function ContractManagementPage() {
                             };
                             printTable(singleData);
                           }}
-                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? 'var(--city-soft, #eff6ff)' : '#e5e7eb', color: c.isSigned ? '#2563eb' : '#9ca3af', border: c.isSigned ? '1px solid #bfdbfe' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
+                          style={{ padding: '6px 12px', fontSize: '13px', background: c.isSigned ? 'var(--city-soft, #eff6ff)' : '#e5e7eb', color: c.isSigned ? 'var(--brand-primary)' : '#9ca3af', border: c.isSigned ? '1px solid var(--brand-border)' : 'none', borderRadius: '6px', cursor: c.isSigned ? 'pointer' : 'not-allowed', fontWeight: '500', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}
                         >
                           <FaPrint /> {t('admin.print', 'Imprimir')}
                         </button>
@@ -383,7 +387,7 @@ export default function ContractManagementPage() {
                         <p>
                           {t(
                             "admin.contractsPage.emptySubtitle",
-                            "Intenta ajustar los criterios de búsqueda.",
+                            t('hc2.intenta_ajustar_los_criterios_de_busqu', 'Intenta ajustar los criterios de búsqueda.'),
                           )}
                         </p>
                       </div>
