@@ -67,7 +67,7 @@ export const useNotificationStore = create((set, get) => ({
     try {
       const count = await notificationService.getUnreadCount()
       set({ conteoNoLeidas: typeof count === 'number' ? count : 0 })
-    } catch (err) {
+    } catch {
       // Si falla endpoint específico, mantener o calcular sobre las que ya estén
       const fallbackCount = get().notificaciones.filter((n) => !n.leida).length
       set({ conteoNoLeidas: fallbackCount })

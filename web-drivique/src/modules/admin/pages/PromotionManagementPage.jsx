@@ -1,27 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  FaSearch,
-  FaPlus,
-  FaEdit,
-  FaTrash,
-  FaFileExcel,
-  FaFilePdf,
-  FaPrint,
-  FaBuilding,
-  FaTag,
-  FaCar,
-  FaStar,
-  FaRegStar,
-  FaToggleOn,
-  FaToggleOff,
-  FaInfoCircle,
-  FaGift,
-  FaCheckCircle,
-  FaFileAlt,
-  FaExclamationCircle,
-  FaEye,
-} from 'react-icons/fa'
+import { FaSearch, FaPlus, FaEdit, FaTrash, FaFileExcel, FaFilePdf, FaPrint, FaBuilding, FaTag, FaCar, FaStar, FaRegStar, FaToggleOn, FaToggleOff, FaInfoCircle, FaGift, FaCheckCircle, FaFileAlt, FaEye } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { promotionManagementService } from '../../../services/promotionManagementService'

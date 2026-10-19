@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
-import { useAuthStore } from '../../../store/authStore'
-import { promotionManagementService } from '../../../services/promotionManagementService'
 import { formatCurrency } from '@/utils/currencyUtils'
 
 import { FaHeart, FaRegHeart, FaCogs, FaGasPump, FaCar, FaStar, FaMapMarkerAlt, FaChevronRight, FaChevronLeft } from 'react-icons/fa'
@@ -86,7 +84,6 @@ export default function TarjetaVehiculo({
   onFavorito = () => {},
   c,
   invitado = false,
-  onGuestBlocked = () => {},
   onGuestFavorito = () => {},
   onVerDetalles = null,
 }) {
@@ -103,8 +100,6 @@ export default function TarjetaVehiculo({
   const rating = normalizeRating(vehiculo)
   const totalImagenes = imagenes.length
 
-  const estadoDisponible = true
-  const disponibleEnFechas = true
   const puedeReservar = true
 
   const badgeTexto = t('catalogo.available')

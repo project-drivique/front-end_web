@@ -1,22 +1,7 @@
-﻿import React, { useState, useMemo } from 'react'
+﻿import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaBell,
-  FaSearch,
-  FaCheckDouble,
-  FaClock,
-  FaChevronRight,
-  FaFilter,
-  FaCar,
-  FaExclamationTriangle,
-  FaClipboardList,
-  FaUndo,
-  FaIdCard,
-  FaCashRegister,
-  FaArrowLeft,
-  FaCheckCircle,
-} from 'react-icons/fa'
+import { FaBell, FaSearch, FaCheckDouble, FaClock, FaChevronRight, FaCar, FaExclamationTriangle, FaArrowLeft, FaCheckCircle } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBranchDashboard } from '../../../hooks/useBranchDashboard'

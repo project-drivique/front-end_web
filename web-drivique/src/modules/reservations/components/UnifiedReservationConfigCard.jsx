@@ -5,9 +5,6 @@ import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'
 import AlertModal from '../../catalog/components/AlertModal'
 import { SUCURSALES, CIUDADES } from '../../catalog/constants'
-import { branchManagementService } from '../../../services/branchManagementService'
-import { verificarYCambiarSiSucursalCerradaHoy, generarHorasDisponibles } from '@/utils/branchScheduleUtils'
-
 function getHorarioSucursal(nombreSucursal) {
   if (!nombreSucursal) return { apertura: '00:00', cierre: '23:30' }
   const nombreLower = String(nombreSucursal).toLowerCase()

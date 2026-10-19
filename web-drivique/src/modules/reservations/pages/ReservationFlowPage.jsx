@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaMoneyBillWave, FaCreditCard, FaArrowLeft, FaTimes, FaClipboardList, FaArrowRight } from 'react-icons/fa'
+import { FaCreditCard, FaArrowLeft, FaTimes, FaClipboardList, FaArrowRight } from 'react-icons/fa'
 import logo from '@/assets/logo.png'
 import { useBrand } from '@/contexts/BrandContext'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../landing/LandingContext'
-import { HORAS_LIMITE_PAGO_EFECTIVO } from '../utils/paymentDeadline'
 import { SUCURSALES } from '../../catalog/constants'
-import { showAlert } from '@/utils/swalConfig'
 import { useNavigate } from 'react-router-dom'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
 
@@ -20,8 +18,6 @@ import SideSummary from '../components/SideSummary'
 import EditReservationModal from '../components/EditReservationModal'
 import PersonalData from '../components/PersonalData'
 import VehicleDetailsModal from '../../catalog/components/detail/VehicleDetailsModal'
-import ContractSignature from '../../contracts/components/ContractSignature'
-
 import '../../catalog/pages/CatalogPage.css'
 
 const formatearFechaHoraReserva = (fecha) => {

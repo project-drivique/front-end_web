@@ -1,38 +1,12 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  FaBuilding,
-  FaCar,
-  FaCheckCircle,
-  FaClipboardList,
-  FaClock,
-  FaExclamationCircle,
-  FaExclamationTriangle,
-  FaExternalLinkAlt,
-  FaEye,
-  FaFileExcel,
-  FaFileImage,
-  FaFilePdf,
-  FaPaperPlane,
-  FaPhone,
-  FaPlus,
-  FaPrint,
-  FaSearch,
-  FaShieldAlt,
-  FaTimesCircle,
-  FaTrash,
-  FaUser,
-  FaUserShield,
-  FaVideo,
-  FaWrench,
-} from 'react-icons/fa'
+import { FaBuilding, FaCheckCircle, FaClipboardList, FaClock, FaExclamationTriangle, FaExternalLinkAlt, FaEye, FaFileExcel, FaFileImage, FaFilePdf, FaPaperPlane, FaPhone, FaPlus, FaPrint, FaSearch, FaShieldAlt, FaTimesCircle, FaTrash, FaUser, FaUserShield, FaVideo, FaWrench } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useBrand } from '../../../contexts/BrandContext'
 import { incidentManagementService } from '../../../services/incidentManagementService'
 import { vehicleManagementService } from '../../../services/vehicleManagementService'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { useBranchScope } from '../../../hooks/useBranchScope'
-import { useManagementTable } from '../../../hooks/useManagementTable'
 import { useManagementModal } from '../../../hooks/useManagementModal'
 import { useManagementExport } from '../../../hooks/useManagementExport'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'

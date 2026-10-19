@@ -1,27 +1,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaBell,
-  FaTag,
-  FaCheckCircle,
-  FaCreditCard,
-  FaFileAlt,
-  FaComments,
-  FaCar,
-  FaExclamationCircle,
-  FaHourglassHalf,
-  FaCheckDouble,
-  FaTicketAlt,
-  FaInbox,
-  FaCog,
-  FaSlidersH,
-  FaSyncAlt,
-  FaFilter,
-  FaFileContract,
-  FaShieldAlt,
-  FaArrowRight,
-} from 'react-icons/fa'
+import { FaBell, FaTag, FaCheckCircle, FaCreditCard, FaFileAlt, FaComments, FaCar, FaExclamationCircle, FaHourglassHalf, FaCheckDouble, FaTicketAlt, FaInbox, FaSlidersH, FaSyncAlt, FaFileContract, FaShieldAlt, FaArrowRight } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'

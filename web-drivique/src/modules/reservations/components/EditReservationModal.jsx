@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { FaTimes } from 'react-icons/fa'
 import { SUCURSALES } from '../../catalog/constants'
-import { branchManagementService } from '../../../services/branchManagementService'
 import ProtectionPlans from './ProtectionPlans'
 import MileageType from './MileageType'
 import AdditionalServices from './AdditionalServices'

@@ -1,37 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaSearch,
-  FaBell,
-  FaCalendarAlt,
-  FaDollarSign,
-  FaCalendarCheck,
-  FaUndo,
-  FaCar,
-  FaTimes,
-  FaArrowUp,
-  FaCheckCircle,
-  FaClock,
-  FaClipboardList,
-  FaIdCard,
-  FaExclamationTriangle,
-  FaCashRegister,
-  FaCheckDouble,
-  FaChevronRight,
-  FaPlus,
-  FaEllipsisV,
-  FaEye,
-  FaReceipt,
-  FaPhone,
-  FaChartBar,
-  FaTimesCircle,
-  FaBellSlash,
-  FaInfoCircle,
-  FaFileExcel,
-  FaFilePdf,
-  FaPrint,
-} from 'react-icons/fa'
+import { FaBell, FaCalendarAlt, FaDollarSign, FaCalendarCheck, FaUndo, FaCar, FaTimes, FaCheckCircle, FaClock, FaClipboardList, FaExclamationTriangle, FaCheckDouble, FaPlus, FaEllipsisV, FaReceipt, FaChartBar, FaTimesCircle } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBranchDashboard, getScheduleForRange } from '../../../hooks/useBranchDashboard'

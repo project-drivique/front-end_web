@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
 import { getNombreTipoDoc, getSiglaDoc } from '@/utils/documentUtils';
-import { FaUser, FaIdCard, FaTimes, FaCheckCircle, FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
+import { FaUser, FaIdCard, FaCheckCircle, FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
 import paisesMock from '@/config/datos/nationalities.json';
 
 const getPrefijoPais = (nacionalidad) => {
@@ -168,10 +168,7 @@ export default function DatosPersonales({
   onCancelar,
   errores,
   docsVerificados,
-  appliedPromotion,
   cotizacion,
-  onApplyPromotion,
-  onRemovePromotion,
   c
 }) {
   const navigate = useNavigate();

@@ -600,7 +600,7 @@ export function exportWord({
 /**
  * IMPRIMIR LISTADO CON ESTILO Y COLORES
  */
-export function printTable({ title = 'Reporte Drivique', headers = [], rows = [], items = [], kpis = [] }) {
+export function printTable({ title = 'Reporte Drivique', headers = [], rows = [], items = [] }) {
   exportPdf({ title, headers, rows, items, filename: 'impresion' })
 }
 

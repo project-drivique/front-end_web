@@ -1,25 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  FaSearch,
-  FaMapMarkerAlt,
-  FaUserTie,
-  FaCalendarAlt,
-  FaCar,
-  FaCheckCircle,
-  FaTimes,
-  FaKey,
-  FaRoute,
-  FaExclamationCircle,
-  FaFileExcel,
-  FaFilePdf,
-  FaPrint,
-  FaBuilding,
-  FaPlus,
-  FaEdit,
-  FaTrashAlt,
-  FaHashtag,
-} from 'react-icons/fa'
+import { FaSearch, FaMapMarkerAlt, FaUserTie, FaCalendarAlt, FaCar, FaCheckCircle, FaKey, FaRoute, FaExclamationCircle, FaFileExcel, FaFilePdf, FaPrint, FaBuilding, FaPlus, FaEdit, FaTrashAlt } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'

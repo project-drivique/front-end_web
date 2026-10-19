@@ -1,22 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  FaStar,
-  FaSearch,
-  FaCommentDots,
-  FaCheckCircle,
-  FaBuilding,
-  FaCar,
-  FaFileExcel,
-  FaFilePdf,
-  FaPrint,
-  FaExclamationCircle,
-  FaFileImage,
-  FaPaperPlane,
-  FaEye,
-  FaExternalLinkAlt,
-  FaCheck,
-} from 'react-icons/fa'
+import { FaStar, FaSearch, FaCommentDots, FaCheckCircle, FaBuilding, FaCar, FaFileExcel, FaFilePdf, FaPrint, FaExclamationCircle, FaFileImage, FaPaperPlane, FaExternalLinkAlt, FaCheck } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { branchReviewManagementService } from '../../../services/branchReviewManagementService'

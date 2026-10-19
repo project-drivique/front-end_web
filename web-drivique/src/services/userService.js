@@ -49,7 +49,7 @@ export const userService = {
     try {
       const { data } = await api.get('/users/me')
       return data
-    } catch (err) {
+    } catch {
       return getUsuarioGuardado()
     }
   },
@@ -127,7 +127,7 @@ export const userService = {
     try {
       const { data } = await api.post('/usuario/verificar-correo', { correo })
       return data
-    } catch (err) {
+    } catch {
       return { disponible: true }
     }
   },
@@ -136,7 +136,7 @@ export const userService = {
     try {
       const { data } = await api.post('/usuario/verificar-contrasena', { contrasena })
       return data
-    } catch (err) {
+    } catch {
       return { valida: true }
     }
   },

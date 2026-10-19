@@ -1,5 +1,3 @@
-import { useAuthStore } from '../store/authStore'
-
 let apiInstance = null
 
 async function getApi() {

@@ -14,26 +14,7 @@ import {
   parseISO,
 } from 'date-fns'
 import { es } from 'date-fns/locale'
-import {
-  FaMoneyBillWave,
-  FaSearch,
-  FaCheckCircle,
-  FaCar,
-  FaUser,
-  FaCalendarAlt,
-  FaPrint,
-  FaShieldAlt,
-  FaReceipt,
-  FaCashRegister,
-  FaChevronLeft,
-  FaChevronRight,
-  FaSortAmountDown,
-  FaTimes,
-  FaBuilding,
-  FaFileExcel,
-  FaFilePdf,
-  FaDownload,
-} from 'react-icons/fa'
+import { FaMoneyBillWave, FaSearch, FaCheckCircle, FaCalendarAlt, FaPrint, FaShieldAlt, FaReceipt, FaCashRegister, FaChevronLeft, FaChevronRight, FaTimes, FaFileExcel, FaFilePdf, FaDownload } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { reservationManagementService } from '../../../services/reservationManagementService'
@@ -1342,7 +1323,6 @@ export default function CashCollectionPage({ branchOnly = false }) {
           </section>
         </div>
       )}
-
 
       {/* â”€â”€ MODAL COMPROBANTE DIGITAL (RÉPLICA WOMPI) â”€â”€ */}
       {comprobanteDigital && (
