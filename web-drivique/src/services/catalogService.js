@@ -44,9 +44,11 @@ function mapVehicle(vehicle) {
     kilometraje: vehicle.kilometraje ?? vehicle.mileage,
     precio: Number(vehicle.precio ?? vehicle.dailyRate ?? 0),
     imagen: mainImage,
-    imagenes: Array.isArray(vehicle.imagenes)
-      ? vehicle.imagenes
-      : (mainImage ? [mainImage] : []),
+    imagenes: Array.isArray(vehicle.imageUrls) && vehicle.imageUrls.length
+      ? vehicle.imageUrls
+      : (Array.isArray(vehicle.imagenes)
+        ? vehicle.imagenes
+        : (mainImage ? [mainImage] : [])),
     destacado: vehicle.destacado ?? vehicle.isFeatured ?? false,
     activo: vehicle.activo ?? vehicle.isActive ?? true,
     disponible: vehicle.disponible ?? vehicle.allowsReservation ?? false,

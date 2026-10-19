@@ -10,18 +10,13 @@ function getSafeImages(vehiculo) {
   const imgs = vehiculo.imagenes || vehiculo.fotos || []
   const arrayFiltrado = Array.isArray(imgs) ? imgs.filter(Boolean) : []
 
-  if (arrayFiltrado.length > 1) {
+  if (arrayFiltrado.length > 0) {
     return arrayFiltrado.slice(0, 3)
   }
 
-  const fotoBase = arrayFiltrado[0] || vehiculo.imagen || vehiculo.foto
-
+  const fotoBase = vehiculo.imagen || vehiculo.foto
   if (fotoBase) {
-    return [
-      fotoBase,
-      'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80',
-      'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80',
-    ]
+    return [fotoBase]
   }
 
   return ['']

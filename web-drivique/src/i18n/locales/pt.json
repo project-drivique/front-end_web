@@ -5662,6 +5662,7 @@
     "home_return": "Devolução ao domicílio",
     "assign_driver": "Atribuir condutor",
     "home_not_saved_title": "Não foi possível guardar o domicílio",
-    "home_not_saved": "A reserva foi criada, mas a morada de entrega não foi guardada. Contacte a agência."
+    "home_not_saved": "A reserva foi criada, mas a morada de entrega não foi guardada. Contacte a agência.",
+    "url_de_la_imagen_n": "URL da imagem {{n}} (opcional)"
   }
 }

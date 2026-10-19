@@ -5658,6 +5658,7 @@
     "home_return": "Home return",
     "assign_driver": "Assign driver",
     "home_not_saved_title": "The home delivery could not be saved",
-    "home_not_saved": "The reservation was created, but the delivery address was not saved. Please contact the branch."
+    "home_not_saved": "The reservation was created, but the delivery address was not saved. Please contact the branch.",
+    "url_de_la_imagen_n": "Image {{n}} URL (optional)"
   }
 }

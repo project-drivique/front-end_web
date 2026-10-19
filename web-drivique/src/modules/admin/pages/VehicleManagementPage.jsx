@@ -1267,10 +1267,33 @@ export default function VehicleManagementPage() {
                         
                         {/* IMAGEN */}
                         <div style={{ gridColumn: '1 / -1', marginBottom: '8px' }}>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t('hc.url_de_la_imagen_principal', 'URL de la imagen principal')}</label>
-                          <input type="url" style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} placeholder="https://..." value={form.imagenes?.[0] || ""} onChange={(e) => setForm({ ...form, imagenes: e.target.value ? [e.target.value] : [] })} />
-                          {form.imagenes?.[0] && (
-                            <img src={form.imagenes[0]} alt="Vista previa" style={{ marginTop: 10, width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 12 }} />
+                          {[0, 1, 2].map((idx) => (
+                            <div key={idx} style={{ marginBottom: 12 }}>
+                              <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>
+                                {idx === 0
+                                  ? t('hc.url_de_la_imagen_principal', 'URL de la imagen principal')
+                                  : t('hc6.url_de_la_imagen_n', { defaultValue: 'URL de la imagen {{n}} (opcional)', n: idx + 1 })}
+                              </label>
+                              <input
+                                type="url"
+                                style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }}
+                                placeholder="https://..."
+                                value={form.imagenes?.[idx] || ""}
+                                onChange={(e) => {
+                                  const next = [...(form.imagenes || [])];
+                                  while (next.length <= idx) next.push("");
+                                  next[idx] = e.target.value;
+                                  setForm({ ...form, imagenes: next });
+                                }}
+                              />
+                            </div>
+                          ))}
+                          {(form.imagenes || []).some(Boolean) && (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                              {(form.imagenes || []).slice(0, 3).map((url, idx) => url ? (
+                                <img key={idx} src={url} alt={'Vista previa ' + (idx + 1)} style={{ width: '100%', height: 90, objectFit: 'cover', borderRadius: 10 }} />
+                              ) : null)}
+                            </div>
                           )}
                         </div>
 

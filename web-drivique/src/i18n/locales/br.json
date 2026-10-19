@@ -5662,6 +5662,7 @@
     "home_return": "Devolução em domicílio",
     "assign_driver": "Atribuir motorista",
     "home_not_saved_title": "Não foi possível salvar o domicílio",
-    "home_not_saved": "A reserva foi criada, mas o endereço de entrega não foi salvo. Entre em contato com a filial."
+    "home_not_saved": "A reserva foi criada, mas o endereço de entrega não foi salvo. Entre em contato com a filial.",
+    "url_de_la_imagen_n": "URL da imagem {{n}} (opcional)"
   }
 }
