@@ -61,7 +61,8 @@ export function useBranchDashboard(user) {
       const devolucionesRecibidas = agenda.returns.filter((d) => d.estado === 'FINALIZADA').length
 
       const documentosPendientes = expedientes.filter((e) => e.estado === 'pendiente')
-      const incidenciasAbiertas = incidentManagementService.list().filter((i) => ['OPEN', 'IN_REVIEW'].includes(i.estadoCodigo)).length
+      const incidenciasAbiertasLista = incidentManagementService.list().filter((i) => ['OPEN', 'IN_REVIEW'].includes(i.estadoCodigo))
+      const incidenciasAbiertas = incidenciasAbiertasLista.length
       const pagosPendientes = reservations.filter((r) => r.pagoEstado !== 'aprobado' && r.estado !== 'cancelada' && r.metodoPago === 'efectivo').length
 
       setData({
@@ -89,6 +90,33 @@ export function useBranchDashboard(user) {
           pendingDocuments: documentosPendientes.length,
           pendingDocsList: documentosPendientes,
           openIncidents: incidenciasAbiertas,
+          openIncidentsList: incidenciasAbiertasLista.map((i) => ({
+            id: i.id,
+            codigo: i.codigo,
+            titulo: i.titulo,
+            tipo: i.tipoIncidenciaNombre,
+            prioridad: i.prioridad,
+            vehiculo: i.vehiculo || i.vehiculoModelo || '',
+            placa: i.vehiculoPlaca || i.placa || '',
+            reservaCodigo: i.reservaCodigo || '',
+            estadoCodigo: i.estadoCodigo,
+            fechaIso: i.fechaIso,
+          })),
+          recentClosedIncidents: incidentManagementService.list()
+            .filter((i) => ['RESOLVED', 'CLOSED'].includes(i.estadoCodigo) && i.fechaIso && Date.now() - new Date(i.fechaIso).getTime() < 3 * 24 * 3600 * 1000)
+            .slice(0, 10)
+            .map((i) => ({ id: i.id, codigo: i.codigo, titulo: i.titulo, tipo: i.tipoIncidenciaNombre, vehiculo: i.vehiculo || i.vehiculoModelo || '', placa: i.vehiculoPlaca || i.placa || '', reservaCodigo: i.reservaCodigo || '', fechaIso: i.fechaIso })),
+          pendingReservationsList: reservations
+            .filter((r) => r.estado === 'creada')
+            .slice(0, 20)
+            .map((r) => ({ id: r.id, codigo: r.codigo, clienteNombre: r.clienteNombre, vehiculoNombre: r.vehiculoNombre, vehiculoPlaca: r.vehiculoPlaca, fecha: r.fechaInicio, hora: r.horaInicio })),
+          pendingHomeDeliveries: reservations
+            // Primero paga el cliente; sólo entonces se asigna el conductor
+            .filter((r) => r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.pagoEstado === 'aprobado')
+            .flatMap((r) => (r.domicilioPuntos || [])
+              .filter((p) => !p.conductorId && !['COMPLETED', 'DELIVERED'].includes(String(p.estado || p.deliveryStatus || '').toUpperCase()))
+              .map((p) => ({ id: `${r.id}-${p.tipo}`, codigo: r.codigo, tipo: p.tipo, clienteNombre: r.clienteNombre, direccion: p.direccion, barrio: p.barrio, ciudad: p.ciudad, fecha: p.tipo === 'RETURN' ? r.fechaFin : r.fechaInicio, hora: p.tipo === 'RETURN' ? r.horaFin : r.horaInicio })))
+            .slice(0, 20),
           pendingPayments: pagosPendientes,
           expiringVehicleDocs: 0,
           allClear: documentosPendientes.length === 0 && incidenciasAbiertas === 0 && pagosPendientes === 0,

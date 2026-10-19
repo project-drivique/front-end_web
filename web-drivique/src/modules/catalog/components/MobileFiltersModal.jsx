@@ -72,7 +72,7 @@ export default function ModalFiltrosMovil({ abierto, onCerrar, c, resultado = []
             <button
               type="button"
               onClick={onCerrar}
-              aria-label="Cerrar"
+              aria-label={t('hc4.cerrar', 'Cerrar')}
               style={{
                 width: '32px',
                 height: '32px',

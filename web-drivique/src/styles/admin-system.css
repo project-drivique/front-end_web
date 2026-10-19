@@ -348,9 +348,9 @@
 .audit-btn-action--print,
 .cash-exp-btn.print,
 .kpi-action-btn--print {
-  background: #eff6ff !important;
-  border: 1.5px solid #bfdbfe !important;
-  color: #2563eb !important;
+  background: var(--brand-soft) !important;
+  border: 1.5px solid var(--brand-border) !important;
+  color: var(--brand-text) !important;
 }
 .cities-export button:nth-child(3) svg,
 .cities-export button.export-btn-print svg,
@@ -359,7 +359,7 @@
 .audit-btn-action--print svg,
 .cash-exp-btn.print svg,
 .kpi-action-btn--print svg {
-  color: #2563eb !important;
+  color: var(--brand-text) !important;
   font-size: 14px !important;
 }
 .cities-export button:nth-child(3):hover,
@@ -369,9 +369,9 @@
 .audit-btn-action--print:hover,
 .cash-exp-btn.print:hover,
 .kpi-action-btn--print:hover {
-  background: #dbeafe !important;
-  border-color: #93c5fd !important;
-  color: #1d4ed8 !important;
+  background: var(--brand-soft-strong) !important;
+  border-color: var(--brand-border) !important;
+  color: var(--brand-text) !important;
   transform: translateY(-1px) !important;
 }
 .management-shell--dark .cities-export button:nth-child(3),
@@ -380,9 +380,9 @@
 .management-shell--dark .audit-btn-action--print,
 .management-shell--dark .cash-exp-btn.print,
 .management-shell--dark .kpi-action-btn--print {
-  background: rgba(59, 130, 246, 0.14) !important;
-  border-color: rgba(59, 130, 246, 0.38) !important;
-  color: #60a5fa !important;
+  background: rgba(var(--brand-primary-rgb), 0.14) !important;
+  border-color: rgba(var(--brand-primary-rgb), 0.38) !important;
+  color: var(--brand-text) !important;
 }
 .management-shell--dark .cities-export button:nth-child(3) svg,
 .management-shell--dark .cities-export button.export-btn-print svg,
@@ -390,7 +390,7 @@
 .management-shell--dark .audit-btn-action--print svg,
 .management-shell--dark .cash-exp-btn.print svg,
 .management-shell--dark .kpi-action-btn--print svg {
-  color: #60a5fa !important;
+  color: var(--brand-text) !important;
 }
 .management-shell--dark .cities-export button:nth-child(3):hover,
 .management-shell--dark .cities-export button.export-btn-print:hover,
@@ -398,9 +398,9 @@
 .management-shell--dark .audit-btn-action--print:hover,
 .management-shell--dark .cash-exp-btn.print:hover,
 .management-shell--dark .kpi-action-btn--print:hover {
-  background: rgba(59, 130, 246, 0.24) !important;
-  border-color: rgba(59, 130, 246, 0.6) !important;
-  color: #93c5fd !important;
+  background: rgba(var(--brand-primary-rgb), 0.24) !important;
+  border-color: rgba(var(--brand-primary-rgb), 0.6) !important;
+  color: var(--brand-text) !important;
 }
 
 .brand-secondary, .cities-modal__actions>button:not(.cities-primary):not(.cities-danger) {
@@ -441,13 +441,13 @@
 .cities-row-actions .btn-row-action {
   border: none !important;
   border-radius: 8px !important;
-  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+  background: linear-gradient(135deg, var(--brand-primary-hover) 0%, var(--brand-primary) 100%) !important;
   color: #ffffff !important;
   padding: 6px 14px !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   cursor: pointer !important;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+  box-shadow: 0 2px 6px rgba(var(--brand-primary-rgb), 0.25) !important;
   transition: transform 0.15s ease, box-shadow 0.15s ease !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -457,8 +457,8 @@
 .cities-row-actions button:hover,
 .cities-row-actions .btn-row-action:hover {
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35) !important;
-  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%) !important;
+  box-shadow: 0 4px 10px rgba(var(--brand-primary-rgb), 0.35) !important;
+  background: linear-gradient(135deg, var(--brand-primary-active) 0%, var(--brand-primary-hover) 100%) !important;
   color: #ffffff !important;
 }
 .cities-row-actions button.is-delete,
@@ -762,7 +762,7 @@
 .history-kpi-icon.word,
 .format-selection-card.word .format-icon-box {
   background: #e0e7ff !important;
-  color: #2563eb !important;
+  color: var(--brand-text) !important;
   border: 1px solid #a5b4fc !important;
 }
 .management-shell--dark .format-pill-tag.PDF,
@@ -779,16 +779,33 @@
 }
 .management-shell--dark .format-pill-tag.WORD,
 .management-shell--dark .history-kpi-icon.word {
-  background: rgba(59, 130, 246, 0.2) !important;
-  color: #60a5fa !important;
-  border: 1px solid rgba(59, 130, 246, 0.4) !important;
+  background: rgba(var(--brand-primary-rgb), 0.2) !important;
+  color: var(--brand-text) !important;
+  border: 1px solid rgba(var(--brand-primary-rgb), 0.4) !important;
 }
 
 /* Formularios, modales y estados */
-.cities-modal-backdrop { background: rgba(15,23,42,.58) !important; backdrop-filter: blur(5px); }
-.cities-modal, .fleet-modal, .contracts-detail-modal {
-  background: var(--adm-card) !important; color: var(--adm-text) !important;
-  border: 1px solid var(--adm-border) !important; border-radius: 18px !important; box-shadow: var(--adm-shadow-lg) !important;
+.cities-modal-backdrop {
+  background: rgba(15,23,42,.58) !important;
+  backdrop-filter: blur(5px);
+  position: fixed !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px 16px !important;
+  overflow-y: auto !important;
+  z-index: 1000 !important;
+}
+.cities-modal, .fleet-modal, .contracts-detail-modal, .reserva-detail-modal {
+  background: var(--adm-card) !important;
+  color: var(--adm-text) !important;
+  border: 1px solid var(--adm-border) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--adm-shadow-lg) !important;
+  max-height: calc(100vh - 48px) !important;
+  overflow-y: auto !important;
+  margin: auto !important;
 }
 .cities-modal input, .cities-modal select, .cities-modal textarea, .fleet-modal input:not([type=file]),
 .fleet-modal select, .fleet-modal textarea {

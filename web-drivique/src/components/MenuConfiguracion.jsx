@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useLanding } from '../modules/landing/LandingContext'
 import translations, { IDIOMAS } from '../modules/landing/translations'
+import i18n from '@/i18n'
 
 const IconoEngranaje = () => (
   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -231,7 +232,7 @@ export default function MenuConfiguracion({ modoMovilForce = false, buttonStyle 
                 <button
                   type="button"
                   onClick={() => setAbierto(false)}
-                  aria-label="Cerrar"
+                  aria-label={i18n.t('hc4.cerrar', 'Cerrar')}
                   style={{ width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'var(--bg-item)', color: 'var(--texto-second)', cursor: 'pointer' }}
                 >
                   ✕

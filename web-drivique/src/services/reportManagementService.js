@@ -321,7 +321,7 @@ export const reportManagementService = {
     const maximo = Math.max(1, ...data.months.map((m) => m.value))
     let acumulado = 0
     const segmentosFlota = [
-      { clave: 'alquilados', color: '#2563eb', valor: data.fleet.rented },
+      { clave: 'alquilados', color: 'var(--brand-text)', valor: data.fleet.rented },
       { clave: 'disponibles', color: '#10b981', valor: data.fleet.available },
       { clave: 'mantenimiento', color: '#f59e0b', valor: data.fleet.maintenance },
     ].map((seg) => {

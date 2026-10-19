@@ -74,7 +74,7 @@
   font-size: 11px;
   font-weight: 650;
   color: var(--brand-primary, #2563eb);
-  background: var(--brand-soft, rgba(37, 99, 235, 0.08));
+  background: var(--brand-soft, rgba(var(--brand-primary-rgb), 0.08));
   padding: 2px 8px;
   border-radius: 20px;
 }
@@ -306,8 +306,8 @@ body.dark .bnp-title,
 
 body.dark .bnp-unread-pill,
 .management-shell--dark .bnp-unread-pill {
-  background: rgba(37, 99, 235, 0.2);
-  color: #60a5fa;
+  background: rgba(var(--brand-primary-rgb), 0.2);
+  color: var(--brand-text);
 }
 
 body.dark .bnp-action-btn,
@@ -358,12 +358,12 @@ body.dark .bnp-footer,
 
 body.dark .bnp-view-all-link,
 .management-shell--dark .bnp-view-all-link {
-  color: #60a5fa;
+  color: var(--brand-text);
 }
 
 body.dark .bnp-view-all-link:hover,
 .management-shell--dark .bnp-view-all-link:hover {
-  color: #93c5fd;
+  color: var(--brand-text);
 }
 
 /* ─────────────────────────────────────────────────────────────

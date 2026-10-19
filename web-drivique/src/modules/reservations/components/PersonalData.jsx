@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanding } from '../../landing/LandingContext';
 import { formatCurrency } from '@/utils/currencyUtils';
 import { getNombreTipoDoc, getSiglaDoc } from '@/utils/documentUtils';
-import { FaUser, FaIdCard, FaTimes, FaCheckCircle, FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
+import { FaUser, FaIdCard, FaCheckCircle, FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
 import paisesMock from '@/config/datos/nationalities.json';
 
 const getPrefijoPais = (nacionalidad) => {
@@ -15,11 +15,12 @@ const getPrefijoPais = (nacionalidad) => {
 };
 
 const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onClear, required = true, c }) => {
+  const { t } = useTranslation();
   const isDark = c?.isDark;
   
   return (
     <div className="doc-uploader-card" style={{
-      border: `1.5px dashed ${error ? '#ef4444' : (isDark ? '#60A5FA' : '#93C5FD')}`,
+      border: `1.5px dashed ${error ? '#ef4444' : (isDark ? 'var(--brand-accent)' : 'var(--brand-border)')}`,
       borderRadius: 16,
       padding: '24px 20px',
       textAlign: 'center',
@@ -54,8 +55,8 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          background: isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
-          border: `1px solid ${isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
+          background: isDark ? 'rgba(var(--brand-primary-rgb), 0.08)' : 'var(--brand-soft)',
+          border: `1px solid ${isDark ? 'rgba(var(--brand-primary-rgb), 0.25)' : 'var(--brand-border)'}`,
           padding: '10px 16px',
           borderRadius: 14,
           width: '100%',
@@ -67,7 +68,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
             width: 22,
             height: 22,
             borderRadius: '50%',
-            background: '#2563eb',
+            background: 'var(--brand-primary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -101,7 +102,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           <button
             type="button"
             onClick={onClear}
-            title="Eliminar archivo"
+            title={t('hc.eliminar_archivo', 'Eliminar archivo')}
             style={{
               background: 'none',
               border: 'none',
@@ -139,7 +140,7 @@ const DocumentUploader = ({ label, helpText, error, file, loading, onUpload, onC
           transition: 'all 150ms ease'
         }}>
           <FaCloudUploadAlt size={18} color={c?.accentText || 'var(--brand-secondary)'} />
-          <span>Subir PDF (máx 5MB)</span>
+          <span>{t('hc.subir_pdf_max_5mb', 'Subir PDF (máx 5MB)')}</span>
           <input
             type="file"
             accept=".pdf"
@@ -167,10 +168,7 @@ export default function DatosPersonales({
   onCancelar,
   errores,
   docsVerificados,
-  appliedPromotion,
   cotizacion,
-  onApplyPromotion,
-  onRemovePromotion,
   c
 }) {
   const navigate = useNavigate();
@@ -206,9 +204,9 @@ export default function DatosPersonales({
 
     if (file.type !== 'application/pdf') {
       if (tipo === 'cedula') {
-        setCedulaError('El archivo debe ser en formato PDF.');
+        setCedulaError(t('hc2.el_archivo_debe_ser_en_formato_pdf', 'El archivo debe ser en formato PDF.'));
       } else {
-        setLicenciaError('El archivo debe ser en formato PDF.');
+        setLicenciaError(t('hc2.el_archivo_debe_ser_en_formato_pdf', 'El archivo debe ser en formato PDF.'));
       }
       return;
     }
@@ -251,13 +249,10 @@ export default function DatosPersonales({
         { value: 'CC', label: t('vehiculo.docTypes.cc', 'Cédula de Ciudadanía (CC)') },
         { value: 'CE', label: t('vehiculo.docTypes.ce', 'Cédula de Extranjería (CE)') },
         { value: 'PASAPORTE', label: t('vehiculo.docTypes.passport', 'Pasaporte (PAS)') },
-        { value: 'PPT', label: t('vehiculo.docTypes.ppt', 'Permiso por Protección Temporal (PPT)') },
-        { value: 'PEP', label: t('vehiculo.docTypes.pep', 'Permiso Especial de Permanencia (PEP)') },
       ];
     }
     return [
       { value: 'PASAPORTE', label: t('vehiculo.docTypes.passport', 'Pasaporte (PAS)') },
-      { value: 'DNI', label: t('vehiculo.docTypes.dni', 'Documento Nacional de Identidad (DNI)') },
       { value: 'CE', label: t('vehiculo.docTypes.ce', 'Cédula de Extranjería (CE)') },
     ];
   }, [datosForm.nacionalidad, t]);
@@ -267,8 +262,8 @@ export default function DatosPersonales({
     if (nuevoPais) {
       const esCol = nuevoPais.toLowerCase() === 'colombia';
       const validos = esCol
-        ? ['CC', 'CE', 'PASAPORTE', 'PPT', 'PEP']
-        : ['PASAPORTE', 'DNI', 'CE'];
+        ? ['CC', 'CE', 'PASAPORTE']
+        : ['PASAPORTE', 'CE'];
       if (!validos.includes(datosForm.tipoDoc)) {
         onCambio('tipoDoc', '');
       }
@@ -356,7 +351,7 @@ export default function DatosPersonales({
               type="text"
               value={datosForm.nombre}
               onChange={e => onCambio('nombre', e.target.value)}
-              placeholder="Ej. Juan Pérez"
+              placeholder={t('hc.ej_juan_perez', 'Ej. Juan Pérez')}
               style={inputStyle(errores.nombre)}
             />
             {errores.nombre && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.nombre}</p>}
@@ -390,7 +385,7 @@ export default function DatosPersonales({
               type="email"
               value={datosForm.correo}
               onChange={e => onCambio('correo', e.target.value)}
-              placeholder="Ej. juan@correo.com"
+              placeholder={t('hc2.ej_juan_correo_com', 'Ej. juan@correo.com')}
               style={inputStyle(errores.correo)}
             />
             {errores.correo && <p style={{ color: '#ef4444', fontSize: 12, margin: '4px 0 0', fontWeight: 600 }}>{errores.correo}</p>}
@@ -526,8 +521,8 @@ export default function DatosPersonales({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {docsVerificados && (
             <div style={{
-              background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
-              border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
+              background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.08)' : 'var(--brand-soft)',
+              border: `1px solid ${c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.25)' : 'var(--brand-border)'}`,
               borderRadius: 14,
               padding: '14px 16px',
               display: 'flex',
@@ -535,7 +530,7 @@ export default function DatosPersonales({
               gap: 12
             }}>
               <div style={{
-                color: '#1D4ED8',
+                color: 'var(--brand-text)',
                 fontSize: 18,
                 marginTop: 2,
                 flexShrink: 0
@@ -545,7 +540,7 @@ export default function DatosPersonales({
               <p style={{
                 margin: 0,
                 fontSize: 12.5,
-                color: c?.isDark ? '#93C5FD' : '#1E40AF',
+                color: c?.isDark ? 'var(--brand-border)' : 'var(--brand-primary-active)',
                 lineHeight: 1.45
               }}>
                 {t('vehiculo.docsAlreadyRegisteredTitle', 'Documentos ya registrados:')}{' '}
@@ -588,8 +583,8 @@ export default function DatosPersonales({
 
           {/* Privacy & Legal Notice Banner */}
           <div style={{
-            background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
-            border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
+            background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.08)' : 'var(--brand-soft)',
+            border: `1px solid ${c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.25)' : 'var(--brand-border)'}`,
             borderRadius: 14,
             padding: '12px 18px',
             display: 'flex',
@@ -712,8 +707,8 @@ export default function DatosPersonales({
 
       {/* ── Aviso informativo de confirmación ── */}
       <div style={{
-        background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
-        border: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
+        background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.08)' : 'var(--brand-soft)',
+        border: `1px solid ${c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.25)' : 'var(--brand-border)'}`,
         borderRadius: 16,
         padding: '16px 20px',
         display: 'flex',
@@ -744,15 +739,15 @@ export default function DatosPersonales({
           fontWeight: 500
         }}>
           {(() => {
-            let limit = 72;
+            let limit = 8;
             if (reserva?.fechaInicio && reserva?.horaInicio) {
               const pickupMs = new Date(`${reserva.fechaInicio}T${reserva.horaInicio}:00`).getTime();
               // eslint-disable-next-line react-hooks/purity
-              limit = Math.floor(Math.min(72, Math.max(2, (pickupMs - Date.now()) / (1000 * 60 * 60))));
+              limit = Math.floor(Math.min(8, Math.max(2, (pickupMs - Date.now()) / (1000 * 60 * 60))));
             }
             return t('vehiculo.confirmNoticeText', {
               horas: limit,
-              defaultValue: `Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de ${limit} horas para completar el pago antes de su cancelación automática.`
+              defaultValue: 'Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de {{horas}} horas para completar el pago antes de su cancelación automática.'
             });
           })()}
         </p>
@@ -905,13 +900,13 @@ export default function DatosPersonales({
               width: 60,
               height: 60,
               borderRadius: '50%',
-              background: c?.isDark ? 'rgba(59, 130, 246, 0.15)' : '#EFF6FF',
+              background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.15)' : 'var(--brand-soft)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: 16
             }}>
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke={c?.isDark ? '#60A5FA' : '#1D4ED8'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke={c?.isDark ? 'var(--brand-accent)' : 'var(--brand-primary-hover)'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" strokeWidth="2.4" />
                 <line x1="12" y1="16" x2="12.01" y2="16" strokeWidth="3" />
@@ -953,9 +948,9 @@ export default function DatosPersonales({
                   flex: 1,
                   height: 40,
                   borderRadius: 10,
-                  border: `2px solid ${c?.isDark ? '#60A5FA' : '#1D4ED8'}`,
+                  border: `2px solid ${c?.isDark ? 'var(--brand-accent)' : 'var(--brand-primary-hover)'}`,
                   background: 'transparent',
-                  color: c?.isDark ? '#93C5FD' : '#1D4ED8',
+                  color: c?.isDark ? 'var(--brand-border)' : 'var(--brand-primary-hover)',
                   fontWeight: 700,
                   fontSize: 12.5,
                   cursor: 'pointer',
@@ -964,7 +959,7 @@ export default function DatosPersonales({
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = c?.isDark ? 'rgba(96, 165, 250, 0.1)' : '#EFF6FF'}
+                onMouseEnter={e => e.currentTarget.style.background = c?.isDark ? 'rgba(var(--brand-accent-rgb), 0.1)' : 'var(--brand-soft)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 {t('vehiculo.cancelModalNo', 'No, continuar')}
@@ -985,7 +980,7 @@ export default function DatosPersonales({
                   height: 40,
                   borderRadius: 10,
                   border: 'none',
-                  background: c?.isDark ? '#2563EB' : '#1D4ED8',
+                  background: c?.isDark ? 'var(--brand-primary)' : 'var(--brand-primary-hover)',
                   color: '#ffffff',
                   fontWeight: 700,
                   fontSize: 12.5,
@@ -995,8 +990,8 @@ export default function DatosPersonales({
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}
-                onMouseEnter={e => e.currentTarget.style.background = '#1E40AF'}
-                onMouseLeave={e => e.currentTarget.style.background = c?.isDark ? '#2563EB' : '#1D4ED8'}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--brand-primary-active)'}
+                onMouseLeave={e => e.currentTarget.style.background = c?.isDark ? 'var(--brand-primary)' : 'var(--brand-primary-hover)'}
               >
                 {t('vehiculo.cancelModalYes', 'Sí, cancelar reserva')}
               </button>
@@ -1099,8 +1094,8 @@ export default function DatosPersonales({
               >
                 {/* Important Policy Top Banner */}
                 <div style={{
-                  background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
-                  borderBottom: `1px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
+                  background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.08)' : 'var(--brand-soft)',
+                  borderBottom: `1px solid ${c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.25)' : 'var(--brand-border)'}`,
                   padding: '16px 20px',
                   flexShrink: 0
                 }}>
@@ -1115,7 +1110,7 @@ export default function DatosPersonales({
                     {t('vehiculo.importantPoliciesTitle', 'POLÍTICAS IMPORTANTES DEL CONTRATO')}
                   </p>
                   <p style={{ fontSize: 12.5, color: c?.textPrimary || '#0f172a', margin: 0, lineHeight: 1.55 }}>
-                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>Política de No Reembolso:</strong> Una vez confirmada y pagada la reserva, no se realizan devoluciones de dinero bajo ninguna circunstancia. El cliente podrá reprogramar su fecha de alquiler notificando con al menos 48 horas de anticipación.
+                    <strong style={{ color: c?.textPrimary || '#0f172a' }}>{t('hc.politica_de_no_reembolso', 'Política de No Reembolso:')}</strong> Una vez confirmada y pagada la reserva, no se realizan devoluciones de dinero bajo ninguna circunstancia. El cliente podrá reprogramar su fecha de alquiler notificando con al menos 48 horas de anticipación.
                   </p>
                 </div>
 
@@ -1134,34 +1129,34 @@ export default function DatosPersonales({
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: 12.5, color: c?.textSecondary || '#64748b', lineHeight: 1.6 }}>
                     <p style={{ margin: 0 }}>
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>1. OBJETO DEL CONTRATO:</strong> El arrendador entrega al arrendatario el vehículo descrito en las condiciones óptimas de funcionamiento para su uso personal o comercial autorizado.
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>{t('hc.1_objeto_del_contrato', '1. OBJETO DEL CONTRATO:')}</strong> El arrendador entrega al arrendatario el vehículo descrito en las condiciones óptimas de funcionamiento para su uso personal o comercial autorizado.
                     </p>
                     <p style={{ margin: 0 }}>
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>2. USO DEL VEHÍCULO:</strong> Queda estrictamente prohibido utilizar el vehículo para fines ilícitos, subarrendar, transporte de carga pesada no autorizada o conducir bajo los efectos del alcohol o sustancias psicoactivas. El vehículo debe ser usado únicamente dentro del territorio colombiano.
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>{t('hc.2_uso_del_vehiculo', '2. USO DEL VEHÍCULO:')}</strong> Queda estrictamente prohibido utilizar el vehículo para fines ilícitos, subarrendar, transporte de carga pesada no autorizada o conducir bajo los efectos del alcohol o sustancias psicoactivas. El vehículo debe ser usado únicamente dentro del territorio colombiano.
                     </p>
                     <p style={{ margin: 0 }}>
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>3. DOCUMENTACIÓN OBLIGATORIA:</strong> El conductor debe presentar documento de identidad original válido y licencia de conducción vigente al momento de la entrega del vehículo.
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>{t('hc.3_documentacion_obligatoria', '3. DOCUMENTACIÓN OBLIGATORIA:')}</strong> El conductor debe presentar documento de identidad original válido y licencia de conducción vigente al momento de la entrega del vehículo.
                     </p>
                     <p style={{ margin: 0 }}>
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>4. POLÍTICA DE CANCELACIÓN Y NO REEMBOLSO:</strong> No se realizarán devoluciones de dinero. Las cancelaciones se gestionan mediante saldo a favor para futuras reservas.
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>{t('hc.4_politica_de_cancelacion_y_no_reembol', '4. POLÍTICA DE CANCELACIÓN Y NO REEMBOLSO:')}</strong> No se realizarán devoluciones de dinero. Las cancelaciones se gestionan mediante saldo a favor para futuras reservas.
                     </p>
                     <p style={{ margin: 0 }}>
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>5. DURACIÓN Y MODIFICACIONES:</strong> La duración de la renta será la acordada en la reserva. Cualquier cambio en fechas, horas o sucursal de entrega/devolución debe ser coordinado con antelación y puede generar ajustes en la tarifa.
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>{t('hc.5_duracion_y_modificaciones', '5. DURACIÓN Y MODIFICACIONES:')}</strong> La duración de la renta será la acordada en la reserva. Cualquier cambio en fechas, horas o sucursal de entrega/devolución debe ser coordinado con antelación y puede generar ajustes en la tarifa.
                     </p>
                     <p style={{ margin: 0 }}>
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>6. KILOMETRAJE Y EXCEDENTES:</strong> En plan Limitado se incluye un cupo de km por día; el kilómetro adicional excedente tendrá un valor de $1.500 COP/km calculado al devolver el auto. En plan Ilimitado no aplica cobro por distancia recorrida.
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>{t('hc.6_kilometraje_y_excedentes', '6. KILOMETRAJE Y EXCEDENTES:')}</strong> En plan Limitado se incluye un cupo de km por día; el kilómetro adicional excedente tendrá un valor de $1.500 COP/km calculado al devolver el auto. En plan Ilimitado no aplica cobro por distancia recorrida.
                     </p>
                     <p style={{ margin: 0 }}>
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>7. PAGOS Y TARIFAS:</strong> El valor pactado incluye la renta diaria del vehículo, coberturas de protección seleccionadas, cargos administrativos e impuestos de ley.
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>{t('hc.7_pagos_y_tarifas', '7. PAGOS Y TARIFAS:')}</strong> El valor pactado incluye la renta diaria del vehículo, coberturas de protección seleccionadas, cargos administrativos e impuestos de ley.
                     </p>
                     <p style={{ margin: 0 }}>
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>8. DAÑOS Y RESPONSABILIDAD:</strong> El arrendatario es responsable del cuidado del vehículo durante el periodo contratado. En caso de siniestro o eventualidad, se deberá notificar de forma inmediata a Drivique y a las autoridades competentes.
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>{t('hc.8_danos_y_responsabilidad', '8. DAÑOS Y RESPONSABILIDAD:')}</strong> El arrendatario es responsable del cuidado del vehículo durante el periodo contratado. En caso de siniestro o eventualidad, se deberá notificar de forma inmediata a Drivique y a las autoridades competentes.
                     </p>
                     <p style={{ margin: 0 }}>
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>9. LEGISLACIÓN APLICABLE:</strong> El presente contrato de alquiler se rige en su totalidad por las leyes de la República de Colombia.
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>{t('hc.9_legislacion_aplicable', '9. LEGISLACIÓN APLICABLE:')}</strong> El presente contrato de alquiler se rige en su totalidad por las leyes de la República de Colombia.
                     </p>
                     <p style={{ margin: 0 }}>
-                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>10. POLÍTICA DE DEVOLUCIÓN PUNTUAL:</strong> Por favor entrega el vehículo en la fecha y hora acordadas. Cuentas con 30 minutos de cortesía. Pasado este tiempo, la hora adicional tendrá un valor de $30.000 COP. Si el retraso supera las 2 horas o pasa al siguiente día, se cobrará el valor equivalente a un (1) día completo de alquiler a la tarifa contratada.
+                      <strong style={{ color: c?.textPrimary || '#0f172a' }}>{t('hc.10_politica_de_devolucion_puntual', '10. POLÍTICA DE DEVOLUCIÓN PUNTUAL:')}</strong> Por favor entrega el vehículo en la fecha y hora acordadas. Cuentas con 30 minutos de cortesía. Pasado este tiempo, la hora adicional tendrá un valor de $30.000 COP. Si el retraso supera las 2 horas o pasa al siguiente día, se cobrará el valor equivalente a un (1) día completo de alquiler a la tarifa contratada.
                     </p>
                   </div>
                 </div>
@@ -1219,7 +1214,7 @@ export default function DatosPersonales({
                   fontSize: 14,
                   cursor: hasScrolledToBottom ? 'pointer' : 'not-allowed',
                   boxShadow: hasScrolledToBottom
-                    ? '0 4px 14px rgba(29, 78, 216, 0.25)'
+                    ? '0 4px 14px rgba(var(--brand-primary-rgb), 0.25)'
                     : 'none',
                   transition: 'all 0.2s'
                 }}

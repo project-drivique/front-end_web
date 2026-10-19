@@ -20,7 +20,7 @@ const mapear = (r) => ({
 export const branchReviewManagementService = {
   async list() {
     try {
-      const { data } = await api.get('/admin/reviews/branches')
+      const { data } = await api.get('/v1/admin/reviews/branches')
       return (Array.isArray(data) ? data : []).map(mapear)
     } catch (error) {
       console.error('Error fetching branch reviews:', error)
@@ -30,19 +30,19 @@ export const branchReviewManagementService = {
 
   async responderResena(id, textoRespuesta) {
     try {
-      const { data } = await api.patch(`/admin/reviews/branches/${id}/reply`, { reply: textoRespuesta })
+      const { data } = await api.patch(`/v1/admin/reviews/branches/${id}/reply`, { reply: textoRespuesta })
       return mapear(data)
     } catch (error) {
-      throw new Error(error?.response?.data?.detail || 'No fue posible publicar la respuesta.')
+      throw new Error(error?.response?.data?.detail || 'No fue posible publicar la respuesta.', { cause: error })
     }
   },
 
   async eliminarResena(id) {
     try {
-      await api.delete(`/admin/reviews/branches/${id}`)
+      await api.delete(`/v1/admin/reviews/branches/${id}`)
       return true
     } catch (error) {
-      throw new Error(error?.response?.data?.detail || 'No fue posible eliminar la reseña.')
+      throw new Error(error?.response?.data?.detail || 'No fue posible eliminar la reseña.', { cause: error })
     }
   },
 }

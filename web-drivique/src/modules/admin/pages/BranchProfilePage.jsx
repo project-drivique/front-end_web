@@ -1,36 +1,21 @@
-﻿import { useState, useEffect, useRef, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  FaLock,
-  FaInfoCircle,
-  FaMapMarkerAlt,
-  FaClock,
-  FaBuilding,
-  FaCar,
-  FaCheck,
-  FaTimes,
-  FaDirections,
-  FaCheckCircle,
-  FaExclamationTriangle,
-  FaCreditCard,
-  FaHourglassHalf,
-  FaMoneyBillWave,
-  FaUndo,
-  FaSave,
-  FaPlane,
-  FaBus,
-  FaHome,
-} from 'react-icons/fa'
+import { FaLock, FaInfoCircle, FaMapMarkerAlt, FaBuilding, FaDirections, FaExclamationTriangle, FaCreditCard, FaHourglassHalf, FaMoneyBillWave, FaUndo, FaSave, FaExternalLinkAlt } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBranchProfile } from '../../../hooks/useBranchProfile'
 import { showAlert } from '../../../utils/swalConfig'
-import { getPlaceSchedule, formatSchedule } from '../../../utils/branchSchedules'
-import { CIUDADES } from '../../catalog/constants'
 import ManagementSidebar from '../components/ManagementSidebar'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import './BranchProfilePage.css'
+
+const CITY_COORDINATES = {
+  bogota: { lat: 4.6558, lng: -74.0573 },
+  medellin: { lat: 6.2088, lng: -75.5683 },
+  barranquilla: { lat: 11.0069, lng: -74.8194 },
+  cali: { lat: 3.4682, lng: -76.5298 },
+  cartagena: { lat: 10.4072, lng: -75.5562 },
+}
 
 /**
  * Componente: BranchProfilePage
@@ -50,10 +35,9 @@ import './BranchProfilePage.css'
  * @returns {JSX.Element}
  */
 export default function BranchProfilePage() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
-  const navigate = useNavigate()
 
   const {
     profile,
@@ -92,12 +76,21 @@ export default function BranchProfilePage() {
   // Sincronizar el formulario cuando el perfil cargue
   useEffect(() => {
     if (profile) {
+      const cityKey = String(profile.ciudad || '').trim().toLowerCase()
+      const fallbackCoord = CITY_COORDINATES[cityKey] || { lat: 4.6558, lng: -74.0573 }
+      const latVal = profile.latitud != null && String(profile.latitud).trim() !== ''
+        ? String(profile.latitud)
+        : String(fallbackCoord.lat)
+      const lngVal = profile.longitud != null && String(profile.longitud).trim() !== ''
+        ? String(profile.longitud)
+        : String(fallbackCoord.lng)
+
       const initial = {
         direccion: profile.direccion || '',
         telefono: profile.telefono || '',
         indicacionesRecogida: profile.indicacionesRecogida || '',
-        latitud: String(profile.latitud || ''),
-        longitud: String(profile.longitud || ''),
+        latitud: latVal,
+        longitud: lngVal,
       }
       setForm(initial)
       setOriginalForm(initial)
@@ -128,11 +121,11 @@ export default function BranchProfilePage() {
     // Teléfono opcional: solo dígitos, espacios, +, -, de 7 a 13 dígitos
     if (form.telefono.trim()) {
       const digitsOnly = form.telefono.replace(/[^\d]/g, '')
-      const validChars = /^[0-9\s+\-]+$/.test(form.telefono)
+      const validChars = /^[0-9\s+-]+$/.test(form.telefono)
       if (!validChars || digitsOnly.length < 7 || digitsOnly.length > 13) {
         errs.telefono = t(
           'branchProfile.errors.phoneInvalid',
-          'El teléfono debe contener entre 7 y 13 dígitos.'
+          t('hc2.el_telefono_debe_contener_entre_7_y_13', 'El teléfono debe contener entre 7 y 13 dígitos.')
         )
       }
     }
@@ -158,13 +151,13 @@ export default function BranchProfilePage() {
         if (isNaN(latNum) || latNum < -90 || latNum > 90) {
           errs.latitud = t(
             'branchProfile.errors.latInvalid',
-            'La latitud debe estar entre -90 y 90.'
+            t('hc2.la_latitud_debe_estar_entre_90_y_90', 'La latitud debe estar entre -90 y 90.')
           )
         }
         if (isNaN(lngNum) || lngNum < -180 || lngNum > 180) {
           errs.longitud = t(
             'branchProfile.errors.lngInvalid',
-            'La longitud debe estar entre -180 y 180.'
+            t('hc2.la_longitud_debe_estar_entre_180_y_180', 'La longitud debe estar entre -180 y 180.')
           )
         }
       }
@@ -228,7 +221,7 @@ export default function BranchProfilePage() {
           title: t('branchProfile.saveSuccessTitle', 'Cambios guardados'),
           text: t(
             'branchProfile.saveSuccessMsg',
-            'Los datos de la sucursal han sido actualizados con éxito.'
+            t('hc2.los_datos_de_la_sucursal_han_sido_actu', 'Los datos de la sucursal han sido actualizados con éxito.')
           ),
           confirmButtonText: t('common.accept', 'Aceptar'),
         })
@@ -238,7 +231,7 @@ export default function BranchProfilePage() {
       })
   }
 
-  // Mapa iframe URL dinámica
+  // Mapa iframe URL dinámica (OpenStreetMap interactivo con marcador satelital)
   const isValidMapCoord =
     !isNaN(parseFloat(form.latitud)) &&
     !isNaN(parseFloat(form.longitud)) &&
@@ -247,57 +240,19 @@ export default function BranchProfilePage() {
     parseFloat(form.longitud) >= -180 &&
     parseFloat(form.longitud) <= 180
 
-  const mapIframeUrl = isValidMapCoord
-    ? `https://maps.google.com/maps?q=${encodeURIComponent(
-        form.latitud
-      )},${encodeURIComponent(form.longitud)}&z=16&output=embed`
-    : null
+  const cityKeyForMap = String(profile?.ciudad || '').trim().toLowerCase()
+  const fallbackCoordForMap = CITY_COORDINATES[cityKeyForMap] || { lat: 4.6558, lng: -74.0573 }
 
-  const googleMapsExternalUrl = isValidMapCoord
-    ? `https://www.google.com/maps?q=${encodeURIComponent(form.latitud)},${encodeURIComponent(
-        form.longitud
-      )}`
-    : null
+  const curLat = isValidMapCoord ? parseFloat(form.latitud) : fallbackCoordForMap.lat
+  const curLng = isValidMapCoord ? parseFloat(form.longitud) : fallbackCoordForMap.lng
+
+  const mapIframeUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${(curLng - 0.008).toFixed(5)}%2C${(curLat - 0.008).toFixed(5)}%2C${(curLng + 0.008).toFixed(5)}%2C${(curLat + 0.008).toFixed(5)}&layer=mapnik&marker=${curLat}%2C${curLng}`
+
+  const googleMapsExternalUrl = `https://www.google.com/maps?q=${curLat},${curLng}`
 
   // Ciudad e infraestructura
-  const cityObj = useMemo(() => {
-    if (!profile?.ciudad) return null
-    const cleanCity = String(profile.ciudad).trim().toLowerCase()
-    return (
-      CIUDADES.find(
-        (c) =>
-          c.nombre?.toLowerCase() === cleanCity ||
-          c.id?.toLowerCase() === cleanCity ||
-          cleanCity.includes(c.nombre?.toLowerCase()) ||
-          c.nombre?.toLowerCase().includes(cleanCity)
-      ) || null
-    )
-  }, [profile?.ciudad])
 
   // Horarios usando branchSchedules.js
-  const branchScheduleObj = useMemo(() => {
-    return getPlaceSchedule({ branchType: profile?.branchType })
-  }, [profile?.branchType])
-
-  const homeScheduleObj = useMemo(() => {
-    return getPlaceSchedule({ kind: 'home_delivery' })
-  }, [])
-
-  const airportScheduleObj = useMemo(() => {
-    return getPlaceSchedule({ branchType: 'AIRPORT_TERMINAL' })
-  }, [])
-
-  const formattedBranchSchedule = useMemo(() => {
-    return formatSchedule(branchScheduleObj, i18n.language)
-  }, [branchScheduleObj, i18n.language])
-
-  const formattedHomeSchedule = useMemo(() => {
-    return formatSchedule(homeScheduleObj, i18n.language)
-  }, [homeScheduleObj, i18n.language])
-
-  const formattedAirportSchedule = useMemo(() => {
-    return formatSchedule(airportScheduleObj, i18n.language)
-  }, [airportScheduleObj, i18n.language])
 
   if (loading || !profile) {
     return (
@@ -316,10 +271,6 @@ export default function BranchProfilePage() {
       </div>
     )
   }
-
-  const isAirport =
-    profile.branchType === 'AIRPORT_TERMINAL' ||
-    String(profile.branchType).toLowerCase().includes('airport')
 
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
@@ -358,7 +309,7 @@ export default function BranchProfilePage() {
               className="cities-primary"
               onClick={handleSubmit}
               disabled={!hasUnsavedChanges || saving}
-              title="Guardar información editada"
+              title={t('hc.guardar_informacion_editada', 'Guardar información editada')}
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 8, fontWeight: 600 }}
             >
               <FaSave aria-hidden="true" />
@@ -462,7 +413,7 @@ export default function BranchProfilePage() {
                         setForm({ ...form, direccion: e.target.value })
                         if (errors.direccion) setErrors({ ...errors, direccion: null })
                       }}
-                      placeholder="Ej. Av. El Dorado # 103-09, Fontibón"
+                      placeholder={t('hc.ej_av_el_dorado_103_09_fontibon', 'Ej. Av. El Dorado # 103-09, Fontibón')}
                       required
                     />
                     {errors.direccion && (
@@ -514,7 +465,7 @@ export default function BranchProfilePage() {
                     className="branch-profile-textarea"
                     placeholder={t(
                       'branchProfile.placeholders.pickupInstructions',
-                      'Frente a la salida 3 del aeropuerto - hall de entregas.'
+                      t('hc2.frente_a_la_salida_3_del_aeropuerto_ha', 'Frente a la salida 3 del aeropuerto - hall de entregas.')
                     )}
                     value={form.indicacionesRecogida}
                     onChange={(e) =>
@@ -540,14 +491,15 @@ export default function BranchProfilePage() {
               </div>
 
               <div className="branch-profile-card-body branch-profile-card-body--stretched">
-                {/* Visor interactivo de Google Maps */}
-                <div className="branch-profile-map-wrap">
+                {/* Visor interactivo de Mapa Satelital */}
+                <div className="branch-profile-map-wrap" style={{ position: 'relative', overflow: 'hidden', borderRadius: 14 }}>
                   {mapIframeUrl ? (
                     <iframe
                       title={t('branchProfile.location.title', 'Ubicación')}
                       src={mapIframeUrl}
                       className="branch-profile-map-iframe"
                       loading="lazy"
+                      style={{ border: 'none', width: '100%', height: '100%', minHeight: 220 }}
                     />
                   ) : (
                     <div className="branch-profile-map-fallback">
@@ -555,6 +507,24 @@ export default function BranchProfilePage() {
                       <span>{t('branchProfile.location.mapUnavailable', 'Mapa no disponible')}</span>
                     </div>
                   )}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 6, marginBottom: 4 }}>
+                  <a
+                    href={googleMapsExternalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: 'var(--brand-primary, #2563eb)',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    <FaExternalLinkAlt size={11} /> {t('branchProfile.location.openInMaps', 'Abrir en Google Maps')}
+                  </a>
                 </div>
 
                 {/* Coordenadas Latitud / Longitud */}

@@ -1,3 +1,4 @@
+import i18n from '@/i18n'
 
 const IconoCheck = () => (
   <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24" style={{ marginTop: '1px' }}>
@@ -8,10 +9,10 @@ const IconoCheck = () => (
 export default function RecoveryStepper({ currentStep }) {
   // Nombres de los pasos hardcodeados o traducidos
   const pasos = [
-    { id: 1, label: 'Correo' },
-    { id: 2, label: 'Verificación' },
-    { id: 3, label: 'Nueva contraseña' },
-    { id: 4, label: 'Confirmación' },
+    { id: 1, label: i18n.t('hc4.correo', 'Correo') },
+    { id: 2, label: i18n.t('hc.verificacion', 'Verificación') },
+    { id: 3, label: i18n.t('hc.nueva_contrasena', 'Nueva contraseña') },
+    { id: 4, label: i18n.t('hc.confirmacion', 'Confirmación') },
   ]
 
   return (

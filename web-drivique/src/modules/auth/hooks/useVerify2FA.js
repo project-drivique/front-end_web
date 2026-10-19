@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { authService } from '../../../services/authService'
 import { useAuthStore } from '../../../store/authStore'
 import { getRoleHome } from '../utils/accessControl'
+import i18n from '@/i18n'
 
 const LARGO_CODIGO  = 6
 const TIEMPO_REENVIO = 60 // segundos
@@ -76,7 +77,7 @@ export function useVerify2FA() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (codigo.length < LARGO_CODIGO) {
-      setError('Ingresa los 6 dígitos del código.')
+      setError(i18n.t('hc.ingresa_los_6_digitos_del_codigo', 'Ingresa los 6 dígitos del código.'))
       return
     }
 
@@ -92,11 +93,11 @@ export function useVerify2FA() {
     } catch (err) {
       const msg = err?.response?.data?.mensaje || ''
       if (msg.toLowerCase().includes('expir')) {
-        setError('El código ha expirado. Solicita uno nuevo.')
+        setError(i18n.t('hc.el_codigo_ha_expirado_solicita_uno_nue', 'El código ha expirado. Solicita uno nuevo.'))
       } else if (msg.toLowerCase().includes('inválido') || msg.toLowerCase().includes('incorrecto')) {
-        setError('Código incorrecto. Verifica e intenta de nuevo.')
+        setError(i18n.t('hc.codigo_incorrecto_verifica_e_intenta_d', 'Código incorrecto. Verifica e intenta de nuevo.'))
       } else {
-        setError('Error al verificar. Intenta de nuevo.')
+        setError(i18n.t('hc.error_al_verificar_intenta_de_nuevo', 'Error al verificar. Intenta de nuevo.'))
       }
       setCodigo('')
       inputsRef.current[0]?.focus()
@@ -115,7 +116,7 @@ export function useVerify2FA() {
       setCodigo('')
       inputsRef.current[0]?.focus()
     } catch {
-      setError('No se pudo reenviar el código. Intenta de nuevo.')
+      setError(i18n.t('hc.no_se_pudo_reenviar_el_codigo_intenta_', 'No se pudo reenviar el código. Intenta de nuevo.'))
     } finally {
       setReenviando(false)
     }

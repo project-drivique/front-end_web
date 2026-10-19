@@ -175,12 +175,12 @@
   font-weight: 700 !important;
   border-radius: 10px !important;
   white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 2px 6px rgba(var(--brand-primary-rgb), 0.2);
   transition: all 0.2s ease;
 }
 
 .fleet-btn-create-tab:hover {
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(var(--brand-primary-rgb), 0.3);
   transform: translateY(-1px);
 }
 
@@ -279,7 +279,7 @@
   font-size: 12px !important;
   font-weight: 600 !important;
   cursor: pointer !important;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+  box-shadow: 0 2px 6px rgba(var(--brand-primary-rgb), 0.25) !important;
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -294,7 +294,7 @@
 .btn-row-action:hover,
 .cities-row-actions button:hover {
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35) !important;
+  box-shadow: 0 4px 10px rgba(var(--brand-primary-rgb), 0.35) !important;
   background: linear-gradient(135deg, var(--brand-secondary, #1e40af) 0%, var(--brand-secondary, #1d4ed8) 100%) !important;
   color: #ffffff !important;
 }
@@ -356,7 +356,7 @@
 
 .fleet-datatable-search input:focus {
   border-color: var(--brand-primary, #2563eb);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.12);
 }
 
 .export-pills-group {
@@ -556,7 +556,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 10px 25px -5px rgba(var(--brand-primary-rgb), 0.25);
   color: #ffffff;
   position: relative;
   overflow: hidden;
@@ -660,7 +660,7 @@
 
 .branch-hero-btn--white {
   background: #ffffff;
-  color: #1e40af;
+  color: var(--brand-text);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   font-weight: 700;
 }
@@ -766,9 +766,9 @@
 }
 
 .fleet-badge-branch {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  color: #1d4ed8;
+  background: var(--brand-soft);
+  border: 1px solid var(--brand-border);
+  color: var(--brand-text);
   font-weight: 600;
   font-size: 11px;
   padding: 2px 8px;
@@ -916,7 +916,7 @@
 .fleet-form-textarea:focus {
   outline: none;
   border-color: var(--brand-primary, #2563eb);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.12);
 }
 
 .fleet-form-textarea {
@@ -1058,7 +1058,7 @@
 }
 
 .fleet-btn-add-insurance:hover {
-  background: rgba(37, 99, 235, 0.06);
+  background: rgba(var(--brand-primary-rgb), 0.06);
 }
 
 /* UPLOAD Y GALERÍA */
@@ -1079,7 +1079,7 @@
 
 .fleet-upload-box:hover {
   border-color: var(--brand-primary, #2563eb);
-  background: #eff6ff;
+  background: var(--brand-soft);
 }
 
 .fleet-upload-icon {
@@ -1427,9 +1427,9 @@ body.dark .fleet-gallery-actions {
 
 .management-shell--dark .fleet-gallery-btn.is-edit,
 body.dark .fleet-gallery-btn.is-edit {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
-  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(var(--brand-primary-rgb), 0.15);
+  color: var(--brand-text);
+  border-color: rgba(var(--brand-primary-rgb), 0.3);
 }
 
 .management-shell--dark .fleet-gallery-btn.is-edit:hover,

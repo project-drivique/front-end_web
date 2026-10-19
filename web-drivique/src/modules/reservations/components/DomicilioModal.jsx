@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { FaMapMarkerAlt, FaTimes, FaHome, FaInfoCircle } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaInfoCircle } from 'react-icons/fa'
 import { useIsMobile } from '../../../hooks/useIsMobile'
 import { useEffect, useState } from 'react'
 

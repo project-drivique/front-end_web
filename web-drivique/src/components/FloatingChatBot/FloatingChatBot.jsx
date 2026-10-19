@@ -28,7 +28,7 @@ export default function FloatingChatBot() {
       sender: 'bot',
       texto: t(
         'chatbot.welcomeMsg',
-        `👋 ¡Hola! Soy el asistente virtual interactivo de ${brand.name} 24/7.\n¿En qué puedo ayudarte hoy?`
+        t('hc3.chat_greeting', { defaultValue: '👋 ¡Hola! Soy el asistente virtual interactivo de {{name}} 24/7.\n¿En qué puedo ayudarte hoy?', name: brand.name })
       ).replaceAll('Drivique', brand.name),
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
@@ -116,7 +116,7 @@ export default function FloatingChatBot() {
         className="floating-chatbot-trigger"
         onClick={toggleChat}
         title={t('chatbot.toggleTitle', `Asistente de Soporte ${brand.name}`).replaceAll('Drivique', brand.name)}
-        aria-label="Abrir Chatbot de soporte"
+        aria-label={t('hc.abrir_chatbot_de_soporte', 'Abrir Chatbot de soporte')}
       >
         <FaComments />
         {mensajeUnread && <span className="floating-chatbot-badge" />}
