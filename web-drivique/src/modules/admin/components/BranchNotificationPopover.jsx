@@ -1,13 +1,7 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaBell,
-  FaTimes,
-  FaCheckDouble,
-  FaCheckCircle,
-  FaArrowRight,
-} from 'react-icons/fa'
+import { FaTimes, FaCheckDouble, FaCheckCircle, FaArrowRight } from 'react-icons/fa'
 import './BranchNotificationPopover.css'
 
 /**

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
-import { FaTicketAlt, FaTrashAlt } from 'react-icons/fa'
+import { FaTicketAlt } from 'react-icons/fa'
 import { promotionManagementService } from '@/services/promotionManagementService'
 
 const formatearFechaExp = (fechaStr) => {

@@ -34,7 +34,6 @@ import {
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
-import { useBrand } from '../../../contexts/BrandContext'
 import {
   reportManagementService,
   REPORT_CATEGORIES,
@@ -199,7 +198,6 @@ export default function ReportsManagementPage({ branchOnly = false }) {
   const { t, i18n } = useTranslation()
   const { tema, moneda, tasaUSD } = useLanding()
   const user = useAuthStore((state) => state.usuario)
-  const { brand } = useBrand()
   const esModoOscuro = tema === 'oscuro'
 
   const esEncargado =
@@ -229,7 +227,7 @@ export default function ReportsManagementPage({ branchOnly = false }) {
   const [filterEndDate, setFilterEndDate] = useState('')
   const [filterBranch, setFilterBranch] = useState(esEncargado ? sucursalEncargado : 'all')
   const [filterState, setFilterState] = useState('all')
-  const [filterCategory, setFilterCategory] = useState('all')
+  const [filterCategory] = useState('all')
   const [filterSeverity, setFilterSeverity] = useState('all')
   const [filterSearch, setFilterSearch] = useState('')
 

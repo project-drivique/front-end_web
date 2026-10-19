@@ -29,7 +29,6 @@ const CATEGORIA_DE_TIPO = {
 }
 
 // ─── REPOSITORIO DE REPORTES DE CLIENTES (CERO DATOS QUEMADOS) ────────
-const INITIAL_SEED_INCIDENTS = []
 
 function cargarStorage() {
   if (typeof window === 'undefined') return []

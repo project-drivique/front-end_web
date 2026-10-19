@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useRef } from 'react'
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { FaArrowLeft, FaFileSignature, FaShieldAlt, FaCar, FaCheckCircle } from 'react-icons/fa'
+import { FaArrowLeft, FaShieldAlt, FaCheckCircle } from 'react-icons/fa'
 import { useAuthStore } from '@/store/authStore'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { contractService } from '@/services/contractService'
@@ -59,7 +59,6 @@ export default function ContractSigningPage() {
         if (!vehData && resData?.vehiculoId) {
           vehData = await catalogService.getVehiculoById(resData.vehiculoId).catch(() => null)
         }
-
 
         if (activo) {
           setReserva(resData || null)

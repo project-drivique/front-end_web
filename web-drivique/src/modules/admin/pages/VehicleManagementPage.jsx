@@ -1,25 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  FaCamera,
-  FaCar,
-  FaCheck,
-  FaCogs,
-  FaEdit,
-  FaEye,
-  FaFileExcel,
-  FaFilePdf,
-  FaImage,
-  FaListUl,
-  FaLock,
-  FaMoneyBillWave,
-  FaPlus,
-  FaPrint,
-  FaShieldAlt,
-  FaSyncAlt,
-  FaTimes,
-  FaTrash,
-} from "react-icons/fa";
+import { FaCar, FaCheck, FaEye, FaFileExcel, FaFilePdf, FaPlus, FaPrint, FaTimes, FaTrash } from "react-icons/fa";
 import { useLanding } from "../../landing/LandingContext";
 import { useAuthStore } from "../../../store/authStore";
 import { ROLES } from "../../auth/utils/accessControl";
@@ -70,6 +51,7 @@ const CATEGORY_EMPTY = {
 
 const listToText = (items) =>
   (items || []).map((item) => item.nombre).join(", ");
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
 const textToList = (text) =>
   String(text || "")
     .split(",")
@@ -124,6 +106,7 @@ export default function VehicleManagementPage() {
   const [zoomImage, setZoomImage] = useState(null);
   
   // Agregar un estado local para la actualización rápida
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const [updatingVehicleId, setUpdatingVehicleId] = useState(null);
 
   const [dataVersion, setDataVersion] = useState(0);
@@ -204,6 +187,7 @@ export default function VehicleManagementPage() {
     ).length;
   };
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const filteredSucursales = useMemo(() => {
     const term = search.trim().toLowerCase();
     return branches.filter(
@@ -394,6 +378,7 @@ export default function VehicleManagementPage() {
     setError("");
   };
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const handleQuickStatusChange = async (vehicleId, newState) => {
     try {
       setUpdatingVehicleId(vehicleId);
@@ -493,9 +478,11 @@ export default function VehicleManagementPage() {
     }
   };
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const addInsurance = () =>
     setForm({ ...form, seguros: [...form.seguros, { nombre: "", precio: 0 }] });
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const updateInsurance = (index, key, value) =>
     setForm({
       ...form,
@@ -506,6 +493,7 @@ export default function VehicleManagementPage() {
       ),
     });
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const loadImages = async (event) => {
     const remainingSlots = Math.max(0, 3 - (form.imagenes?.length || 0));
     if (remainingSlots <= 0) {
@@ -542,6 +530,7 @@ export default function VehicleManagementPage() {
     event.target.value = "";
   };
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const handleReplaceImage = async (index, event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -574,6 +563,7 @@ export default function VehicleManagementPage() {
     event.target.value = "";
   };
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const pico = getPicoYPlacaInfo(form.placa, form.sucursal);
 
   return (

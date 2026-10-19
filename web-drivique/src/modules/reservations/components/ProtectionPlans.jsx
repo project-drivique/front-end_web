@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { FaShieldAlt, FaRegHeart, FaCheckCircle } from "react-icons/fa";
+import { FaShieldAlt, FaCheckCircle } from "react-icons/fa";
 import { formatCurrency } from '@/utils/currencyUtils';
 import { useLanding } from '../../landing/LandingContext';
 import { useEffect, useState } from 'react';

@@ -1,21 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  FaIdCard,
-  FaSearch,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaEye,
-  FaBuilding,
-  FaShieldAlt,
-  FaFileExcel,
-  FaFilePdf,
-  FaPrint,
-  FaTimes,
-  FaCheckSquare,
-  FaRegSquare,
-  FaExternalLinkAlt,
-} from 'react-icons/fa'
+import { FaIdCard, FaSearch, FaCheckCircle, FaTimesCircle, FaEye, FaBuilding, FaShieldAlt, FaFileExcel, FaFilePdf, FaPrint, FaExternalLinkAlt } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { documentVerificationService } from '../../../services/documentVerificationService'

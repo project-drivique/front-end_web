@@ -1,28 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaLock,
-  FaInfoCircle,
-  FaMapMarkerAlt,
-  FaClock,
-  FaBuilding,
-  FaCar,
-  FaCheck,
-  FaTimes,
-  FaDirections,
-  FaCheckCircle,
-  FaExclamationTriangle,
-  FaCreditCard,
-  FaHourglassHalf,
-  FaMoneyBillWave,
-  FaUndo,
-  FaSave,
-  FaPlane,
-  FaBus,
-  FaHome,
-  FaExternalLinkAlt,
-} from 'react-icons/fa'
+import { FaLock, FaInfoCircle, FaMapMarkerAlt, FaBuilding, FaDirections, FaExclamationTriangle, FaCreditCard, FaHourglassHalf, FaMoneyBillWave, FaUndo, FaSave, FaExternalLinkAlt } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBranchProfile } from '../../../hooks/useBranchProfile'

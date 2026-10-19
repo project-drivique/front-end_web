@@ -1,18 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaCar,
-  FaCheckCircle,
-  FaDollarSign,
-  FaCalendarCheck,
-  FaClock,
-  FaMoneyBillWave,
-  FaPlus,
-  FaSearch,
-  FaChartLine,
-  FaSync,
-} from 'react-icons/fa'
+import { FaCheckCircle, FaDollarSign, FaCalendarCheck, FaMoneyBillWave, FaPlus, FaSearch, FaChartLine, FaSync } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { adminDashboardService } from '../../../services/adminDashboardService'

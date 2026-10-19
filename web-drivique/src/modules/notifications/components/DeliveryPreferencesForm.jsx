@@ -1,17 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  FaEnvelope,
-  FaMobileAlt,
-  FaBell,
-  FaLaptop,
-  FaBullhorn,
-  FaSave,
-  FaCheckCircle,
-  FaExclamationTriangle,
-  FaShieldAlt,
-  FaSpinner,
-} from 'react-icons/fa'
+import { FaEnvelope, FaBell, FaLaptop, FaBullhorn, FaSave, FaCheckCircle, FaExclamationTriangle, FaShieldAlt, FaSpinner } from 'react-icons/fa'
 import { userService } from '@/services/userService'
 import './DeliveryPreferencesForm.css'
 

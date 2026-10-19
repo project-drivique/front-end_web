@@ -1,20 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  FaFileContract,
-  FaEye,
-  FaFileExcel,
-  FaFilePdf,
-  FaPrint,
-  FaSearch,
-  FaTimes,
-  FaUser,
-  FaBuilding,
-  FaCalendarAlt,
-  FaDownload,
-  FaCar,
-  FaReceipt,
-} from "react-icons/fa";
+import { FaFileContract, FaFileExcel, FaFilePdf, FaPrint, FaSearch, FaTimes, FaReceipt } from "react-icons/fa";
 import { useLanding } from "../../landing/LandingContext";
 import { useAuthStore } from "../../../store/authStore";
 import { useBrand } from "../../../contexts/BrandContext";
@@ -25,7 +11,7 @@ import {
   exportPdf,
   printTable,
 } from "../../../utils/listExportUtils";
-import { formatCurrency } from "../../../utils/currencyUtils";
+
 import MenuConfiguracion from "../../../components/MenuConfiguracion";
 import FirmaContrato from '@/modules/contracts/components/ContractSignature';
 import ManagementSidebar from "../components/ManagementSidebar";
@@ -33,7 +19,7 @@ import "./CityManagementPage.css";
 import "./ContractManagementPage.css";
 
 export default function ContractManagementPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { tema } = useLanding();
   const user = useAuthStore((state) => state.usuario);
   const { brand } = useBrand();
@@ -53,7 +39,6 @@ export default function ContractManagementPage() {
   const [modalDetalle, setModalDetalle] = useState(null);
   const [notice, setNotice] = useState("");
 
-  const getVehiculoImagen = (c) => c?.vehiculoImagen || "";
 
   useEffect(() => {
     contractManagementService.refresh().then(setContratos).catch((error) => console.error('No se pudieron cargar los contratos:', error));

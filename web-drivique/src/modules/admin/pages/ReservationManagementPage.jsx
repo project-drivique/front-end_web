@@ -1,33 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaCalendarAlt,
-  FaCar,
-  FaEdit,
-  FaEye,
-  FaFileExcel,
-  FaFilePdf,
-  FaPlus,
-  FaPrint,
-  FaSearch,
-  FaUser,
-  FaBuilding,
-  FaClock,
-  FaBan,
-  FaHistory,
-  FaUserCheck,
-  FaSave,
-  FaMapMarkerAlt,
-  FaWhatsapp,
-  FaMoneyBillWave,
-  FaShieldAlt,
-  FaFileContract,
-  FaFileSignature,
-  FaCheckCircle,
-  FaIdCard,
-  FaExternalLinkAlt,
-} from 'react-icons/fa'
+import { FaCalendarAlt, FaCar, FaFileExcel, FaFilePdf, FaPrint, FaSearch, FaUser, FaBuilding, FaBan, FaHistory, FaMoneyBillWave, FaShieldAlt, FaFileContract, FaCheckCircle, FaIdCard, FaExternalLinkAlt } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { reservationManagementService } from '../../../services/reservationManagementService'

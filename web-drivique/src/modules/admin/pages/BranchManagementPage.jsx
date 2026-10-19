@@ -18,7 +18,6 @@ import {
 } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
-import { api } from '../../../services/httpClient'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { cityManagementService } from '../../../services/cityManagementService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'

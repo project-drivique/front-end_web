@@ -1,19 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaBell,
-  FaTimes,
-  FaCheckDouble,
-  FaSearch,
-  FaCar,
-  FaExclamationTriangle,
-  FaCheckCircle,
-  FaClock,
-  FaChevronRight,
-  FaCheck,
-  FaExternalLinkAlt,
-} from 'react-icons/fa'
+import { FaBell, FaTimes, FaCheckDouble, FaSearch, FaCar, FaExclamationTriangle, FaCheckCircle, FaClock, FaChevronRight, FaCheck } from 'react-icons/fa'
 import './BranchNotificationModal.css'
 
 /**

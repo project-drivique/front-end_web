@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaDownload, FaEye, FaEyeSlash, FaFileContract, FaFlag, FaKey, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaInfoCircle, FaCreditCard, FaFileSignature, FaPenNib, FaClock, FaTruck, FaUserCheck, FaWhatsapp, FaEnvelope } from 'react-icons/fa'
+import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaEye, FaEyeSlash, FaFlag, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaCreditCard, FaFileSignature, FaClock, FaWhatsapp } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
@@ -9,12 +9,9 @@ import { contractService } from '@/services/contractService'
 import { useHistorialReservas } from '../hooks/useReservations'
 import filtrosReservas from '@/config/datos/reservationsFilters.json'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
-import FirmaContrato from '@/modules/contracts/components/ContractSignature'
-import { descargarContratoOriginal, prepararVistaContrato } from '@/modules/contracts/utils/downloadSignedContract'
 import { SUCURSALES } from '@/modules/catalog/constants'
 import { construirUrlCheckout, aCentavos } from '@/services/wompiService'
 import logo from '@/assets/logo.png'
-import firmaDrivique from '@/assets/drivique-signature.png'
 import { useBrand } from '@/contexts/BrandContext'
 import { showAlert } from '@/utils/swalConfig'
 import './ReservationsPage.css'
@@ -555,7 +552,6 @@ function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
   )
 }
 
-
 function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onValorar, onReportar }) {
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
@@ -898,7 +894,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
       })
     }
   }
-
 
   const formatHoraAmPm = (hora24) => {
     if (!hora24) return ''

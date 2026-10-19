@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaFileSignature, FaCheckCircle, FaDownload, FaArrowLeft, FaEnvelope } from 'react-icons/fa';
 import logo from '@/assets/logo.png';
@@ -14,10 +14,6 @@ import SignatureCanvas from './SignatureCanvas';
 const LOCALES_FECHA = { es: 'es-CO', en: 'en-US', fr: 'fr-FR', pt: 'pt-PT', br: 'pt-BR' };
 
 /** "Toyota Corolla 2024" -> { marca: "Toyota", modelo: "Corolla 2024" } */
-function separarMarcaModelo(nombre = '') {
-  const partes = nombre.trim().split(' ');
-  return { marca: partes[0] || '', modelo: partes.slice(1).join(' ') || '' };
-}
 
 const Campo = ({ label, value }) => (
   <div className="contrato-campo" style={{
@@ -52,7 +48,7 @@ export default function FirmaContrato({
   const [errorFirma, setErrorFirma] = useState('');
   const [firmando, setFirmando] = useState(false);
 
-  const { datosForm = {}, reservaDetalles = {}, referencia, seguroIdx, serviciosSeleccionados = [] } = reservaGuardada || {};
+  const { datosForm = {}, reservaDetalles = {}, referencia } = reservaGuardada || {};
   const [contratoApi, setContratoApi] = useState(contratoFirmado?.contractNumber ? contratoFirmado : null);
 
   const directSignature = (

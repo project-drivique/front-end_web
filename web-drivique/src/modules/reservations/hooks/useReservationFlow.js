@@ -190,7 +190,6 @@ export function useReservationFlow() {
   const [modalDetallesOpen, setModalDetallesOpen] = useState(false)
   const [resumenMovilAbierto, setResumenMovilAbierto] = useState(false)
   const resumenMovilRef = useRef(null)
-  const prellenado = useRef(false)
 
   const abrirModalEditar = (seccion) => {
     setLocalReserva({ ...reserva })
@@ -784,7 +783,7 @@ export function useReservationFlow() {
             })
           }
         }
-      } catch (e) {
+      } catch {
         // Ignorar errores de sondeo
       }
     }, 4000)

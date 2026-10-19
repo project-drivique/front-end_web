@@ -7,7 +7,6 @@ export default function RentalRequirements({ c }) {
   const bg = c?.cardBg || '#fff'
   const border = c?.cardBorder || '#e2e8f0'
   const titleColor = c?.titleColor || 'var(--brand-secondary)'
-  const reqTitleColor = c?.textPrimary || '#334155'
   const reqDescColor = c?.textSecondary || '#64748b'
 
   const requisitos = [
