@@ -1,6 +1,7 @@
 import { createPortal } from 'react-dom'
 import { FaTimes } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
+import i18n from '@/i18n'
 
 const TEMA_LIGHT = {
   overlayBg: 'rgba(15, 23, 42, 0.6)',
@@ -149,7 +150,7 @@ export default function AlertModal({
           <button
             type="button"
             onClick={onCerrar}
-            aria-label="Cerrar"
+            aria-label={i18n.t('hc4.cerrar', 'Cerrar')}
             style={{ ...ESTILOS.closeButton, color: t.textSecondary }}
           >
             <FaTimes size={13} />

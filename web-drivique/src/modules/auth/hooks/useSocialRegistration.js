@@ -1,6 +1,7 @@
 // src/modules/auth/hooks/useSocialRegistration.js
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from '@/i18n'
 import { authService } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
 import { createPkceChallenge } from '../utils/pkce'
@@ -20,7 +21,7 @@ function cargarGoogleSDK() {
     script.async = true
     script.defer = true
     script.onload = resolve
-    script.onerror = () => reject(new Error('No se pudo cargar la API oficial de Google'))
+    script.onerror = () => reject(new Error(i18n.t('hc2.no_se_pudo_cargar_la_api_oficial_de_go', 'No se pudo cargar la API oficial de Google')))
     document.head.appendChild(script)
   })
 }
@@ -105,7 +106,7 @@ export function useSocialRegistration({ onExito } = {}) {
               resolve(resp)
             },
             error_callback: (err) => {
-              reject(new Error(err?.message || 'Error al abrir ventana de Google'))
+              reject(new Error(err?.message || t('hc2.error_al_abrir_ventana_de_google', 'Error al abrir ventana de Google')))
             },
           })
 
@@ -183,7 +184,11 @@ export function useSocialRegistration({ onExito } = {}) {
         return
       }
       setErrorSocial(
-        err?.message || t('registro.errors.googleError', 'Error al autenticar con la API de Google')
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        err?.response?.data?.error ||
+        err?.message ||
+        t('registro.errors.googleError', 'Error al autenticar con la API de Google')
       )
     } finally {
       setCargandoGoogle(false)
@@ -236,7 +241,7 @@ export function useSocialRegistration({ onExito } = {}) {
 
         const popup = window.open(authUrl, 'facebook_oauth', 'width=600,height=700,top=100,left=100')
         if (!popup) {
-          reject(new Error('No se pudo abrir la ventana emergente de Facebook'))
+          reject(new Error(t('hc2.no_se_pudo_abrir_la_ventana_emergente_', 'No se pudo abrir la ventana emergente de Facebook')))
           return
         }
 
@@ -268,7 +273,7 @@ export function useSocialRegistration({ onExito } = {}) {
       const graphRes = await fetch(
         `https://graph.facebook.com/me?fields=id,name,first_name,last_name,email,picture&access_token=${authResp.accessToken}`
       )
-      const fbUser = graphRes.ok ? await graphRes.json() : { id: 'fb_' + Date.now(), name: 'Usuario Facebook' }
+      const fbUser = graphRes.ok ? await graphRes.json() : { id: 'fb_' + Date.now(), name: t('hc2.usuario_facebook', 'Usuario Facebook') }
 
       let rawFirst = (fbUser.first_name || '').trim()
       let rawLast = (fbUser.last_name || '').trim()
@@ -328,8 +333,11 @@ export function useSocialRegistration({ onExito } = {}) {
         return
       }
       setErrorSocial(
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        err?.response?.data?.error ||
         err?.message ||
-          t('registro.errors.facebookError', 'Error al autenticar con la API de Facebook')
+        t('registro.errors.facebookError', 'Error al autenticar con la API de Facebook')
       )
     } finally {
       setCargandoFacebook(false)

@@ -28,7 +28,6 @@ export default function LocationModal({ visible, onClose, sucursalInfo, c }) {
     : ''
 
   const cardBg = c?.cardBg || 'var(--bg-tarjeta, #ffffff)'
-  const footerBg = c?.subCardBg || 'var(--bg-item, #ffffff)'
   const borderColor = c?.cardBorder || 'var(--borde, #e2e8f0)'
   const titleColor = c?.accentText || c?.titleColor || 'var(--brand-secondary, #1e3a8a)'
   const textPrimary = c?.textPrimary || 'var(--texto-primary, #0f172a)'

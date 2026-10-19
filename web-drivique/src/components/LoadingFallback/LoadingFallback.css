@@ -11,7 +11,7 @@
 .rlf-spinner {
   width: 44px;
   height: 44px;
-  border: 3px solid rgba(37, 99, 235, 0.15);
+  border: 3px solid rgba(var(--brand-primary-rgb), 0.15);
   border-top-color: var(--brand-primary, #2563eb);
   border-radius: 50%;
   animation: rlfSpin 0.75s linear infinite;

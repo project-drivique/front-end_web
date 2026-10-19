@@ -23,6 +23,7 @@ export class PaymentStrategy {
    * @param {string} [paymentData.redirectUrl] - URL de redirección post-pago
    * @returns {Promise<{ success: boolean, redirectUrl?: string, message?: string }>}
    */
+// eslint-disable-next-line no-unused-vars -- metodo abstracto: las subclases usan el parametro
   async processPayment(paymentData) {
     throw new Error(`processPayment() must be implemented by subclass ${this.constructor.name}`);
   }

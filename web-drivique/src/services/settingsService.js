@@ -1,6 +1,7 @@
 import { api } from './httpClient'
+import i18n from '@/i18n'
 
-const errorDe = (error) => new Error(error?.response?.data?.detail || 'No fue posible completar la operación.', { cause: error })
+const errorDe = (error) => new Error(error?.response?.data?.detail || i18n.t('hc2.no_fue_posible_completar_la_operacion', 'No fue posible completar la operación.'), { cause: error })
 
 // Parámetros globales de seguridad (solo administrador global)
 export const settingsService = {

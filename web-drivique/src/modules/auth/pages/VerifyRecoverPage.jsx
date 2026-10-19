@@ -110,7 +110,7 @@ export default function VerifyRecoverPage() {
               lineHeight: 1.5
             }}>
               {t('verificarRecuperacion.subtitle', 'Ingresa el código de 6 dígitos que enviamos a')}<br />
-              <span style={{ fontWeight: 800, color: c.accentText }}>{correo || 'tu correo'}</span>.
+              <span style={{ fontWeight: 800, color: c.accentText }}>{correo || t('hc5.your_email', 'tu correo')}</span>.
             </p>
           </div>
 

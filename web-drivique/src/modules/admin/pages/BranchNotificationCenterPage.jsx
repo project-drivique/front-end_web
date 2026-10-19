@@ -1,22 +1,7 @@
-﻿import React, { useState, useMemo } from 'react'
+﻿import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaBell,
-  FaSearch,
-  FaCheckDouble,
-  FaClock,
-  FaChevronRight,
-  FaFilter,
-  FaCar,
-  FaExclamationTriangle,
-  FaClipboardList,
-  FaUndo,
-  FaIdCard,
-  FaCashRegister,
-  FaArrowLeft,
-  FaCheckCircle,
-} from 'react-icons/fa'
+import { FaBell, FaSearch, FaCheckDouble, FaClock, FaChevronRight, FaCar, FaExclamationTriangle, FaArrowLeft, FaCheckCircle } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBranchDashboard } from '../../../hooks/useBranchDashboard'
@@ -47,7 +32,7 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
   const navigate = useNavigate()
 
   // Consumo del Custom Hook de datos del Dashboard
-  const { data: dashboardData, loading } = useBranchDashboard(usuario)
+  const { data: dashboardData } = useBranchDashboard(usuario)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState('all') // 'all', 'unread', 'operations', 'attention'
 
@@ -55,9 +40,6 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
   const {
     notifications,
     unreadCount,
-    filter,
-    setFilter,
-    filteredNotifications,
     markAsRead,
     markAllAsRead,
   } = useBranchNotifications(usuario, dashboardData)
@@ -86,7 +68,7 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
   const handleActionClick = (notif) => {
     markAsRead(notif.id)
     if (notif.route) {
-      navigate(notif.route)
+      navigate(notif.route, { state: notif.navigationState })
     }
   }
 
@@ -275,11 +257,11 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
                         <span
                           className="bnc-category-badge"
                           style={{
-                            background: notif.badgeBg || 'var(--brand-soft, rgba(37, 99, 235, 0.08))',
+                            background: notif.badgeBg || 'var(--brand-soft, rgba(var(--brand-primary-rgb), 0.08))',
                             color: notif.badgeColor || 'var(--brand-primary, #2563eb)',
                           }}
                         >
-                          {notif.categoryLabel || 'Notificación'}
+                          {notif.categoryLabel || t('hc2.notificacion', 'Notificación')}
                         </span>
                         <span className="bnc-card-time">
                           <FaClock aria-hidden="true" />

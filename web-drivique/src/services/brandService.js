@@ -7,8 +7,31 @@ const HEX_COLOR = /^#[0-9a-f]{6}$/i
 
 const clone = (value) => JSON.parse(JSON.stringify(value))
 
-// Marca vigente tal como la entrega el servidor; mientras no responde se usa la marca base de arranque
-let active = { ...clone(defaultBrand), faviconUrl: null, theme: 'SYSTEM', hasPrevious: false }
+const CACHE_KEY = 'drivique_brand_active'
+
+// Última marca conocida: evita mostrar el azul original mientras el servidor responde
+function leerCache() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null')
+    const c = saved?.colors
+    if (saved && c && [c.primary, c.secondary, c.accent].every((x) => HEX_COLOR.test(String(x || '')))) {
+      return { ...clone(defaultBrand), ...saved, faviconUrl: saved.faviconUrl || null, theme: saved.theme || 'SYSTEM', hasPrevious: Boolean(saved.hasPrevious) }
+    }
+  } catch { /* sin caché */ }
+  return null
+}
+
+function guardarCache(brand) {
+  try {
+    const { logoDataUrl, ...resto } = brand
+    // el logo se guarda sólo si es liviano; si no, se vuelve a pedir al servidor
+    const conLogo = logoDataUrl && logoDataUrl.length < 300000 ? { ...resto, logoDataUrl } : resto
+    localStorage.setItem(CACHE_KEY, JSON.stringify(conLogo))
+  } catch { /* sin almacenamiento */ }
+}
+
+// Marca vigente tal como la entrega el servidor; mientras no responde se usa la última conocida (o la base de arranque)
+let active = leerCache() || { ...clone(defaultBrand), faviconUrl: null, theme: 'SYSTEM', hasPrevious: false }
 
 function validate(config) {
   const name = String(config?.name || '').trim()
@@ -47,6 +70,7 @@ const errorDe = (error) => {
 
 function adopt(brand) {
   active = brand
+  guardarCache(active)
   applyBrand(active)
   if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: clone(active) }))
   return clone(active)

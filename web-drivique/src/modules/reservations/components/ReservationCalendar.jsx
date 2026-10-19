@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval,
-  addMonths, subMonths, isSameMonth, isToday, format,
+  addMonths, subMonths, isSameMonth, isToday, format, parseISO,
 } from 'date-fns'
 import { es, enUS, fr, ptBR, de } from 'date-fns/locale'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
@@ -41,8 +41,9 @@ export default function CalendarioReservas({ vehiculoId, sucursal, fechaInicio, 
   const hayConflictoEnRango = useCallback((desde, hasta) => {
     try {
       if (!desde || !hasta) return false
-      const dStart = new Date(desde)
-      const dEnd = new Date(hasta)
+      // parseISO lee 'yyyy-MM-dd' como fecha local (new Date la toma en UTC y corre el rango un día atrás)
+      const dStart = parseISO(desde)
+      const dEnd = parseISO(hasta)
       if (isNaN(dStart.getTime()) || isNaN(dEnd.getTime()) || dStart > dEnd) return false
       return eachDayOfInterval({ start: dStart, end: dEnd })
         .some(d => estaOcupado(format(d, 'yyyy-MM-dd')))

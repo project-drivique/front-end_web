@@ -1,3 +1,4 @@
+import i18n from '@/i18n'
 const HEX = /^#([0-9a-f]{6})$/i
 
 export function normalizeHex(value) {
@@ -112,7 +113,7 @@ export function applyBrand(config) {
   Object.entries(properties).forEach(([key, value]) => root.style.setProperty(key, value))
   if (config?.name) {
     root.dataset.brand = config.name
-    document.title = `${config.name} — Alquiler de vehículos en Colombia`
+    document.title = i18n.t('hc3.page_title', { defaultValue: '{{marca}} — Alquiler de vehículos en Colombia', marca: config.name })
   }
 }
 

@@ -86,6 +86,7 @@ const ICONOS_FEATURES = [
 ]
 
 function MenuConfiguracion({ tx, modoMovil = false }) {
+  const { t } = useTranslation()
   const { tema, toggleTema, idioma, setIdioma, moneda, setMoneda } = useLanding()
   const { brand } = useBrand()
   const [abierto, setAbierto] = useState(false)
@@ -277,7 +278,7 @@ function MenuConfiguracion({ tx, modoMovil = false }) {
                 <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--texto-primary)' }}>{tx.nav.config}</span>
                 <button
                   onClick={() => setAbierto(false)}
-                  aria-label="Cerrar"
+                  aria-label={t('hc4.cerrar', 'Cerrar')}
                   style={{ width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'var(--bg-item)', color: 'var(--texto-second)', cursor: 'pointer' }}
                 >
                   ✕
@@ -509,7 +510,7 @@ export default function LandingPage() {
           <button
             className="landing-nav-toggle"
             onClick={() => setMenuMovilAbierto(v => !v)}
-            aria-label="Abrir menú"
+            aria-label={t('hc.abrir_menu', 'Abrir menú')}
             style={{
               display: 'none',
               marginLeft: 'auto',

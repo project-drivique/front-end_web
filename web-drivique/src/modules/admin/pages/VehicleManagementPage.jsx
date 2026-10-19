@@ -1,24 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  FaCamera,
-  FaCar,
-  FaCheck,
-  FaCogs,
-  FaEdit,
-  FaFileExcel,
-  FaFilePdf,
-  FaImage,
-  FaListUl,
-  FaLock,
-  FaMoneyBillWave,
-  FaPlus,
-  FaPrint,
-  FaShieldAlt,
-  FaSyncAlt,
-  FaTimes,
-  FaTrash,
-} from "react-icons/fa";
+import { FaCar, FaCheck, FaEye, FaFileExcel, FaFilePdf, FaPlus, FaPrint, FaTimes, FaTrash } from "react-icons/fa";
 import { useLanding } from "../../landing/LandingContext";
 import { useAuthStore } from "../../../store/authStore";
 import { ROLES } from "../../auth/utils/accessControl";
@@ -69,6 +51,7 @@ const CATEGORY_EMPTY = {
 
 const listToText = (items) =>
   (items || []).map((item) => item.nombre).join(", ");
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
 const textToList = (text) =>
   String(text || "")
     .split(",")
@@ -103,8 +86,8 @@ export default function VehicleManagementPage() {
     user?.sucursalAsignada || user?.branchName || user?.sucursal || user?.sucursalId || "";
   const assignedBranchKey = normalizeBranch(sucursalAsignada);
 
-  // Pestañas activas: Encargado inicia en 'vehiculos' (o 'flotas'); Admin en 'sucursales'
-  const [activeTab, setActiveTab] = useState(() => (esEncargado ? "vehiculos" : "sucursales"));
+  // Pestañas activas: Inicia en 'vehiculos'
+  const [activeTab, setActiveTab] = useState("vehiculos");
 
   const [vehicles, setVehicles] = useState(() => vehicleManagementService.list());
   const [categories, setCategories] = useState(() => branchCategoryService.listCategories());
@@ -123,6 +106,7 @@ export default function VehicleManagementPage() {
   const [zoomImage, setZoomImage] = useState(null);
   
   // Agregar un estado local para la actualización rápida
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const [updatingVehicleId, setUpdatingVehicleId] = useState(null);
 
   const [dataVersion, setDataVersion] = useState(0);
@@ -156,6 +140,7 @@ export default function VehicleManagementPage() {
     const term = search.trim().toLocaleLowerCase();
     return vehicles
       .filter((vehicle) => {
+        if (vehicle.activo === false || vehicle.isActive === false) return false;
         if (esEncargado && (!sucursalAsignada || !hasMatchingBranch(vehicle.sucursal, sucursalAsignada))) return false;
 
         const matchBranchFilter =
@@ -202,6 +187,7 @@ export default function VehicleManagementPage() {
     ).length;
   };
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const filteredSucursales = useMemo(() => {
     const term = search.trim().toLowerCase();
     return branches.filter(
@@ -259,7 +245,7 @@ export default function VehicleManagementPage() {
   const vehicleExportData = useMemo(() => {
     return {
       title: esEncargado
-        ? `Flota de Vehículos - ${sucursalAsignada}`
+        ? t('hc3.fleet_title', { defaultValue: 'Flota de Vehículos - {{sucursal}}', sucursal: sucursalAsignada })
         : t("admin.vehiclesManagement.exportTitle", "Gestión de Flota y Vehículos Drivique"),
       headers: vehicleHeaders,
       rows: vehicleRows,
@@ -363,6 +349,23 @@ export default function VehicleManagementPage() {
     setError("");
   };
 
+  const openDetail = (vehicle) => {
+    setForm({
+      ...vehicle,
+      estadoFlota: vehicle.estadoFlota,
+      kmLimitado: vehicle.tarifas?.kmLimitado?.km || 0,
+      precioLimitado:
+        vehicle.tarifas?.kmLimitado?.precio || vehicle.precio || 0,
+      precioExcedente: vehicle.tarifas?.kmLimitado?.excedente || 0,
+      precioIlimitado: vehicle.tarifas?.kmIlimitado?.precio || 0,
+      caracteristicasTexto: listToText(vehicle.caracteristicas),
+      seguros: vehicle.seguros || [],
+      imagenes: vehicle.imagenes || [],
+    });
+    setModal({ type: "form", vehicle, readOnly: true });
+    setError("");
+  };
+
   const openCreateCategory = () => {
     setCategoryForm(CATEGORY_EMPTY);
     setModal({ type: "category_form" });
@@ -375,18 +378,19 @@ export default function VehicleManagementPage() {
     setError("");
   };
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const handleQuickStatusChange = async (vehicleId, newState) => {
     try {
       setUpdatingVehicleId(vehicleId);
       if (vehicleManagementService.activeReservationCount(vehicleId) > 0 && newState !== "reservado") {
-        alert("No puedes cambiar el estado manualmente porque este vehículo tiene una reserva activa.");
+        alert(t('hc.no_puedes_cambiar_el_estado_manualment', 'No puedes cambiar el estado manualmente porque este vehículo tiene una reserva activa.'));
         return;
       }
       setVehicles(await vehicleManagementService.changeState(vehicleId, newState));
-      setNotice(`Estado del vehículo actualizado a ${newState === "disponible" ? "Disponible" : "Mantenimiento"}.`);
+      setNotice(t('hc3.vehicle_state_updated', { defaultValue: 'Estado del vehículo actualizado a {{estado}}.', estado: newState === 'disponible' ? t('hc3.state_available', 'Disponible') : t('hc3.state_maintenance', 'Mantenimiento') }));
     } catch (caught) {
       console.error("Error updating status:", caught);
-      alert(caught.message || "No se pudo cambiar el estado.");
+      alert(caught.message || t('hc2.no_se_pudo_cambiar_el_estado', 'No se pudo cambiar el estado.'));
     } finally {
       setUpdatingVehicleId(null);
     }
@@ -446,7 +450,7 @@ export default function VehicleManagementPage() {
           modal.vehicle
             ? "admin.vehiclesManagement.messages.updated"
             : "admin.vehiclesManagement.messages.created",
-          "Vehículo guardado correctamente"
+          t('hc2.vehiculo_guardado_correctamente', 'Vehículo guardado correctamente')
         )
       );
       close();
@@ -454,7 +458,7 @@ export default function VehicleManagementPage() {
       setError(
         t(
           `admin.vehiclesManagement.errors.${caught.message}`,
-          caught.message || "Error al procesar vehículo"
+          caught.message || t('hc2.error_al_procesar_vehiculo', 'Error al procesar vehículo')
         )
       );
     }
@@ -474,9 +478,11 @@ export default function VehicleManagementPage() {
     }
   };
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const addInsurance = () =>
     setForm({ ...form, seguros: [...form.seguros, { nombre: "", precio: 0 }] });
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const updateInsurance = (index, key, value) =>
     setForm({
       ...form,
@@ -487,6 +493,7 @@ export default function VehicleManagementPage() {
       ),
     });
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const loadImages = async (event) => {
     const remainingSlots = Math.max(0, 3 - (form.imagenes?.length || 0));
     if (remainingSlots <= 0) {
@@ -498,7 +505,7 @@ export default function VehicleManagementPage() {
       setError(
         t(
           "admin.vehiclesManagement.errors.imageSize",
-          "Las imágenes no deben superar 1MB"
+          t('hc2.las_imagenes_no_deben_superar_1mb', 'Las imágenes no deben superar 1MB')
         )
       );
       event.target.value = "";
@@ -523,6 +530,7 @@ export default function VehicleManagementPage() {
     event.target.value = "";
   };
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const handleReplaceImage = async (index, event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -530,7 +538,7 @@ export default function VehicleManagementPage() {
       setError(
         t(
           "admin.vehiclesManagement.errors.imageSize",
-          "Las imágenes no deben superar 1MB"
+          t('hc2.las_imagenes_no_deben_superar_1mb', 'Las imágenes no deben superar 1MB')
         )
       );
       event.target.value = "";
@@ -549,12 +557,13 @@ export default function VehicleManagementPage() {
       setError("");
     };
     reader.onerror = () => {
-      setError("Error al procesar la imagen seleccionada");
+      setError(t('hc.error_al_procesar_la_imagen_selecciona', 'Error al procesar la imagen seleccionada'));
     };
     reader.readAsDataURL(file);
     event.target.value = "";
   };
 
+// eslint-disable-next-line no-unused-vars -- sin usar a la espera de la gestion de fotos de vehiculos
   const pico = getPicoYPlacaInfo(form.placa, form.sucursal);
 
   return (
@@ -617,18 +626,9 @@ export default function VehicleManagementPage() {
             </div>
           )}
 
-          {/* Pestañas de Secciones y Botón Crear Vehículo a la derecha */}
+          {/* Pestañas de Secciones y Botón Crear a la derecha */}
           <div className="fleet-attached-tabs">
             <div className="fleet-tabs-nav">
-              {!esEncargado && (
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("sucursales")}
-                  className={`fleet-tab-btn ${activeTab === "sucursales" ? "is-active" : ""}`}
-                >
-                  {t("fleetVehicles.tabBranches", "Sucursales")}
-                </button>
-              )}
               <button
                 type="button"
                 onClick={() => setActiveTab("flotas")}
@@ -646,207 +646,27 @@ export default function VehicleManagementPage() {
             </div>
 
             <div className="fleet-tabs-action">
-              {((!esEncargado) || (esEncargado && activeTab === "vehiculos")) && (
+              {activeTab === "flotas" && !esEncargado && (
                 <button
                   className="cities-primary fleet-btn-create-tab"
                   type="button"
-                  onClick={() => {
-                    if (activeTab === "sucursales") {
-                      setNotice("Para registrar nuevas sedes, dirígete al módulo de Sucursales.");
-                    } else if (activeTab === "flotas") {
-                      openCreateCategory();
-                    } else {
-                      openCreate();
-                    }
-                  }}
-                  disabled={esEncargado && activeTab === "vehiculos" && !sucursalAsignada}
+                  onClick={openCreateCategory}
                 >
-                  {activeTab === "sucursales" && "+ Crear Sucursal"}
-                  {activeTab === "flotas" && t("fleetVehicles.createCategory", "+ Crear Categoría")}
-                  {activeTab === "vehiculos" && t("fleetVehicles.createVehicle", "+ Crear Vehículo")}
+                  {t("fleetVehicles.createCategory", "+ Crear Categoría")}
+                </button>
+              )}
+              {activeTab === "vehiculos" && esEncargado && (
+                <button
+                  className="cities-primary fleet-btn-create-tab"
+                  type="button"
+                  onClick={openCreate}
+                  disabled={!sucursalAsignada}
+                >
+                  {t("fleetVehicles.createVehicle", "+ Crear Vehículo")}
                 </button>
               )}
             </div>
           </div>
-
-          {/* TAB 2: SUCURSALES (SOLO ADMIN GENERAL) */}
-          {activeTab === "sucursales" && !esEncargado && (
-            <section className="cities-card attached-to-tabs">
-              <div className="fleet-datatable-header">
-                <div className="fleet-datatable-search">
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Buscar sucursal o ciudad..."
-                  />
-                </div>
-                <div className="export-pills-group">
-                  <button
-                    type="button"
-                    className="export-pill export-pill--excel"
-                    onClick={() =>
-                      exportExcel({
-                        title: "Sucursales",
-                        headers: [
-                          "ID",
-                          "Código",
-                          "Sucursal",
-                          "Ciudad",
-                          "Dirección",
-                          "Teléfono",
-                          "Capacidad",
-                          "Horario",
-                          "Estado",
-                        ],
-                        rows: filteredSucursales.map((b, idx) => [
-                          b.id || idx + 1,
-                          `SEC-00${b.id || idx + 1}`,
-                          b.nombre,
-                          b.ciudad || "Colombia",
-                          b.direccion || "",
-                          b.telefono || "",
-                          `${b.capacidadVehiculos || 25} autos`,
-                          b.horario || "",
-                          b.estado,
-                        ]),
-                        filename: "sucursales-drivique",
-                      })
-                    }
-                  >
-                    <FaFileExcel aria-hidden="true" /> {t('admin.vehiclesManagement.export.excel', 'Excel')}
-                  </button>
-                  <button
-                    type="button"
-                    className="export-pill export-pill--pdf"
-                    onClick={() =>
-                      exportPdf({
-                        title: "Sucursales",
-                        headers: [
-                          "ID",
-                          "Código",
-                          "Sucursal",
-                          "Ciudad",
-                          "Dirección",
-                          "Teléfono",
-                          "Capacidad",
-                          "Horario",
-                          "Estado",
-                        ],
-                        rows: filteredSucursales.map((b, idx) => [
-                          b.id || idx + 1,
-                          `SEC-00${b.id || idx + 1}`,
-                          b.nombre,
-                          b.ciudad || "Colombia",
-                          b.direccion || "",
-                          b.telefono || "",
-                          `${b.capacidadVehiculos || 25} autos`,
-                          b.horario || "",
-                          b.estado,
-                        ]),
-                        filename: "sucursales-drivique",
-                      })
-                    }
-                  >
-                    <FaFilePdf aria-hidden="true" /> {t('admin.vehiclesManagement.export.pdf', 'PDF')}
-                  </button>
-                  <button
-                    type="button"
-                    className="export-pill export-pill--print"
-                    onClick={() =>
-                      printTable({
-                        title: "Sucursales",
-                        headers: [
-                          "ID",
-                          "Código",
-                          "Sucursal",
-                          "Ciudad",
-                          "Dirección",
-                          "Teléfono",
-                          "Capacidad",
-                          "Horario",
-                          "Estado",
-                        ],
-                        rows: filteredSucursales.map((b, idx) => [
-                          b.id || idx + 1,
-                          `SEC-00${b.id || idx + 1}`,
-                          b.nombre,
-                          b.ciudad || "Colombia",
-                          b.direccion || "",
-                          b.telefono || "",
-                          `${b.capacidadVehiculos || 25} autos`,
-                          b.horario || "",
-                          b.estado,
-                        ]),
-                      })
-                    }
-                  >
-                    <FaPrint aria-hidden="true" /> {t('admin.vehiclesManagement.export.print', 'Imprimir')}
-                  </button>
-                </div>
-              </div>
-              <div className="cities-table-wrap">
-                <table className="fleet-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>CÓDIGO SEDE</th>
-                      <th>NOMBRE SUCURSAL</th>
-                      <th>CIUDAD</th>
-                      <th>DIRECCIÓN FÍSICA</th>
-                      <th>TELÉFONO CONTACTO</th>
-                      <th>CAPACIDAD PARQUEADERO</th>
-                      <th>HORARIO ATENCIÓN</th>
-                      <th>ESTADO</th>
-                      <th style={{ textAlign: "center" }}>ACCIONES</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredSucursales.map((b, idx) => (
-                      <tr key={b.id || b.nombre}>
-                        <td>{b.id || idx + 1}</td>
-                        <td>
-                          <code>SEC-00{b.id || idx + 1}</code>
-                        </td>
-                        <td>{b.nombre}</td>
-                        <td>{b.ciudad || "Colombia"}</td>
-                        <td>{b.direccion || "Dirección comercial de sede"}</td>
-                        <td>{b.telefono || "300 000 0000"}</td>
-                        <td>{b.capacidadVehiculos || 25} autos</td>
-                        <td>{b.horario || "Lun a Sáb 7:00 am - 7:00 pm"}</td>
-                        <td>
-                          <span
-                            className={`status-pill ${b.estado === "inactiva" ? "is-red" : "is-green"}`}
-                            style={{
-                              padding: "4px 10px",
-                              borderRadius: 20,
-                              fontSize: 11,
-                              fontWeight: 700,
-                            }}
-                          >
-                            {b.estado === "inactiva" ? "Inactiva" : "Activa"}
-                          </span>
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          <div className="cities-row-actions">
-                            <button
-                              type="button"
-                              className="btn-row-action"
-                              onClick={() =>
-                                setNotice(`Modificando parámetros de la ${b.nombre}.`)
-                              }
-                            >
-                              Editar
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          )}
 
           {/* TAB 3: CATEGORÍAS (Diferenciadas estrictamente por rol) */}
           {activeTab === "flotas" && (
@@ -862,7 +682,7 @@ export default function VehicleManagementPage() {
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder={t(
                       "categoriesManagement.searchPlaceholder",
-                      "Buscar categoría por nombre o descripción..."
+                      t('hc2.buscar_categoria_por_nombre_o_descripc', 'Buscar categoría por nombre o descripción...')
                     )}
                   />
                   {!esEncargado && (
@@ -911,7 +731,7 @@ export default function VehicleManagementPage() {
                   <h2>
                     {t(
                       "categoriesManagement.noCategoriesFound",
-                      "No se encontraron categorías"
+                      t('hc2.no_se_encontraron_categorias', 'No se encontraron categorías')
                     )}
                   </h2>
                 </div>
@@ -986,7 +806,7 @@ export default function VehicleManagementPage() {
                                     display: "inline-flex",
                                     padding: "4px 12px",
                                     borderRadius: 12,
-                                    background: vehiclesInBranch > 0 ? "rgba(37, 99, 235, 0.08)" : "var(--city-card-alt, #f1f5f9)",
+                                    background: vehiclesInBranch > 0 ? "rgba(var(--brand-primary-rgb), 0.08)" : "var(--city-card-alt, #f1f5f9)",
                                     color: vehiclesInBranch > 0 ? "var(--brand-primary, #2563eb)" : "var(--city-muted, #64748b)",
                                     fontWeight: 700,
                                     fontSize: 13,
@@ -994,7 +814,7 @@ export default function VehicleManagementPage() {
                                   }}
                                 >
                                   {vehiclesInBranch}{" "}
-                                  {vehiclesInBranch === 1 ? "vehículo" : "vehículos"}
+                                  {vehiclesInBranch === 1 ? t('hc2.vehiculo_155', 'vehículo') : t('hc2.vehiculos', 'vehículos')}
                                 </span>
                               </td>
                               <td style={{ textAlign: "center" }}>
@@ -1046,7 +866,7 @@ export default function VehicleManagementPage() {
                                   display: "inline-flex",
                                   padding: "4px 10px",
                                   borderRadius: 12,
-                                  background: "rgba(37, 99, 235, 0.08)",
+                                  background: "rgba(var(--brand-primary-rgb), 0.08)",
                                   color: "var(--brand-primary, #2563eb)",
                                   fontWeight: 700,
                                   fontSize: 12,
@@ -1130,11 +950,11 @@ export default function VehicleManagementPage() {
                       esEncargado
                         ? t(
                             "admin.vehiclesManagement.searchManager",
-                            "Buscar por vehículo, placa o categoría..."
+                            t('hc2.buscar_por_vehiculo_placa_o_categoria', 'Buscar por vehículo, placa o categoría...')
                           )
                         : t(
                             "admin.vehiclesManagement.search",
-                            "Buscar por vehículo, placa, categoría o sucursal..."
+                            t('hc2.buscar_por_vehiculo_placa_categoria_o_', 'Buscar por vehículo, placa, categoría o sucursal...')
                           )
                     }
                   />
@@ -1213,7 +1033,7 @@ export default function VehicleManagementPage() {
                   <h2>
                     {t(
                       "admin.vehiclesManagement.emptyTitle",
-                      "No se encontraron vehículos registrados"
+                      t('hc2.no_se_encontraron_vehiculos_registrado', 'No se encontraron vehículos registrados')
                     )}
                   </h2>
                 </div>
@@ -1239,11 +1059,11 @@ export default function VehicleManagementPage() {
                               <img
                                 src={vehicle.imagenes[0]}
                                 alt={vehicle.nombre || "Auto"}
-                                title="Haz clic para ver foto completa"
+                                title={t('hc.haz_clic_para_ver_foto_completa', 'Haz clic para ver foto completa')}
                                 onClick={() =>
                                   setZoomImage({
                                     url: vehicle.imagenes[0],
-                                    title: `${vehicle.nombre || "Vehículo"} (${vehicle.placa || "Placa"})`,
+                                    title: t('hc3.zoom_title', { defaultValue: '{{nombre}} ({{placa}})', nombre: vehicle.nombre || t('hc3.vehicle_word', 'Vehículo'), placa: vehicle.placa || t('hc3.plate_word', 'Placa') }),
                                   })
                                 }
                                 style={{
@@ -1271,7 +1091,7 @@ export default function VehicleManagementPage() {
                           <td>{vehicle.categoria}</td>
                           <td>{vehicle.ano || vehicle.año || "—"}</td>
                           <td>{vehicle.color || "—"}</td>
-                          <td>{vehicle.transmision || "Automática"}</td>
+                          <td>{vehicle.transmision || t('hc2.automatica', 'Automática')}</td>
                           <td>{vehicle.combustible || "Gasolina"}</td>
                           <td>
                             {formatCurrency(
@@ -1328,7 +1148,7 @@ export default function VehicleManagementPage() {
                                     vehicle.estadoEfectivo === "disponible"
                                       ? "#10b981"
                                       : vehicle.estadoEfectivo === "reservado"
-                                      ? "#3b82f6"
+                                      ? "var(--brand-primary)"
                                       : "#ef4444",
                                 }}
                               />
@@ -1343,22 +1163,48 @@ export default function VehicleManagementPage() {
                           </td>
                           <td style={{ textAlign: "center" }}>
                             <div className="cities-row-actions">
-                              <button
-                                type="button"
-                                className="btn-row-action"
-                                onClick={() => openEdit(vehicle)}
-                              >
-                                {t("common.edit", "Editar")}
-                              </button>
-                              <button
-                                type="button"
-                                className="btn-row-action is-delete"
-                                onClick={() =>
-                                  setModal({ type: "delete", vehicle })
-                                }
-                              >
-                                {t("common.delete", "Eliminar")}
-                              </button>
+                              {esEncargado ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="btn-row-action"
+                                    onClick={() => openEdit(vehicle)}
+                                    disabled={!sucursalAsignada || !hasMatchingBranch(vehicle.sucursal, sucursalAsignada)}
+                                  >
+                                    {t("common.edit", "Editar")}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn-row-action is-delete"
+                                    onClick={() =>
+                                      setModal({ type: "delete", vehicle })
+                                    }
+                                    disabled={!sucursalAsignada || !hasMatchingBranch(vehicle.sucursal, sucursalAsignada)}
+                                  >
+                                    {t("common.delete", "Eliminar")}
+                                  </button>
+                                </>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="btn-row-action"
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    padding: '5px 12px',
+                                    borderRadius: 8,
+                                    background: 'var(--brand-soft-light, #eff6ff)',
+                                    color: 'var(--brand-primary, #2563eb)',
+                                    fontWeight: 700,
+                                    border: '1px solid var(--brand-border-light, #bfdbfe)',
+                                    cursor: 'pointer'
+                                  }}
+                                  onClick={() => openDetail(vehicle)}
+                                >
+                                  <FaEye size={12} /> {t("common.viewDetail", "Ver Detalle")}
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -1396,21 +1242,21 @@ export default function VehicleManagementPage() {
                   <div className="fleet-modal-header">
                     <div className="fleet-modal-header__info">
                       <span className="fleet-modal-eyebrow">
-                        <FaCar aria-hidden="true" />
-                        {modal.vehicle ? "Modificación de Ficha" : "Registro de Flota"}
+                        {modal.readOnly ? <FaEye aria-hidden="true" /> : <FaCar aria-hidden="true" />}
+                        {modal.readOnly ? t('hc2.modo_auditoria_admin_general_solo_lect', 'Modo Auditoría (Admin General) - Solo Lectura') : modal.vehicle ? t('hc2.modificacion_de_ficha', 'Modificación de Ficha') : "Registro de Flota"}
                       </span>
                       <h2 className="fleet-modal-title">
-                        {modal.vehicle ? (form.nombre || "Editar Vehículo") : "Nuevo Vehículo"}
+                        {modal.vehicle ? (form.nombre || t('hc2.editar_vehiculo', 'Editar Vehículo')) : t('hc2.nuevo_vehiculo', 'Nuevo Vehículo')}
                       </h2>
                       {modal.vehicle && (
                         <div className="fleet-modal-subtags">
-                          <span className="fleet-badge-plate">{form.placa || "SIN PLACA"}</span>
+                          <span className="fleet-badge-plate">{form.placa || t('hc2.sin_placa', 'SIN PLACA')}</span>
                           <span className="fleet-badge-branch">{form.sucursal || sucursalAsignada}</span>
                           {form.categoria && <span className="fleet-badge-cat">{form.categoria}</span>}
                         </div>
                       )}
                     </div>
-                    <button type="button" className="fleet-modal-close-btn" onClick={close} aria-label="Cerrar">
+                    <button type="button" className="fleet-modal-close-btn" onClick={close} aria-label={t('hc4.cerrar', 'Cerrar')}>
                       <FaTimes />
                     </button>
                   </div>
@@ -1421,16 +1267,39 @@ export default function VehicleManagementPage() {
                         
                         {/* IMAGEN */}
                         <div style={{ gridColumn: '1 / -1', marginBottom: '8px' }}>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>URL de la imagen principal</label>
-                          <input type="url" style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} placeholder="https://..." value={form.imagenes?.[0] || ""} onChange={(e) => setForm({ ...form, imagenes: e.target.value ? [e.target.value] : [] })} />
-                          {form.imagenes?.[0] && (
-                            <img src={form.imagenes[0]} alt="Vista previa" style={{ marginTop: 10, width: '100%', maxHeight: 160, objectFit: 'cover', borderRadius: 12 }} />
+                          {[0, 1, 2, 3, 4, 5, 6, 7].map((idx) => (
+                            <div key={idx} style={{ marginBottom: 12 }}>
+                              <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>
+                                {idx === 0
+                                  ? t('hc.url_de_la_imagen_principal', 'URL de la imagen principal')
+                                  : t('hc6.url_de_la_imagen_n', { defaultValue: 'URL de la imagen {{n}} (opcional)', n: idx + 1 })}
+                              </label>
+                              <input
+                                type="url"
+                                style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }}
+                                placeholder="https://..."
+                                value={form.imagenes?.[idx] || ""}
+                                onChange={(e) => {
+                                  const next = [...(form.imagenes || [])];
+                                  while (next.length <= idx) next.push("");
+                                  next[idx] = e.target.value;
+                                  setForm({ ...form, imagenes: next });
+                                }}
+                              />
+                            </div>
+                          ))}
+                          {(form.imagenes || []).some(Boolean) && (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                              {(form.imagenes || []).slice(0, 8).map((url, idx) => url ? (
+                                <img key={idx} src={url} alt={'Vista previa ' + (idx + 1)} style={{ width: '100%', height: 90, objectFit: 'cover', borderRadius: 10 }} />
+                              ) : null)}
+                            </div>
                           )}
                         </div>
 
                         {/* INPUTS ESTILO REFERENCIA */}
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>Marca *</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t('hc4.marca', 'Marca *')}</label>
                           <select disabled={Boolean(modal.vehicle)} required style={{ ...{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }, cursor: 'pointer' }} value={form.marca || ""} onChange={(e) => setForm({ ...form, marca: e.target.value })}>
                             <option value="" disabled>{t("admin.vehiclesManagement.modal.select", "Seleccionar")}</option>
                             {fleetLookups.brands.map((b) => <option key={b} value={b}>{b}</option>)}
@@ -1438,7 +1307,7 @@ export default function VehicleManagementPage() {
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>Modelo *</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t('hc4.modelo', 'Modelo *')}</label>
                           <input disabled={Boolean(modal.vehicle)} required style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.modelo || ""} onChange={(e) => setForm({ ...form, modelo: e.target.value })} />
                         </div>
 
@@ -1448,7 +1317,7 @@ export default function VehicleManagementPage() {
                         </div>
 
                         <div>
-                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>Kilometraje *</label>
+                          <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>{t('hc4.kilometraje', 'Kilometraje *')}</label>
                           <input type="number" min="0" required style={{ width: '100%', padding: '10px 14px', background: 'var(--bg-seccion1, #f8fafc)', border: 'none', borderRadius: '6px', fontSize: '13px', color: 'var(--texto-primary, #334155)', outline: 'none' }} value={form.kilometraje ?? 0} onChange={(e) => setForm({ ...form, kilometraje: e.target.value })} />
                         </div>
 
@@ -1549,13 +1418,21 @@ export default function VehicleManagementPage() {
                     </div>
 
                     <div className="fleet-modal-footer" style={{ borderTop: '1px solid var(--borde, #e2e8f0)', padding: '16px 24px', background: 'var(--bg-seccion1, #f8fafc)', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                      <button type="button" onClick={close} style={{ border: '1px solid var(--borde, #cbd5e1)', background: 'var(--bg-tarjeta, #ffffff)', borderRadius: '6px', padding: '8px 16px', color: 'var(--texto-primary, #475569)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-seccion1, #f1f5f9)'; e.currentTarget.style.borderColor = 'var(--texto-second, #94a3b8)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-tarjeta, #ffffff)'; e.currentTarget.style.borderColor = 'var(--borde, #cbd5e1)'; }}>
-                        {t("common.cancel", "Cancelar")}
-                      </button>
-                      <button className="cities-primary" type="submit">
-                        <FaCheck style={{ marginRight: 6 }} />
-                        {t("admin.vehiclesManagement.modal.save", "Guardar vehículo")}
-                      </button>
+                      {modal.readOnly ? (
+                        <button className="cities-primary" type="button" onClick={close}>
+                          {t("common.close", "Cerrar Detalle")}
+                        </button>
+                      ) : (
+                        <>
+                          <button type="button" onClick={close} style={{ border: '1px solid var(--borde, #cbd5e1)', background: 'var(--bg-tarjeta, #ffffff)', borderRadius: '6px', padding: '8px 16px', color: 'var(--texto-primary, #475569)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-seccion1, #f1f5f9)'; e.currentTarget.style.borderColor = 'var(--texto-second, #94a3b8)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--bg-tarjeta, #ffffff)'; e.currentTarget.style.borderColor = 'var(--borde, #cbd5e1)'; }}>
+                            {t("common.cancel", "Cancelar")}
+                          </button>
+                          <button className="cities-primary" type="submit">
+                            <FaCheck style={{ marginRight: 6 }} />
+                            {t("admin.vehiclesManagement.modal.save", "Guardar vehículo")}
+                          </button>
+                        </>
+                      )}
                     </div>
                   </form>
                 </>
@@ -1579,7 +1456,7 @@ export default function VehicleManagementPage() {
                   <p className="fleet-alert-message">
                     {t(
                       "admin.vehiclesManagement.deleteText",
-                      `¿Estás seguro de que deseas eliminar el vehículo ${modal.vehicle.nombre}? Esta acción no se puede deshacer.`,
+                      t('hc3.vehicle_delete_confirm', { defaultValue: '¿Estás seguro de que deseas eliminar el vehículo {{nombre}}? Esta acción no se puede deshacer.', nombre: modal.vehicle.nombre }),
                       { vehicle: modal.vehicle.nombre }
                     )}
                   </p>
@@ -1658,7 +1535,7 @@ export default function VehicleManagementPage() {
                           onChange={(e) =>
                             setCategoryForm({ ...categoryForm, nombre: e.target.value })
                           }
-                          placeholder="Ej: Camionetas SUV, Sedán Ejecutivo..."
+                          placeholder={t('hc.ej_camionetas_suv_sedan_ejecutivo', 'Ej: Camionetas SUV, Sedán Ejecutivo...')}
                           required
                           style={{
                             width: "100%",
@@ -1683,7 +1560,7 @@ export default function VehicleManagementPage() {
                           onChange={(e) =>
                             setCategoryForm({ ...categoryForm, descripcion: e.target.value })
                           }
-                          placeholder="Breve explicación de los tipos de vehículos que comprende esta categoría..."
+                          placeholder={t('hc.breve_explicacion_de_los_tipos_de_vehi', 'Breve explicación de los tipos de vehículos que comprende esta categoría...')}
                           rows={3}
                           style={{
                             width: "100%",
@@ -1761,7 +1638,7 @@ export default function VehicleManagementPage() {
                         <small style={{ color: "var(--city-muted, #64748b)", fontSize: 11 }}>
                           {t(
                             "categoriesManagement.suggestedRateHint",
-                            "Valor de referencia pre-cargado al crear vehículos en esta categoría"
+                            t('hc2.valor_de_referencia_pre_cargado_al_cre', 'Valor de referencia pre-cargado al crear vehículos en esta categoría')
                           )}
                         </small>
                       </div>
@@ -1809,7 +1686,7 @@ export default function VehicleManagementPage() {
                         <small style={{ color: "var(--city-muted, #64748b)", fontSize: 11 }}>
                           {t(
                             "categoriesManagement.suggestedDepositHint",
-                            "Valor sugerido de depósito en garantía"
+                            t('hc2.valor_sugerido_de_deposito_en_garantia', 'Valor sugerido de depósito en garantía')
                           )}
                         </small>
                       </div>
@@ -1889,7 +1766,7 @@ export default function VehicleManagementPage() {
                           color: "white",
                           border: "none",
                           cursor: "pointer",
-                          boxShadow: "0 4px 12px rgba(37,99,235,0.2)",
+                          boxShadow: "0 4px 12px rgba(var(--brand-primary-rgb),0.2)",
                         }}
                       >
                         {t("common.save", "Guardar categoría")}
@@ -1917,8 +1794,7 @@ export default function VehicleManagementPage() {
                   <p className="fleet-alert-message">
                     {t(
                       "categoriesManagement.deleteConfirm",
-                      `¿Estás seguro de que deseas eliminar la categoría "${modal.category.nombre}"? Esta acción no se puede deshacer.`,
-                      { name: modal.category.nombre }
+                      { defaultValue: '¿Estás seguro de que deseas eliminar la categoría "{{name}}"? Esta acción no se puede deshacer.', name: modal.category.nombre }
                     )}
                   </p>
                   <div className="fleet-alert-actions">

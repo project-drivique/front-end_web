@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { FaTimes } from 'react-icons/fa'
 import { SUCURSALES } from '../../catalog/constants'
-import { branchManagementService } from '../../../services/branchManagementService'
 import ProtectionPlans from './ProtectionPlans'
 import MileageType from './MileageType'
 import AdditionalServices from './AdditionalServices'
@@ -32,6 +31,35 @@ export default function EditReservationModal({
       if (!localReserva.sucursalDevolucion) { setModalError(t('reservas.errorReturnLocation', 'Debes seleccionar el lugar de devolución.')); return }
       if (!localReserva.fechaFin) { setModalError(t('reservas.errorReturnDate', 'Debes seleccionar la fecha de devolución.')); return }
       if (!localReserva.horaFin) { setModalError(t('reservas.errorReturnTime', 'Debes seleccionar la hora de devolución.')); return }
+
+      const ahoraDate = new Date();
+      const hoyLocalStr = `${ahoraDate.getFullYear()}-${String(ahoraDate.getMonth() + 1).padStart(2, '0')}-${String(ahoraDate.getDate()).padStart(2, '0')}`;
+      const ahoraMins = ahoraDate.getHours() * 60 + ahoraDate.getMinutes();
+
+      if (localReserva.fechaInicio === hoyLocalStr && localReserva.horaInicio) {
+        const [hR, mR] = localReserva.horaInicio.split(':').map(Number);
+        if (hR * 60 + mR <= ahoraMins) {
+          setModalError(t('reservas.errorHoraRetiroPasada', 'La hora de retiro seleccionada ya ha transcurrido. Por favor selecciona una hora posterior.'));
+          return;
+        }
+      }
+
+      if (localReserva.fechaFin === hoyLocalStr && localReserva.horaFin) {
+        const [hD, mD] = localReserva.horaFin.split(':').map(Number);
+        if (hD * 60 + mD <= ahoraMins) {
+          setModalError(t('reservas.errorHoraDevolucionPasada', 'La hora de devolución seleccionada ya ha transcurrido. Por favor selecciona una hora posterior.'));
+          return;
+        }
+      }
+
+      if (localReserva.fechaInicio === localReserva.fechaFin && localReserva.horaInicio && localReserva.horaFin) {
+        const [hR, mR] = localReserva.horaInicio.split(':').map(Number);
+        const [hD, mD] = localReserva.horaFin.split(':').map(Number);
+        if (hD * 60 + mD < hR * 60 + mR) {
+          setModalError(t('reservas.errorDevolucionAntesRetiro', 'La hora de devolución no puede ser anterior a la hora de retiro para el mismo día.'));
+          return;
+        }
+      }
       if (localReserva.sucursalRetiro === 'domicilio' || localReserva.sucursalDevolucion === 'domicilio') {
         if (!localReserva.domicilioBarrio?.trim() || !localReserva.domicilioDireccion?.trim()) {
           setModalError(t('reservas.errorDomicilioData', 'Debes completar los datos del domicilio.')); return

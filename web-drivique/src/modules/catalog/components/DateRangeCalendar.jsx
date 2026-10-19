@@ -8,10 +8,10 @@ import { es } from 'date-fns/locale'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 
 const hoyISO = format(new Date(), 'yyyy-MM-dd')
-const DIAS_SEMANA = ['lun', 'mar', 'mié', 'jue', 'vie', 'sáb', 'dom']
 
 export default function CalendarioRango({ fechaInicio, fechaFin, onCambiar }) {
   const { t } = useTranslation()
+  const DIAS_SEMANA = t('vehiculo.calendarDays', 'Lun,Mar,Mié,Jue,Vie,Sáb,Dom').split(',')
   const [mesActual, setMesActual] = useState(() => (fechaInicio ? new Date(fechaInicio) : new Date()))
 
   const dias = useMemo(() => {
@@ -56,7 +56,7 @@ export default function CalendarioRango({ fechaInicio, fechaFin, onCambiar }) {
           <button
             type="button"
             onClick={() => setMesActual(new Date())}
-            className="rounded-full bg-[var(--bg-item)] px-2.5 py-1 text-[11px] font-bold text-[var(--texto-second)] transition-colors hover:bg-blue-50 hover:text-blue-700"
+            className="rounded-full bg-[var(--bg-item)] px-2.5 py-1 text-[11px] font-bold text-[var(--texto-second)] transition-colors hover:bg-[var(--brand-soft)] hover:text-[var(--brand-text)]"
           >
             {t('vehiculo.calendarToday')}
           </button>
@@ -96,7 +96,7 @@ export default function CalendarioRango({ fechaInicio, fechaFin, onCambiar }) {
               key={fechaISO}
               className={[
                 'w-full py-1',
-                dentroDelRango ? 'bg-blue-50' : '',
+                dentroDelRango ? 'bg-[var(--brand-soft)]' : '',
                 dentroDelRango && esInicio ? 'rounded-l-full' : '',
                 dentroDelRango && esFin ? 'rounded-r-full' : '',
               ].join(' ')}
@@ -108,10 +108,10 @@ export default function CalendarioRango({ fechaInicio, fechaFin, onCambiar }) {
                 className={[
                   'relative mx-auto flex aspect-square w-full max-w-11 items-center justify-center rounded-full text-sm font-semibold transition-colors',
                   fueraDeMes ? 'text-transparent pointer-events-none' :
-                  seleccionado ? 'bg-blue-600 text-white shadow-md shadow-blue-200' :
+                  seleccionado ? 'bg-[var(--brand-primary)] text-[var(--brand-on-primary)] shadow-md shadow-[rgba(var(--brand-primary-rgb),0.3)]' :
                   pasado ? 'text-[var(--texto-second)] opacity-40 cursor-not-allowed' :
-                  'text-[var(--texto-primary)] hover:bg-blue-100 hover:text-blue-900 cursor-pointer',
-                  isToday(dia) && !seleccionado ? 'ring-2 ring-blue-200' : '',
+                  'text-[var(--texto-primary)] hover:bg-[var(--brand-soft-strong)] hover:text-[var(--brand-text)] cursor-pointer',
+                  isToday(dia) && !seleccionado ? 'ring-2 ring-[var(--brand-border)]' : '',
                 ].join(' ')}
               >
                 {format(dia, 'd')}

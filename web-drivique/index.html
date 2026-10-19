@@ -2,10 +2,20 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <!-- Algunas páginas de fotos (CDN) bloquean la imagen si llega con el sitio de origen; así las URLs de fotos de los vehículos cargan siempre. -->
+    <meta name="referrer" content="same-origin" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <title>RentaMóvil — Alquiler de vehículos en Colombia</title>
     <meta name="description" content="Reserva tu vehículo en línea, paga con Nequi, PSE o tarjeta. Rápido, seguro y 100% digital." />
+    <style>
+      /* Nada se pinta hasta conocer la marca: evita ver un instante los colores base (azul) antes de los reales */
+      html:not([data-brand-ready]) body { visibility: hidden; }
+    </style>
+    <script>
+      // Si algo falla y la marca nunca se aplica, la página se muestra de todos modos
+      setTimeout(function () { if (!document.documentElement.hasAttribute('data-brand-ready')) document.documentElement.setAttribute('data-brand-ready', 'timeout'); }, 5000);
+    </script>
     <script>
       (function() {
         try {

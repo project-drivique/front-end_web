@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { authService, DURACION_CODIGO_VERIFICACION_MS } from '../../../services/authService'
 import { useAuthStore } from '../../../store/authStore'
 import { showAlert } from '../../../utils/swalConfig'
+import i18n from '@/i18n'
 
 const LARGO_CODIGO = 6
 const TIEMPO_REENVIO = 60 // segundos
@@ -64,7 +65,7 @@ export function useVerifyEmail() {
       setSegundosExpiracion(SEGUNDOS_EXPIRACION_INICIAL)
       setCodigoEnviado(true)
     } catch {
-      setError('No se pudo enviar el código. Intenta de nuevo.')
+      setError(i18n.t('hc.no_se_pudo_enviar_el_codigo_intenta_de', 'No se pudo enviar el código. Intenta de nuevo.'))
     } finally {
       setEnviando(false)
     }
@@ -102,11 +103,11 @@ export function useVerifyEmail() {
     e.preventDefault()
 
     if (expirado) {
-      setError('El código expiró. Solicita uno nuevo.')
+      setError(i18n.t('hc.el_codigo_expiro_solicita_uno_nuevo', 'El código expiró. Solicita uno nuevo.'))
       return
     }
     if (codigo.length < LARGO_CODIGO) {
-      setError('Ingresa los 6 dígitos del código.')
+      setError(i18n.t('hc.ingresa_los_6_digitos_del_codigo', 'Ingresa los 6 dígitos del código.'))
       return
     }
 
@@ -151,8 +152,8 @@ export function useVerifyEmail() {
 
       showAlert({
         icon: 'success',
-        title: '¡Verificación exitosa!',
-        text: 'Tu correo ha sido verificado correctamente.',
+        title: i18n.t('hc.verificacion_exitosa', '¡Verificación exitosa!'),
+        text: i18n.t('hc.tu_correo_ha_sido_verificado_correctam', 'Tu correo ha sido verificado correctamente.'),
         timer: 1500,
         showConfirmButton: false,
       })
@@ -166,11 +167,11 @@ export function useVerifyEmail() {
       const status = err?.response?.status
       if (status === 410) {
         setSegundosExpiracion(0)
-        setError(err?.response?.data?.mensaje || 'El código ha expirado. Solicita uno nuevo.')
+        setError(err?.response?.data?.mensaje || i18n.t('hc2.el_codigo_ha_expirado_solicita_uno_nue', 'El código ha expirado. Solicita uno nuevo.'))
       } else if (status === 400) {
-        setError(err?.response?.data?.mensaje || 'Código incorrecto. Verifica e intenta de nuevo.')
+        setError(err?.response?.data?.mensaje || i18n.t('hc2.codigo_incorrecto_verifica_e_intenta_d', 'Código incorrecto. Verifica e intenta de nuevo.'))
       } else {
-        setError('Error al verificar. Intenta de nuevo.')
+        setError(i18n.t('hc.error_al_verificar_intenta_de_nuevo', 'Error al verificar. Intenta de nuevo.'))
       }
       setCodigo('')
       inputsRef.current[0]?.focus()
@@ -190,7 +191,7 @@ export function useVerifyEmail() {
       setCodigo('')
       inputsRef.current[0]?.focus()
     } catch {
-      setError('No se pudo reenviar el código. Intenta de nuevo.')
+      setError(i18n.t('hc.no_se_pudo_reenviar_el_codigo_intenta_', 'No se pudo reenviar el código. Intenta de nuevo.'))
     } finally {
       setReenviando(false)
     }
