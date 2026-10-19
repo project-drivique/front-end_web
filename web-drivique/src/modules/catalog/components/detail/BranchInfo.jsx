@@ -17,7 +17,6 @@ export default function BranchInfo({ sucursalInfo, c }) {
   const bg = c?.cardBg || '#fff'
   const border = c?.cardBorder || '#e2e8f0'
   const titleColor = c?.titleColor || 'var(--brand-secondary)'
-  const textPrimary = c?.textPrimary || 'var(--texto-primary)'
   const textSecondary = c?.textSecondary || 'var(--texto-second)'
 
   const { nombre, direccion, horario } = sucursalInfo

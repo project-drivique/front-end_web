@@ -22,7 +22,7 @@ export default function VehicleCharacteristics({ vehiculo, c, showIcon = false, 
   const border = c?.cardBorder || '#e2e8f0'
   const titleColor = c?.titleColor || 'var(--brand-secondary, #0f172a)'
 
-  const categoria   = CAT_KEYS[vehiculo?.categoria]     ? t(CAT_KEYS[vehiculo.categoria])   : (vehiculo?.categoria || 'Económico')
+  const categoria   = CAT_KEYS[vehiculo?.categoria]     ? t(CAT_KEYS[vehiculo.categoria])   : (vehiculo?.categoria || t('hc2.economico', 'Económico'))
   const transmision = TRANS_KEYS[vehiculo?.transmision] ? t(TRANS_KEYS[vehiculo.transmision]) : (vehiculo?.transmision || 'Manual')
   const combustible = FUEL_KEYS[vehiculo?.combustible]  ? t(FUEL_KEYS[vehiculo.combustible])  : (vehiculo?.combustible || 'Gasolina')
   const color       = COLOR_MAP[vehiculo?.color]        ? t(COLOR_MAP[vehiculo.color])      : (vehiculo?.color || 'Gris Highland')

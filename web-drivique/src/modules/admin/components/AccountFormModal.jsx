@@ -85,13 +85,14 @@ export default function AccountFormModal({
             </select>
           </label>
 
-          {['BRANCH_ADMIN', 'EMPLOYEE'].includes(rolesList.find((r) => r.id === form.rolId)?.codigo) && (
+          {rolesList.find((r) => r.id === form.rolId)?.codigo === 'BRANCH_ADMIN' && (
             <label>
-              {t('admin.rolesPage.assignedBranch', 'Sucursal Asignada (Obligatoria)')}:
+              {t('admin.rolesPage.assignedBranch', 'Sucursal Asignada')}:
               <select
                 value={form.sucursal}
                 onChange={(e) => setForm({ ...form, sucursal: e.target.value })}
               >
+                <option value="">{t('admin.rolesPage.noBranch', 'Sin asignar (asignar luego)')}</option>
                 {sucursales.map((s) => (
                   <option key={s.id} value={s.nombre}>
                     {s.nombre}

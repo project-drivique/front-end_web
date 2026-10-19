@@ -221,14 +221,14 @@
 }
 
 .kpi-action-btn--print {
-  background: #eff6ff;
+  background: var(--brand-soft);
   color: var(--brand-primary, #2563eb);
-  border-color: #bfdbfe;
+  border-color: var(--brand-border);
 }
 
 .kpi-action-btn--print:hover {
-  background: #dbeafe;
-  border-color: #93c5fd;
+  background: var(--brand-soft-strong);
+  border-color: var(--brand-border);
 }
 
 .kpi-action-btn--reports {

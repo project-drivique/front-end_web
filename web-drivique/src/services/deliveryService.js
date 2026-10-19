@@ -1,4 +1,5 @@
 import { api } from './httpClient'
+import i18n from '@/i18n'
 
 // Último resultado del servidor (list() es síncrono para la pantalla)
 let cache = []
@@ -6,7 +7,7 @@ let cache = []
 const ESTADO_UI = { AVAILABLE: 'disponible', ON_ROUTE: 'en_servicio', INACTIVE: 'inactivo' }
 const ESTADO_API = { disponible: 'AVAILABLE', en_servicio: 'ON_ROUTE', inactivo: 'INACTIVE' }
 
-const errorDe = (error) => new Error(error?.response?.data?.detail || error?.message || 'No fue posible completar la operación')
+const errorDe = (error) => new Error(error?.response?.data?.detail || error?.message || i18n.t('hc2.no_fue_posible_completar_la_operacion_279', 'No fue posible completar la operación'))
 
 function mapear(d) {
   return {

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { FaHeart, FaTrashAlt, FaCar, FaArrowRight, FaUsers, FaCog, FaGasPump } from 'react-icons/fa'
 import { useAuthStore } from '@/store/authStore'
@@ -13,7 +13,6 @@ import './FavoritesPage.css'
 
 export default function FavoritesPage() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const { usuario } = useAuthStore()
   const { moneda, tema } = useLanding()
   const esModoOscuro = tema === 'oscuro'
@@ -81,7 +80,9 @@ export default function FavoritesPage() {
       kilometraje: v.mileage,
       precio: Number(v.dailyRate || 0),
       imagen: v.mainImageUrl || '',
-      imagenes: v.mainImageUrl ? [v.mainImageUrl] : [],
+      calificacion: Number(v.averageRating ?? 0),
+      totalResenas: Number(v.reviewCount ?? 0),
+      imagenes: Array.isArray(v.imageUrls) && v.imageUrls.length ? v.imageUrls : (v.mainImageUrl ? [v.mainImageUrl] : []),
     }
     setVehiculoDetalle(inicial)
     try {

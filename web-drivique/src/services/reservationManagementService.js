@@ -1,5 +1,6 @@
 import { api } from './httpClient'
 import { SUCURSALES } from '../modules/catalog/constants'
+import i18n from '@/i18n'
 
 let cache = []
 
@@ -119,12 +120,12 @@ function mapear(item) {
       total: Number(r.totalEstimated) || 0,
     },
     serviciosSeleccionados: (r.additionalServices || []).map((s) => s.name),
-    historialAcciones: [{ fecha: r.createdAt, accion: 'Registro de reserva', usuario: r.customerEmail }],
+    historialAcciones: [{ fecha: r.createdAt, accion: i18n.t('hc2.registro_de_reserva', 'Registro de reserva'), usuario: r.customerEmail }],
   }
 }
 
 function toError(error) {
-  const result = new Error(error?.response?.data?.detail || error?.message || 'No fue posible completar la operación.')
+  const result = new Error(error?.response?.data?.detail || error?.message || i18n.t('hc2.no_fue_posible_completar_la_operacion', 'No fue posible completar la operación.'))
   result.status = error?.response?.status
   return result
 }
@@ -172,7 +173,7 @@ export const reservationManagementService = {
 
   async cancel(id, motivo) {
     try {
-      await api.patch(`/reservations/${id}/cancel`, { reason: motivo || 'Cancelada por el encargado' })
+      await api.patch(`/reservations/${id}/cancel`, { reason: motivo || i18n.t('hc2.cancelada_por_el_encargado', 'Cancelada por el encargado') })
     } catch (error) {
       throw toError(error)
     }

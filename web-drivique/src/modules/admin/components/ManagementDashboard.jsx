@@ -1,18 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaCar,
-  FaCheckCircle,
-  FaDollarSign,
-  FaCalendarCheck,
-  FaClock,
-  FaMoneyBillWave,
-  FaPlus,
-  FaSearch,
-  FaChartLine,
-  FaSync,
-} from 'react-icons/fa'
+import { FaCheckCircle, FaDollarSign, FaCalendarCheck, FaMoneyBillWave, FaPlus, FaSearch, FaChartLine, FaSync } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { adminDashboardService } from '../../../services/adminDashboardService'
@@ -23,15 +12,8 @@ import ManagementSidebar from './ManagementSidebar'
 import './ManagementDashboard.css'
 
 function WeeklyGroupedBarChart({ data = [], isDark = false }) {
-  const chartData = Array.isArray(data) && data.length > 0 ? data : [
-    { day: 'Lun', entregas: 0, devoluciones: 0 },
-    { day: 'Mar', entregas: 0, devoluciones: 0 },
-    { day: 'Mié', entregas: 0, devoluciones: 0 },
-    { day: 'Jue', entregas: 0, devoluciones: 0 },
-    { day: 'Vie', entregas: 0, devoluciones: 0 },
-    { day: 'Sáb', entregas: 0, devoluciones: 0 },
-    { day: 'Dom', entregas: 0, devoluciones: 0 },
-  ]
+  const { t } = useTranslation()
+  const chartData = Array.isArray(data) && data.length > 0 ? data : t('vehiculo.calendarDays', 'Lun,Mar,Mié,Jue,Vie,Sáb,Dom').split(',').map((day) => ({ day, entregas: 0, devoluciones: 0 }))
   const maxDataVal = Math.max(
     ...chartData.map((d) => Math.max(Number(d?.entregas) || 0, Number(d?.devoluciones) || 0)),
     4
@@ -179,7 +161,6 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const usuario = useAuthStore((state) => state.usuario)
   const navigate = useNavigate()
 
-  const todayStr = new Date().toISOString().slice(0, 10)
   const [summary, setSummary] = useState(() => adminDashboardService.getSummary(usuario) || {})
   const [weeklyData, setWeeklyData] = useState(() => adminDashboardService.getWeeklyActivity(usuario) || [])
   const [activeTab, setActiveTab] = useState('entregas') // 'entregas' | 'devoluciones'
@@ -210,10 +191,6 @@ export default function ManagementDashboard({ branchOnly = false }) {
   }, [usuario])
 
   const isBranchManager = branchOnly || usuario?.rol === 'encargado' || usuario?.rol === 'branch_manager' || usuario?.rol === 'encargado_sucursal'
-
-  if (isBranchManager) {
-    return <BranchDashboard branchOnly={branchOnly} />
-  }
 
   const cashRoute = isBranchManager ? '/encargado/cobro-sucursal' : '/admin/cobro-sucursal'
   const reservationsRoute = isBranchManager ? '/encargado/reservations' : '/admin/reservations'
@@ -264,16 +241,16 @@ export default function ManagementDashboard({ branchOnly = false }) {
     text: isDark ? '#f8fafc' : '#0f172a',
     textSecondary: isDark ? '#cbd5e1' : '#334155',
     textMuted: isDark ? '#94a3b8' : '#64748b',
-    headerBadgeBg: isDark ? 'rgba(30, 58, 138, 0.45)' : 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
-    headerBadgeBorder: isDark ? '#1e3a8a' : '#bfdbfe',
-    headerBadgeText: isDark ? '#93c5fd' : '#1e40af',
+    headerBadgeBg: isDark ? 'rgba(var(--brand-secondary-rgb), 0.45)' : 'linear-gradient(135deg, var(--brand-soft) 0%, var(--brand-soft-strong) 100%)',
+    headerBadgeBorder: isDark ? 'var(--brand-secondary)' : 'var(--brand-border)',
+    headerBadgeText: isDark ? 'var(--brand-border)' : 'var(--brand-primary-active)',
     userChipBg: isDark ? '#0f1b2d' : '#ffffff',
     userChipBorder: isDark ? '#26354d' : '#e2e8f0',
     buttonReportBg: isDark ? '#14243b' : '#ffffff',
     buttonReportBorder: isDark ? '#334155' : '#cbd5e1',
     buttonReportText: isDark ? '#e2e8f0' : '#334155',
-    tagBg: isDark ? 'rgba(37, 99, 235, 0.25)' : '#eff6ff',
-    tagText: isDark ? '#60a5fa' : 'var(--brand-primary, #2563eb)',
+    tagBg: isDark ? 'rgba(var(--brand-primary-rgb), 0.25)' : 'var(--brand-soft)',
+    tagText: isDark ? 'var(--brand-accent)' : 'var(--brand-primary, #2563eb)',
     trackBg: isDark ? '#1e293b' : '#f1f5f9',
     tableTheadBg: isDark ? '#14243b' : '#f8fafc',
     tableBorder: isDark ? '#26354d' : '#e2e8f0',
@@ -282,13 +259,17 @@ export default function ManagementDashboard({ branchOnly = false }) {
     searchInputBg: isDark ? '#14243b' : '#f8fafc',
     searchInputBorder: isDark ? '#334155' : '#cbd5e1',
     tabContainerBg: isDark ? '#14243b' : '#f1f5f9',
-    tabActiveBg: isDark ? '#2563eb' : '#ffffff',
+    tabActiveBg: isDark ? 'var(--brand-primary)' : '#ffffff',
     tabActiveText: isDark ? '#ffffff' : '#0f172a',
     tabInactiveText: isDark ? '#94a3b8' : '#64748b',
     emptyBoxBg: isDark ? '#14243b' : '#f8fafc',
     emptyBoxBorder: isDark ? '#334155' : '#cbd5e1',
     zoomModalBg: isDark ? '#0f1b2d' : '#ffffff',
     zoomCloseBtnBg: isDark ? '#1e293b' : '#f1f5f9',
+  }
+
+  if (isBranchManager) {
+    return <BranchDashboard branchOnly={branchOnly} />
   }
 
   return (
@@ -299,10 +280,10 @@ export default function ManagementDashboard({ branchOnly = false }) {
         {/* Cabecera Limpia con Indicador de Tiempo Real */}
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, gap: 20 }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 16px', background: c.headerBadgeBg, border: `1px solid ${c.headerBadgeBorder}`, borderRadius: 24, marginBottom: 10, boxShadow: '0 1px 3px rgba(37,99,235,0.08)' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 16px', background: c.headerBadgeBg, border: `1px solid ${c.headerBadgeBorder}`, borderRadius: 24, marginBottom: 10, boxShadow: '0 1px 3px rgba(var(--brand-primary-rgb),0.08)' }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }} />
               <strong style={{ fontSize: 13, fontWeight: 700, color: c.headerBadgeText, letterSpacing: '-0.01em' }}>
-                {isBranchManager ? `Sucursal: ${summary?.branch || ''}` : 'Administración Central Drivique'}
+                {isBranchManager ? t('hc3.branch_subtitle', { defaultValue: 'Sucursal: {{sucursal}}', sucursal: summary?.branch || '' }) : t('hc2.administracion_central_drivique', 'Administración Central Drivique')}
               </strong>
               <span style={{ fontSize: 11, color: c.textMuted, display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 6, borderLeft: `1px solid ${c.cardBorder}`, paddingLeft: 10 }}>
                 <FaSync style={{ fontSize: 10, color: '#10b981' }} /> En Tiempo Real ({(lastSync instanceof Date ? lastSync : new Date()).toLocaleTimeString().slice(0, 5)})
@@ -324,10 +305,10 @@ export default function ManagementDashboard({ branchOnly = false }) {
               </div>
               <div>
                 <strong style={{ fontSize: 13, fontWeight: 700, color: c.text, display: 'block', lineHeight: 1.1 }}>
-                  {usuario?.nombre || 'Encargado de Sucursal'}
+                  {usuario?.nombre || t('hc2.encargado_de_sucursal', 'Encargado de Sucursal')}
                 </strong>
                 <small style={{ fontSize: 11, color: c.textMuted }}>
-                  {isBranchManager ? 'Administrador de Sucursal' : 'Admin Principal'}
+                  {isBranchManager ? t('hc2.administrador_de_sucursal', 'Administrador de Sucursal') : 'Admin Principal'}
                 </small>
               </div>
             </div>
@@ -351,7 +332,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
               fontWeight: 600,
               fontSize: 13,
               cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(37, 99, 235, 0.25)',
+              boxShadow: '0 2px 8px rgba(var(--brand-primary-rgb), 0.25)',
               transition: 'background 0.2s ease',
             }}
           >
@@ -366,7 +347,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
               alignItems: 'center',
               gap: 8,
               padding: '10px 18px',
-              background: '#0284c7',
+              background: 'var(--brand-primary)',
               border: 'none',
               borderRadius: 10,
               color: '#ffffff',
@@ -388,13 +369,13 @@ export default function ManagementDashboard({ branchOnly = false }) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 <FaDollarSign style={{ fontSize: 13, color: 'var(--brand-primary, #2563eb)' }} aria-hidden="true" />
-                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>Ingresos del Mes</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>{t('hc.ingresos_del_mes', 'Ingresos del Mes')}</span>
               </div>
             </div>
             <strong style={{ fontSize: 22, fontWeight: 800, color: c.text, display: 'block' }}>
               {formatCurrency(summary.monthlyRevenue || 0, moneda, tasaUSD)}
             </strong>
-            <span style={{ fontSize: 11, color: c.textMuted, marginTop: 4, display: 'block' }}>Facturación acumulada en la sucursal</span>
+            <span style={{ fontSize: 11, color: c.textMuted, marginTop: 4, display: 'block' }}>{isBranchManager ? t('hc2.facturacion_acumulada_en_la_sucursal', 'Facturación acumulada en la sucursal') : t('hc2.facturacion_acumulada_de_todas_las_suc', 'Facturación acumulada de todas las sucursales')}</span>
           </div>
 
           {/* KPI 2: Tasa de Ocupación */}
@@ -402,7 +383,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 <FaChartLine style={{ fontSize: 13, color: 'var(--brand-primary, #2563eb)' }} aria-hidden="true" />
-                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>Tasa de Ocupación</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>{t('hc.tasa_de_ocupacion', 'Tasa de Ocupación')}</span>
               </div>
             </div>
             <strong style={{ fontSize: 22, fontWeight: 800, color: c.text, display: 'block' }}>
@@ -416,13 +397,13 @@ export default function ManagementDashboard({ branchOnly = false }) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 <FaCalendarCheck style={{ fontSize: 13, color: '#10b981' }} aria-hidden="true" />
-                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>Entregas de Hoy</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>{t('hc.entregas_de_hoy', 'Entregas de Hoy')}</span>
               </div>
             </div>
             <strong style={{ fontSize: 22, fontWeight: 800, color: c.text, display: 'block' }}>
               {summary.todayDeliveries} recogidas
             </strong>
-            <span style={{ fontSize: 11, color: c.textMuted, marginTop: 4, display: 'block' }}>Clientes en mostrador</span>
+            <span style={{ fontSize: 11, color: c.textMuted, marginTop: 4, display: 'block' }}>{t('hc.clientes_en_mostrador', 'Clientes en mostrador')}</span>
           </div>
 
           {/* KPI 4: Devoluciones de Hoy */}
@@ -430,13 +411,13 @@ export default function ManagementDashboard({ branchOnly = false }) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 <FaCheckCircle style={{ fontSize: 13, color: '#f59e0b' }} aria-hidden="true" />
-                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>Devoluciones de Hoy</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: c.textMuted }}>{t('hc.devoluciones_de_hoy', 'Devoluciones de Hoy')}</span>
               </div>
             </div>
             <strong style={{ fontSize: 22, fontWeight: 800, color: c.text, display: 'block' }}>
               {summary.todayReturns} retornos
             </strong>
-            <span style={{ fontSize: 11, color: c.textMuted, marginTop: 4, display: 'block' }}>Vehículos retornando a la sucursal</span>
+            <span style={{ fontSize: 11, color: c.textMuted, marginTop: 4, display: 'block' }}>{isBranchManager ? t('hc2.vehiculos_retornando_a_la_sucursal', 'Vehículos retornando a la sucursal') : t('hc2.vehiculos_retornando_a_las_sucursales', 'Vehículos retornando a las sucursales')}</span>
           </div>
         </div>
 
@@ -450,7 +431,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: c.text }}>
                   Estado de la Flota
                 </h3>
-                <span style={{ fontSize: 12, color: c.textMuted }}>Distribución de los {totalVehicles} vehículos de la sucursal</span>
+                <span style={{ fontSize: 12, color: c.textMuted }}>{isBranchManager ? t('hc3.fleet_dist_branch', { defaultValue: 'Distribución de los {{total}} vehículos de la sucursal', total: totalVehicles }) : t('hc3.fleet_dist_all', { defaultValue: 'Distribución de los {{total}} vehículos de todas las sucursales', total: totalVehicles })}</span>
               </div>
               <span style={{ fontSize: 12, fontWeight: 700, color: c.tagText, background: c.tagBg, padding: '4px 10px', borderRadius: 20 }}>
                 {totalVehicles} Vehículo{totalVehicles === 1 ? '' : 's'}
@@ -469,7 +450,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981' }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: c.textSecondary }}>Disponibles</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: c.textSecondary }}>{t('hc4.disponibles', 'Disponibles')}</span>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <strong style={{ fontSize: 13, fontWeight: 700, color: c.text }}>{availableVehicles} autos</strong>
@@ -480,7 +461,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--brand-primary, #2563eb)' }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: c.textSecondary }}>En Alquiler</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: c.textSecondary }}>{t('hc.en_alquiler', 'En Alquiler')}</span>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <strong style={{ fontSize: 13, fontWeight: 700, color: c.text }}>{rentedVehicles} autos</strong>
@@ -491,7 +472,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b' }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: c.textSecondary }}>En Taller / Mantenimiento</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: c.textSecondary }}>{t('hc.en_taller_mantenimiento', 'En Taller / Mantenimiento')}</span>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <strong style={{ fontSize: 13, fontWeight: 700, color: c.text }}>{maintenanceVehicles} autos</strong>
@@ -508,7 +489,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: c.text }}>
                   Actividad Semanal
                 </h3>
-                <span style={{ fontSize: 12, color: c.textMuted }}>Entregas vs. Devoluciones de la semana</span>
+                <span style={{ fontSize: 12, color: c.textMuted }}>{t('hc.entregas_vs_devoluciones_de_la_semana', 'Entregas vs. Devoluciones de la semana')}</span>
               </div>
               <div style={{ display: 'flex', gap: 10 }}>
                 <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--brand-primary, #2563eb)', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -545,7 +526,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 <FaSearch style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: c.textMuted, fontSize: 12 }} />
                 <input
                   type="text"
-                  placeholder="Buscar cliente, auto o placa..."
+                  placeholder={t('hc.buscar_cliente_auto_o_placa', 'Buscar cliente, auto o placa...')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{
@@ -611,7 +592,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 No hay {activeTab === 'entregas' ? 'entregas' : 'devoluciones'} registradas
               </h3>
               <p style={{ margin: 0, fontSize: 13, color: c.textMuted }}>
-                {searchTerm ? 'No se encontraron resultados para tu búsqueda.' : 'No existen actividades pendientes en esta sección.'}
+                {searchTerm ? t('hc2.no_se_encontraron_resultados_para_tu_b', 'No se encontraron resultados para tu búsqueda.') : t('hc2.no_existen_actividades_pendientes_en_e', 'No existen actividades pendientes en esta sección.')}
               </p>
             </div>
           ) : (
@@ -620,16 +601,16 @@ export default function ManagementDashboard({ branchOnly = false }) {
                 <thead>
                   <tr style={{ background: c.tableTheadBg, borderBottom: `2px solid ${c.tableBorder}` }}>
                     <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center', width: 50 }}>ID</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>CÓDIGO RESERVA</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('hc.codigo_reserva', 'CÓDIGO RESERVA')}</th>
                     <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>IMAGEN</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>NOMBRE VEHÍCULO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('hc.nombre_vehiculo', 'NOMBRE VEHÍCULO')}</th>
                     <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>PLACA</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>NOMBRE COMPLETO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('hc2.nombre_completo', 'NOMBRE COMPLETO')}</th>
                     <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>FECHA</th>
                     <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>HORA</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>MEDIO DE PAGO</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('hc.medio_de_pago', 'MEDIO DE PAGO')}</th>
                     <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>ESTADO</th>
-                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>ACCIÓN</th>
+                    <th style={{ padding: '12px 14px', fontSize: 11, fontWeight: 700, color: c.textMuted, textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>{t('hc.accion', 'ACCIÓN')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -637,7 +618,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                     const rawCod = r.codigo || r.referencia || `RES-${r.id}`
                     const rawMetodo = String(r.reservaDetalles?.metodoPago || r.pasarela || r.metodoPago || '').toLowerCase()
                     const esEfectivo = rawMetodo.includes('efectivo') || rawMetodo.includes('sucursal')
-                    const textoMedio = esEfectivo ? 'Sucursal (Efectivo)' : 'Wompi (Tarjeta)'
+                    const textoMedio = esEfectivo ? t('hc2.sucursal_efectivo', 'Sucursal (Efectivo)') : 'Wompi (Tarjeta)'
                     const estaPagado = r.pagoEstado === 'aprobado' || Boolean(r.metodoPagoConfirmado) || r.estado === 'confirmada' || r.estado === 'en_curso' || r.estado === 'finalizada'
                     
                     const fechaRaw = activeTab === 'entregas'
@@ -646,7 +627,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                     
                     const fechaSolo = fechaRaw ? fechaRaw.slice(0, 10) : 'N/A'
                     const horaSolo = fechaRaw && fechaRaw.length > 10 ? fechaRaw.slice(11, 16) : '08:00 AM'
-                    const clienteNombre = r.clienteNombre || r.datosForm?.nombres || 'Cliente Drivique'
+                    const clienteNombre = r.clienteNombre || r.datosForm?.nombres || t('hc2.cliente_drivique', 'Cliente Drivique')
 
                     return (
                       <tr
@@ -674,8 +655,8 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <img
                               src={r.vehiculoImagen}
                               alt={r.vehiculoNombre || 'Auto'}
-                              title="Haz clic para ver foto completa"
-                              onClick={() => setZoomImage({ url: r.vehiculoImagen, title: `${r.vehiculoNombre || 'Vehículo'} (${r.vehiculoPlaca || 'Placa'})` })}
+                              title={t('hc.haz_clic_para_ver_foto_completa', 'Haz clic para ver foto completa')}
+                              onClick={() => setZoomImage({ url: r.vehiculoImagen, title: t('hc3.zoom_title', { defaultValue: '{{nombre}} ({{placa}})', nombre: r.vehiculoNombre || t('hc3.vehicle_word', 'Vehículo'), placa: r.vehiculoPlaca || t('hc3.plate_word', 'Placa') }) })}
                               style={{
                                 width: 44,
                                 height: 30,
@@ -741,7 +722,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             color: estaPagado ? (isDark ? '#34d399' : '#047857') : (isDark ? '#fbbf24' : '#b45309'),
                             border: `1px solid ${estaPagado ? (isDark ? '#059669' : '#a7f3d0') : (isDark ? '#d97706' : '#fde68a')}`,
                           }}>
-                            {estaPagado ? 'Recibido' : 'No Recibido'}
+                            {estaPagado ? t('hc5.received', 'Recibido') : t('hc5.not_received', 'No Recibido')}
                           </span>
                         </td>
 
@@ -761,7 +742,7 @@ export default function ManagementDashboard({ branchOnly = false }) {
                             <button
                               type="button"
                               onClick={() => navigate(reservationsRoute)}
-                              style={{ background: 'var(--brand-gradient, linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%))', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 6px rgba(37,99,235,0.25)', transition: 'transform 0.15s ease' }}
+                              style={{ background: 'var(--brand-gradient, linear-gradient(135deg, var(--brand-primary-hover) 0%, var(--brand-primary) 100%))', color: '#ffffff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 6px rgba(var(--brand-primary-rgb),0.25)', transition: 'transform 0.15s ease' }}
                               onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-1px)')}
                               onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
                             >

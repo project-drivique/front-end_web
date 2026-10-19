@@ -5,6 +5,52 @@ import { catalogService } from '../../../services/catalogService'
 import { reservationsService } from '../../../services/reservationsService'
 import { SUCURSALES } from '../constants'
 
+const norm = (str) =>
+  String(str || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase()
+
+export function matchesCategoria(vehicleCategory, filterCategory) {
+  if (!filterCategory || filterCategory === 'Todos' || filterCategory === 'Todas') return true
+  const v = norm(vehicleCategory)
+  const f = norm(filterCategory)
+  if (!v) return false
+  if (v === f) return true
+  if (f === 'sedan' && (v === 'sedan' || v === 'berlina')) return true
+  if (f === 'suv' && (v === 'suv' || v === 'camioneta' || v === 'crossover' || v === '4x4')) return true
+  if (f === 'economico' && (v === 'economico' || v === 'hatchback' || v === 'compacto' || v === 'urbano')) return true
+  if (f === 'deportivo' && (v === 'deportivo' || v === 'lujo' || v === 'sport' || v === 'premium' || v === 'coupe')) return true
+  return v.includes(f) || f.includes(v)
+}
+
+export function matchesCombustible(vehicleFuel, vehicleFuelCode, filterFuel) {
+  if (!filterFuel || filterFuel === 'Todos' || filterFuel === 'Todas') return true
+  const v = norm(vehicleFuel)
+  const c = norm(vehicleFuelCode)
+  const f = norm(filterFuel)
+  if (!v && !c) return false
+  if (v === f || c === f) return true
+  if (f === 'gasolina' && (v === 'gasolina' || c === 'gasoline')) return true
+  if (f === 'diesel' && (v === 'diesel' || c === 'diesel')) return true
+  if (f === 'hibrido' && (v === 'hibrido' || c === 'hybrid')) return true
+  if (f === 'electrico' && (v === 'electrico' || c === 'electric')) return true
+  return v.includes(f) || f.includes(v)
+}
+
+export function matchesTransmision(vehicleTransmission, vehicleTransCode, filterTransmission) {
+  if (!filterTransmission || filterTransmission === 'Todos' || filterTransmission === 'Todas') return true
+  const v = norm(vehicleTransmission)
+  const c = norm(vehicleTransCode)
+  const f = norm(filterTransmission)
+  if (!v && !c) return false
+  if (v === f || c === f) return true
+  if (f === 'automatica' && (v === 'automatica' || c === 'automatic')) return true
+  if (f === 'manual' && (v === 'manual' || c === 'manual')) return true
+  return v.includes(f) || f.includes(v)
+}
+
 const FILTROS_BASE = {
   ciudad: 'Todas',
   categoria: 'Todos',
@@ -90,7 +136,7 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
   const estaDisponibleEnRango = useCallback((vehiculoId, fechaInicio, fechaFin) => {
     const ocupados = diasOcupadosPorVehiculo.get(Number(vehiculoId))
     if (!ocupados || ocupados.size === 0) return true
-    return !eachDayOfInterval({ start: new Date(fechaInicio), end: new Date(fechaFin) })
+    return !eachDayOfInterval({ start: parseISO(String(fechaInicio).slice(0, 10)), end: parseISO(String(fechaFin).slice(0, 10)) })
       .some(dia => ocupados.has(format(dia, 'yyyy-MM-dd')))
   }, [diasOcupadosPorVehiculo])
 
@@ -175,9 +221,15 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
       })
     }
 
-    if (filtros.categoria !== 'Todos') arr = arr.filter(v => v.categoria === filtros.categoria)
-    if (filtros.transmision !== 'Todas') arr = arr.filter(v => v.transmision === filtros.transmision)
-    if (filtros.combustible !== 'Todos') arr = arr.filter(v => v.combustible === filtros.combustible)
+    if (filtros.categoria !== 'Todos') {
+      arr = arr.filter(v => matchesCategoria(v.categoria, filtros.categoria))
+    }
+    if (filtros.transmision !== 'Todas') {
+      arr = arr.filter(v => matchesTransmision(v.transmision, v.transmissionCode || v.transmisionCode, filtros.transmision))
+    }
+    if (filtros.combustible !== 'Todos') {
+      arr = arr.filter(v => matchesCombustible(v.combustible, v.fuelTypeCode || v.combustibleCode, filtros.combustible))
+    }
 
     if (filtros.sucursal !== 'Todas') {
       arr = arr.filter(v => v.sucursal === filtros.sucursal)
@@ -188,13 +240,6 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
     if (min !== null) arr = arr.filter(v => Number(v.precio) >= min)
     if (max !== null) arr = arr.filter(v => Number(v.precio) <= max)
 
-    // Si con los filtros del sidebar (Categoría, Ciudad, Sucursal, Precio,
-    // Transmisión, Combustible) el resultado queda en 0 -- y de verdad hay
-    // algún filtro activo, no es que el catálogo venga vacío de origen -- no
-    // dejamos el grid vacío: volvemos al catálogo completo sin filtrar y
-    // avisamos con el banner ("Te mostramos el catálogo completo mientras
-    // tanto"). El resto del pipeline (texto libre, sucursal buscada, fechas)
-    // sigue aplicándose normalmente sobre ese catálogo completo.
     const hayFiltroSidebarActivo =
       filtros.ciudad !== 'Todas' ||
       filtros.categoria !== 'Todos' ||
@@ -205,10 +250,6 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
       max !== null
 
     const sinFiltros = hayFiltroSidebarActivo && arr.length === 0 && vehiculos.length > 0
-
-    if (sinFiltros) {
-      arr = [...vehiculos]
-    }
 
     // Guardamos el arreglo ANTES de aplicar el filtro de texto libre. Si el texto
     // no matchea nada, volvemos a este arreglo para no vaciar el grid de tarjetas.
