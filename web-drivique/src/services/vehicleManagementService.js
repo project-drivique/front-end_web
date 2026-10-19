@@ -71,7 +71,7 @@ function mapear(v) {
     precio: Number(v.dailyRate),
     precioLimitado: Number(v.dailyRate),
     tarifas: { kmLimitado: { precio: Number(v.dailyRate) }, kmIlimitado: { precio: Number(v.dailyRate) } },
-    imagenes: v.mainImageUrl ? [v.mainImageUrl] : [],
+    imagenes: Array.isArray(v.imageUrls) && v.imageUrls.length ? v.imageUrls : (v.mainImageUrl ? [v.mainImageUrl] : []),
     seguros: [],
     caracteristicas: [],
     activo: v.isActive,
@@ -118,7 +118,8 @@ function payload(data) {
     trunkCapacityLiters: data.maletero === '' || data.maletero == null ? null : Number(data.maletero),
     mileage: Number(data.kilometraje) || 0,
     dailyRate: Number(data.precioLimitado),
-    mainImageUrl: data.imagenes?.[0] || null,
+    mainImageUrl: (data.imagenes || []).filter(Boolean)[0] || null,
+    imageUrls: (data.imagenes || []).map((u) => String(u || '').trim()).filter(Boolean).slice(0, 3),
     isFeatured: Boolean(data.destacado),
   }
 }

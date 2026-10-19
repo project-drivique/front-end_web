@@ -80,7 +80,7 @@ export default function FavoritesPage() {
       kilometraje: v.mileage,
       precio: Number(v.dailyRate || 0),
       imagen: v.mainImageUrl || '',
-      imagenes: v.mainImageUrl ? [v.mainImageUrl] : [],
+      imagenes: Array.isArray(v.imageUrls) && v.imageUrls.length ? v.imageUrls : (v.mainImageUrl ? [v.mainImageUrl] : []),
     }
     setVehiculoDetalle(inicial)
     try {
