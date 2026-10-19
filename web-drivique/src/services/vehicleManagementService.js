@@ -119,7 +119,7 @@ function payload(data) {
     mileage: Number(data.kilometraje) || 0,
     dailyRate: Number(data.precioLimitado),
     mainImageUrl: (data.imagenes || []).filter(Boolean)[0] || null,
-    imageUrls: (data.imagenes || []).map((u) => String(u || '').trim()).filter(Boolean).slice(0, 3),
+    imageUrls: (data.imagenes || []).map((u) => String(u || '').trim()).filter(Boolean).slice(0, 8),
     isFeatured: Boolean(data.destacado),
   }
 }

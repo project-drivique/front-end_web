@@ -11,7 +11,7 @@ function getSafeImages(vehiculo) {
   const arrayFiltrado = Array.isArray(imgs) ? imgs.filter(Boolean) : []
 
   if (arrayFiltrado.length > 0) {
-    return arrayFiltrado.slice(0, 3)
+    return arrayFiltrado.slice(0, 8)
   }
 
   const fotoBase = vehiculo.imagen || vehiculo.foto
