@@ -36,7 +36,7 @@ export default function PicoYPlacaCard({ c }) {
       <p style={{ fontSize: 13, color: textSecondary, margin: '2px 0 4px', lineHeight: 1.5 }}>
         {t(
           'vehiculo.picoYPlaca.cardDesc',
-          'Consulta la restricción de movilidad oficial para planificar tu ruta y evitar contratiempos durante tu viaje.'
+          t('hc2.consulta_la_restriccion_de_movilidad_o', 'Consulta la restricción de movilidad oficial para planificar tu ruta y evitar contratiempos durante tu viaje.')
         )}
       </p>
 

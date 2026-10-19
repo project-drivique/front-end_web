@@ -31,6 +31,7 @@ export async function cargarUbicaciones() {
     })
     const sucursalesMapeadas = (sucursales || []).map((b) => ({
       id: b.id,
+      cityId: b.cityId,
       nombre: b.name,
       ciudad: b.cityName,
       direccion: b.address,

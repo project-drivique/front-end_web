@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { notificationService } from '../../../services/notificationService'
 import { useAuthStore } from '../../../store/authStore'
 import { promotionManagementService } from '../../../services/promotionManagementService'
+import i18n from '@/i18n'
 
 let publicacionSolicitada = false
 
@@ -48,7 +49,7 @@ export const useNotificationStore = create((set, get) => ({
       console.warn('Error cargando notificaciones del backend:', err)
       set({
         cargando: false,
-        error: err?.response?.data?.detail || err?.response?.data?.message || 'Error al sincronizar notificaciones',
+        error: err?.response?.data?.detail || err?.response?.data?.message || i18n.t('hc2.error_al_sincronizar_notificaciones', 'Error al sincronizar notificaciones'),
       })
     }
   },
@@ -66,7 +67,7 @@ export const useNotificationStore = create((set, get) => ({
     try {
       const count = await notificationService.getUnreadCount()
       set({ conteoNoLeidas: typeof count === 'number' ? count : 0 })
-    } catch (err) {
+    } catch {
       // Si falla endpoint específico, mantener o calcular sobre las que ya estén
       const fallbackCount = get().notificaciones.filter((n) => !n.leida).length
       set({ conteoNoLeidas: fallbackCount })

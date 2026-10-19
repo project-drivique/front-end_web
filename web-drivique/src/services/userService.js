@@ -35,6 +35,13 @@ const nacionalidadNombreDesdeId = async (id) => {
   return nombreDesdeIso(iso)
 }
 
+// La web usa 'PASAPORTE'; el servidor guarda el código PASSPORT
+const codigoTipoDocumento = (tipo) => {
+  if (!tipo) return undefined
+  const up = String(tipo).trim().toUpperCase()
+  return up === 'PASAPORTE' ? 'PASSPORT' : up
+}
+
 export const userService = {
   nacionalidadNombreDesdeId,
 
@@ -42,7 +49,7 @@ export const userService = {
     try {
       const { data } = await api.get('/users/me')
       return data
-    } catch (err) {
+    } catch {
       return getUsuarioGuardado()
     }
   },
@@ -51,10 +58,13 @@ export const userService = {
     const payload = {
       firstName: datosActualizados.nombre || datosActualizados.firstName,
       lastName: datosActualizados.apellido || datosActualizados.lastName,
-      phone: datosActualizados.telefono || datosActualizados.phone,
+      phone: datosActualizados.telefono || datosActualizados.phone || datosActualizados.celular,
       birthDate: datosActualizados.fechaNacimiento || datosActualizados.birthDate || undefined,
       address: datosActualizados.direccion ?? datosActualizados.address,
       nationalityId: await nacionalidadIdDesdeNombre(datosActualizados.nationalityId || datosActualizados.nacionalidad).catch(() => undefined),
+      documentNumber: datosActualizados.documentNumber || datosActualizados.numDoc || datosActualizados.cedula || undefined,
+      documentTypeCode: codigoTipoDocumento(datosActualizados.documentTypeCode || datosActualizados.tipoDoc || datosActualizados.tipoDocumento),
+      documentTypeId: datosActualizados.documentTypeId || undefined,
     }
     const { data } = await api.put('/users/me', payload)
     return data
@@ -117,7 +127,7 @@ export const userService = {
     try {
       const { data } = await api.post('/usuario/verificar-correo', { correo })
       return data
-    } catch (err) {
+    } catch {
       return { disponible: true }
     }
   },
@@ -126,7 +136,7 @@ export const userService = {
     try {
       const { data } = await api.post('/usuario/verificar-contrasena', { contrasena })
       return data
-    } catch (err) {
+    } catch {
       return { valida: true }
     }
   },

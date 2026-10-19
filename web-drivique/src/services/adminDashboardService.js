@@ -1,5 +1,6 @@
 import { vehicleManagementService } from './vehicleManagementService'
 import { reservationManagementService } from './reservationManagementService'
+import i18n from '@/i18n'
 
 const CANCELLED = new Set(['cancelada'])
 
@@ -29,7 +30,7 @@ export const adminDashboardService = {
     const reservations = reservationManagementService.list()
     const isBranchManager = ['encargado_sucursal', 'encargado', 'branch_manager'].includes(user?.rol)
 
-    const rented = vehicles.filter((v) => v.reservasActivas > 0 || v.estadoEfectivo === 'reservado').length
+    const rented = vehicles.filter((v) => v.estadoEfectivo === 'reservado').length
     const maintenance = vehicles.filter((v) => v.estadoFlota === 'mantenimiento').length
     const available = vehicles.filter((v) => v.estadoEfectivo === 'disponible').length
 
@@ -83,7 +84,7 @@ export const adminDashboardService = {
     monday.setDate(referenceDate.getDate() - ((referenceDate.getDay() + 6) % 7))
     monday.setHours(0, 0, 0, 0)
 
-    return ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map((day, index) => {
+    return i18n.t('vehiculo.calendarDays', 'Lun,Mar,Mié,Jue,Vie,Sáb,Dom').split(',').map((day, index) => {
       const target = new Date(monday)
       target.setDate(monday.getDate() + index)
       return {
