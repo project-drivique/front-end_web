@@ -1,33 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaCalendarAlt,
-  FaCar,
-  FaEdit,
-  FaEye,
-  FaFileExcel,
-  FaFilePdf,
-  FaPlus,
-  FaPrint,
-  FaSearch,
-  FaUser,
-  FaBuilding,
-  FaClock,
-  FaBan,
-  FaHistory,
-  FaUserCheck,
-  FaSave,
-  FaMapMarkerAlt,
-  FaWhatsapp,
-  FaMoneyBillWave,
-  FaShieldAlt,
-  FaFileContract,
-  FaFileSignature,
-  FaCheckCircle,
-  FaIdCard,
-  FaExternalLinkAlt,
-} from 'react-icons/fa'
+import { FaCalendarAlt, FaCar, FaFileExcel, FaFilePdf, FaPrint, FaSearch, FaUser, FaBuilding, FaBan, FaHistory, FaMoneyBillWave, FaShieldAlt, FaFileContract, FaCheckCircle, FaIdCard, FaExternalLinkAlt } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { reservationManagementService } from '../../../services/reservationManagementService'
@@ -36,6 +10,8 @@ import { catalogService } from '../../../services/catalogService'
 import { hasMatchingBranch } from '../../../services/accessAuditService'
 import { contractService } from '../../../services/contractService'
 import { inspectionService } from '../../../services/inspectionService'
+import { api } from '../../../services/httpClient'
+import { showAlert } from '../../../utils/swalConfig'
 import { documentVerificationService } from '../../../services/documentVerificationService'
 import FirmaContrato from '../../contracts/components/ContractSignature'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
@@ -44,14 +20,11 @@ import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
 import './ReservationManagementPage.css'
+import { askInspection } from '../components/InspectionFormModal'
+import InspectionNovelties from '../components/InspectionNovelties'
 
 const INITIAL_START_DATE = new Date().toISOString().slice(0, 16)
 const INITIAL_END_DATE = new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 16)
-
-const selectEvidencePhoto = () => new Promise((resolve) => {
-  const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/png,image/jpeg'
-  input.onchange = () => resolve(input.files?.[0] || null); input.click()
-})
 
 export default function ReservationManagementPage() {
   const { t } = useTranslation()
@@ -65,7 +38,7 @@ export default function ReservationManagementPage() {
   const sucursalEncargado = user?.sucursalAsignada || user?.sucursalId || user?.sucursal || ''
   const cashRoute = esEncargado ? '/encargado/cobro-sucursal' : '/admin/cobro-sucursal'
 
-  const [activeTab, setActiveTab] = useState('fechas_ubicacion') // 'fechas_ubicacion' | 'proteccion_extras' | 'datos_pago'
+  const [activeTab, setActiveTab] = useState(() => location.state?.tab || 'fechas_ubicacion') // 'fechas_ubicacion' | 'proteccion_extras' | 'datos_pago'
   const [zoomImage, setZoomImage] = useState(null)
   const [zoomPdf, setZoomPdf] = useState(null)
   const [contratoModalReserva, setContratoModalReserva] = useState(null)
@@ -128,9 +101,9 @@ export default function ReservationManagementPage() {
   const handleOpenDocument = (r, docType) => {
     const cod = r.codigo || r.referencia || `RES-${r.id}`
     const dfName = r.reservaDetalles?.datosForm?.nombre || [r.reservaDetalles?.datosForm?.nombres, r.reservaDetalles?.datosForm?.apellidos].filter(Boolean).join(' ') || ''
-    const cliNom = dfName || r.clienteNombre || 'Cliente Registrado'
+    const cliNom = dfName || r.clienteNombre || t('hc2.cliente_registrado', 'Cliente Registrado')
     const cliDoc = r.clienteDocumento || r.reservaDetalles?.datosForm?.numDoc || ''
-    const tipoDoc = r.clienteTipoDocumento || r.reservaDetalles?.datosForm?.tipoDoc || 'Cédula de Ciudadanía'
+    const tipoDoc = r.clienteTipoDocumento || r.reservaDetalles?.datosForm?.tipoDoc || t('hc2.cedula_de_ciudadania', 'Cédula de Ciudadanía')
 
     const cleanDoc = String(cliDoc || '').trim()
     const matchingKyc = (kycDocs || []).find((k) =>
@@ -139,16 +112,16 @@ export default function ReservationManagementPage() {
       (k.clienteNombre && cliNom && k.clienteNombre.toLowerCase() === cliNom.toLowerCase())
     )
 
-    let docUrl = ''
-    let fileName = ''
-    let title = ''
+    let docUrl
+    let fileName
+    let title
 
     if (docType === 'id') {
-      title = `Documento de Identidad - ${cliNom}`
+      title = t('hc3.res_doc_title_id', { defaultValue: 'Documento de Identidad - {{cliente}}', cliente: cliNom })
       fileName = r.documentoIdentidadPdf || `Cedula-${cliDoc || '1000'}.pdf`
       docUrl = matchingKyc?.fotoCedulaFrente || matchingKyc?.pdfCedulaUrl || r.documentoIdentidadUrl || ''
     } else {
-      title = `Licencia de Conducción - ${cliNom}`
+      title = t('hc3.res_doc_title_license', { defaultValue: 'Licencia de Conducción - {{cliente}}', cliente: cliNom })
       fileName = r.licenciaConduccionPdf || `Licencia-${cliDoc || '1000'}.pdf`
       docUrl = matchingKyc?.fotoLicenciaFrente || matchingKyc?.pdfLicenciaUrl || r.licenciaConduccionUrl || ''
     }
@@ -177,7 +150,7 @@ export default function ReservationManagementPage() {
 
   // Apertura directa y automática de la reserva indicada desde el Centro de Notificaciones
   useEffect(() => {
-    if (location.state?.openCodigo && reservas.length > 0) {
+    if (location.state?.openCodigo && !location.state?.tab && reservas.length > 0) {
       const codeTarget = String(location.state.openCodigo).trim().toLowerCase()
       const match = reservas.find(
         (r) =>
@@ -229,22 +202,22 @@ export default function ReservationManagementPage() {
   // Configuración de exportación global consolidada de reservas
   const headersExport = useMemo(() => {
     return [
-      'Código',
+      t('hc2.codigo_117', 'Código'),
       'Cliente',
-      'Teléfono',
+      t('hc2.telefono', 'Teléfono'),
       'Correo',
-      'Vehículo',
+      t('hc2.vehiculo', 'Vehículo'),
       'Placa',
-      'Sucursal / Retiro',
-      'Lugar Devolución',
-      'Fecha Retiro',
-      'Fecha Devolución',
-      'Duración',
-      'Protección',
+      t('hc2.sucursal_retiro', 'Sucursal / Retiro'),
+      t('hc2.lugar_devolucion', 'Lugar Devolución'),
+      t('hc2.fecha_retiro', 'Fecha Retiro'),
+      t('hc2.fecha_devolucion', 'Fecha Devolución'),
+      t('hc2.duracion', 'Duración'),
+      t('hc2.proteccion', 'Protección'),
       'Extras',
       'Total',
-      'Estado Pago',
-      'Estado Reserva',
+      t('hc2.estado_pago_124', 'Estado Pago'),
+      t('hc2.estado_reserva', 'Estado Reserva'),
     ]
   }, [])
 
@@ -281,15 +254,15 @@ export default function ReservationManagementPage() {
       const fInicioRaw = r.fechaInicio || ''
       const fFinRaw = r.fechaFin || ''
       const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
-      const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
+      const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(new Date().getTime() + 86400000 * 3).toISOString().slice(0, 10)
 
       const duracionText = r.reservaDetalles?.duracionDias ? t('admin.reservationsManagement.durationDays', '{{count}} días', { count: r.reservaDetalles.duracionDias }) : t('admin.reservationsManagement.durationDays', '{{count}} días', { count: 4 })
-      const cobertura = r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Estándar CDW'
+      const cobertura = r.reservaDetalles?.cobertura?.nombre || r.cobertura || t('hc2.proteccion_estandar_cdw', 'Protección Estándar CDW')
       const servs = (r.reservaDetalles?.serviciosAdicionales || []).map(s => typeof s === 'string' ? s : s.nombre).join(', ') || 'Ninguno'
 
       const esCobroPresencialPendiente =
         esPagoEfectivo &&
-        !Boolean(r.metodoPagoConfirmado) &&
+        !r.metodoPagoConfirmado &&
         r.pagoEstado !== 'aprobado'
 
       const isPagoConfirmado =
@@ -306,7 +279,7 @@ export default function ReservationManagementPage() {
 
       return [
         cod,
-        r.clienteNombre || 'Cliente Registrado',
+        r.clienteNombre || t('hc2.cliente_registrado', 'Cliente Registrado'),
         r.clienteTelefono || '300 000 0000',
         r.clienteCorreo || '',
         r.vehiculoNombre || 'Renault Sandero 2023',
@@ -326,7 +299,7 @@ export default function ReservationManagementPage() {
   }, [filtradas, moneda, tasaUSD])
 
   const exportData = {
-    title: `Reporte Consolidado de Reservas - ${esEncargado ? sucursalEncargado : 'Todas las Sedes'}`,
+    title: t('hc3.res_export_title', { defaultValue: 'Reporte Consolidado de Reservas - {{sucursal}}', sucursal: esEncargado ? sucursalEncargado : t('hc3.all_branches_caps', 'Todas las Sedes') }),
     headers: headersExport,
     rows: rowsExport,
     items: filtradas,
@@ -334,46 +307,68 @@ export default function ReservationManagementPage() {
   }
 
   const registrarInspeccion = async (r, inspectionType) => {
-    const mileage = Number(window.prompt('Kilometraje actual del vehículo:', String(r.kilometraje || r.vehiculoKilometraje || 0)))
-    const fuelLevelPercent = Number(window.prompt('Nivel de combustible (0 a 100):', '100'))
-    if (!Number.isFinite(mileage) || mileage < 0 || !Number.isFinite(fuelLevelPercent) || fuelLevelPercent < 0 || fuelLevelPercent > 100) throw new Error('Kilometraje o combustible inválido.')
-    const items = await inspectionService.checklist(); const photos = []; const answers = []
-    for (const item of items) {
-      const compliant = window.confirm(`${item.name}: ¿se encuentra conforme?`)
-      let observation = null; let evidencePhotoIndex = null
-      if (!compliant) {
-        observation = window.prompt(`Describe el daño o novedad en ${item.name}:`)?.trim()
-        if (!observation) throw new Error('Toda novedad requiere observación.')
-        const photo = await selectEvidencePhoto(); if (!photo) throw new Error('Toda novedad requiere una fotografía.')
-        evidencePhotoIndex = photos.length; photos.push(photo)
-      }
-      answers.push({ checklistItemId: item.id, compliant, observation, evidencePhotoIndex })
-    }
+    const items = await inspectionService.checklist()
     const contract = await contractService.obtenerPorReserva(r.id || r.codigo)
-    return inspectionService.register(contract.id, { inspectionType, mileage, fuelLevelPercent, observations: window.prompt('Observaciones generales (opcional):') || null, answers }, photos)
+    // Kilometraje actual del vehículo según el servidor (el backend no admite uno menor)
+    const currentMileage = await api.get(`/vehicles/${r.vehiculoId}`).then(({ data }) => Number(data?.mileage) || 0).catch(() => 0)
+    const result = await askInspection({
+      title: inspectionType === 'CHECK_IN' ? t('hc2.registrar_entrega_del_vehiculo', 'Registrar entrega del vehículo') : t('hc2.registrar_devolucion_del_vehiculo', 'Registrar devolución del vehículo'),
+      subtitle: `${r.vehiculoNombre || ''} ${r.vehiculoPlaca ? `· ${r.vehiculoPlaca}` : ''} · ${r.codigo || r.id}`.trim(),
+      defaultMileage: currentMileage,
+      items,
+      submit: (form) => inspectionService.register(contract.id, {
+        inspectionType,
+        mileage: form.mileage,
+        fuelLevelPercent: form.fuelLevelPercent,
+        observations: form.observations,
+        answers: form.answers,
+      }, form.photos),
+    })
+    if (!result) throw new Error('Registro cancelado.')
+    return result
+  }
+
+  // Abre el detalle de la reserva y baja directo a la sección de novedades de entrega y devolución
+  const abrirNovedades = (r) => {
+    setModalDetalle(r)
+    setTimeout(() => document.getElementById('novedades-inspeccion')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 700)
   }
 
   const handleEntregarAuto = async (r) => {
     try {
-      await registrarInspeccion(r, 'CHECK_IN')
-      setNotice(`Vehículo entregado exitosamente al cliente. Reserva ${r.codigo || r.id} en curso.`)
-      setTimeout(() => setNotice(''), 4000)
+      const inspection = await registrarInspeccion(r, 'CHECK_IN')
+      const novedades = (inspection?.answers || []).filter((a) => !a.compliant).length
       await cargarYEvaluarReservas()
+      showAlert({
+        icon: 'success',
+        title: 'Entrega registrada',
+        text: t('hc3.delivery_success', { defaultValue: 'La entrega del vehículo quedó registrada con éxito y la reserva {{codigo}} está en curso.', codigo: r.codigo || r.id })
+          + (novedades > 0 ? t('hc3.novelties_notice', { defaultValue_one: ' Se registró 1 novedad y se notificó al administrador general.', defaultValue_other: ' Se registró {{count}} novedades y se notificó al administrador general.', count: novedades }) : ''),
+        confirmButtonText: t('hc4.aceptar', 'Aceptar'),
+      })
     } catch (err) {
+      if (err?.message === 'Registro cancelado.') return
       console.error('Error al entregar auto:', err)
-      setNotice(err?.response?.data?.message || err.message || 'No fue posible registrar la entrega.')
+      setNotice(err?.response?.data?.message || err.message || t('hc2.no_fue_posible_registrar_la_entrega', 'No fue posible registrar la entrega.'))
     }
   }
 
   const handleRecibirDevolucion = async (r) => {
     try {
       const inspection = await registrarInspeccion(r, 'CHECK_OUT')
-      setNotice(`Vehículo recibido. Cargos adicionales: ${formatCurrency(inspection.totalCharge || 0, moneda || 'COP', tasaUSD)}.`)
-      setTimeout(() => setNotice(''), 4000)
-      cargarYEvaluarReservas()
+      const novedades = (inspection?.answers || []).filter((a) => !a.compliant).length
+      await cargarYEvaluarReservas()
+      showAlert({
+        icon: 'success',
+        title: t('hc.devolucion_registrada', 'Devolución registrada'),
+        text: t('hc3.return_success', { defaultValue: 'La devolución quedó registrada con éxito y la reserva {{codigo}} está finalizada. Cargos adicionales: {{cargos}}.', codigo: r.codigo || r.id, cargos: formatCurrency(inspection?.totalCharge || 0, moneda || 'COP', tasaUSD) })
+          + (novedades > 0 ? t('hc3.novelties_notice', { defaultValue_one: ' Se registró 1 novedad y se notificó al administrador general.', defaultValue_other: ' Se registró {{count}} novedades y se notificó al administrador general.', count: novedades }) : ''),
+        confirmButtonText: t('hc4.aceptar', 'Aceptar'),
+      })
     } catch (err) {
+      if (err?.message === 'Registro cancelado.') return
       console.error('Error al recibir devolución:', err)
-      setNotice(err?.response?.data?.message || err.message || 'No fue posible registrar la devolución.')
+      setNotice(err?.response?.data?.message || err.message || t('hc2.no_fue_posible_registrar_la_devolucion', 'No fue posible registrar la devolución.'))
     }
   }
 
@@ -404,11 +399,6 @@ export default function ReservationManagementPage() {
     notas: '',
   })
 
-  const openCrearModal = () => {
-    const firstVehicle = vehiculosDisponibles[0]
-    setFormCrear((current) => ({ ...current, vehiculoNombre: firstVehicle?.nombre || '', vehiculoPlaca: firstVehicle?.placa || '', sucursal: esEncargado ? sucursalEncargado : (firstVehicle?.sucursal || sucursales[0]?.nombre || '') }))
-    setModalCrear(true)
-  }
 
   const submitCrearManual = async (e) => {
     e.preventDefault()
@@ -432,14 +422,6 @@ export default function ReservationManagementPage() {
   // --- Manejo de Editar Reserva ---
   const [formEditar, setFormEditar] = useState({})
 
-  const openEditarModal = (res) => {
-    setFormEditar({
-      id: res.id,
-      fechaInicio: `${res.fechaInicio}T${res.horaInicio || '08:00'}`,
-      fechaFin: `${res.fechaFin}T${res.horaFin || '18:00'}`,
-    })
-    setModalEditar(res)
-  }
 
   const submitEditarReserva = async (e) => {
     e.preventDefault()
@@ -462,7 +444,7 @@ export default function ReservationManagementPage() {
     e.preventDefault()
     try {
       await reservationManagementService.cancel(modalCancelar.id, motivoCancelar)
-      setNotice(t('admin.reservationsModal.cancelledSuccess', `Reserva ${modalCancelar.codigo} cancelada.`))
+      setNotice(t('admin.reservationsModal.cancelledSuccess', { defaultValue: 'Reserva {{codigo}} cancelada.', codigo: modalCancelar.codigo }))
       setModalCancelar(null)
       setMotivoCancelar('')
       await cargarYEvaluarReservas()
@@ -683,15 +665,11 @@ export default function ReservationManagementPage() {
                           else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = t('admin.reservationsManagement.dropoffTerminal', 'Devolución en Terminal')
                         }
 
-                        const esCobroPresencialPendiente =
-                          esPagoEfectivo &&
-                          !Boolean(r.metodoPagoConfirmado) &&
-                          r.pagoEstado !== 'aprobado'
 
                         const fInicioRaw = r.fechaInicio || ''
                         const fFinRaw = r.fechaFin || ''
                         const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
-                        const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
+                        const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(new Date().getTime() + 86400000 * 3).toISOString().slice(0, 10)
 
                         const horaRetiroVal = r.horaInicio ? r.horaInicio : (fInicioRaw.includes('T') ? fInicioRaw.split('T')[1].slice(0, 5) : '9:00 a. m.')
                         const horaDevolucionVal = r.horaFin ? r.horaFin : (fFinRaw.includes('T') ? fFinRaw.split('T')[1].slice(0, 5) : '8:30 a. m.')
@@ -703,15 +681,15 @@ export default function ReservationManagementPage() {
                           <tr key={r.id || cod}>
                             <td>{idx + 1}</td>
                             <td>
-                              <code>{cod}</code>
+                              <code role="button" tabIndex={0} title={t('hc.ver_detalle_de_la_reserva_y_novedades', 'Ver detalle de la reserva y novedades')} style={{ cursor: "pointer", textDecoration: "underline dotted" }} onClick={() => setModalDetalle(r)} onKeyDown={(e) => e.key === "Enter" && setModalDetalle(r)}>{cod}</code>
                             </td>
                             <td>
                               {r.vehiculoImagen ? (
                                 <img
                                   src={r.vehiculoImagen}
                                   alt={r.vehiculoNombre || 'Auto'}
-                                  title="Haz clic para ver foto completa"
-                                  onClick={() => setZoomImage({ url: r.vehiculoImagen, title: `${r.vehiculoNombre || 'Vehículo'} (${r.vehiculoPlaca || 'Placa'})` })}
+                                  title={t('hc.haz_clic_para_ver_foto_completa', 'Haz clic para ver foto completa')}
+                                  onClick={() => setZoomImage({ url: r.vehiculoImagen, title: t('hc3.zoom_title', { defaultValue: '{{nombre}} ({{placa}})', nombre: r.vehiculoNombre || t('hc3.vehicle_word', 'Vehículo'), placa: r.vehiculoPlaca || t('hc3.plate_word', 'Placa') }) })}
                                   style={{
                                     width: 48,
                                     height: 34,
@@ -742,7 +720,7 @@ export default function ReservationManagementPage() {
                             <td>{horaRetiroVal}</td>
                             <td>{horaDevolucionVal}</td>
                             <td>{duracionText}</td>
-                            <td style={{ fontSize: 12, color: r.devolucionAnticipada ? '#0284c7' : '#94a3b8' }}>
+                            <td style={{ fontSize: 12, color: r.devolucionAnticipada ? 'var(--brand-primary)' : '#94a3b8' }}>
                               {devAnticipadaText}
                             </td>
                           </tr>
@@ -770,68 +748,21 @@ export default function ReservationManagementPage() {
                     <tbody>
                       {paginatedReservations.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
-                        let cliNom = r.clienteNombre || 'Cliente Registrado'
-                        if (cliNom === 'Cliente Registrado' || cliNom === 'Cliente Drivique') {
-                          const rawCod = String(cod).replace('CTR-', '');
-                          const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                          const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
-                          const nameIdx = hash % mockNames.length;
-                          cliNom = mockNames[nameIdx];
-                        }
-                        const dias = r.fechaInicio && r.fechaFin
-                          ? (r.fechaInicio === r.fechaFin ? 1 : Math.max(1, Math.ceil((new Date(r.fechaFin) - new Date(r.fechaInicio)) / 86400000) + 1))
-                          : (r.reservaDetalles?.duracionDias || 1);
-
-                        let cobNombre = r.reservaDetalles?.cobertura?.nombre || r.cobertura || 'Protección Obligatoria';
-                        let cobPrecio = Number(r.reservaDetalles?.cobertura?.precio || r.proteccionPrecio || r.coberturaPrecio || 29000);
-                        if (r.seguroIdx === 0) {
-                          cobNombre = 'Protección Obligatoria';
-                          cobPrecio = 29000;
-                        } else if (r.seguroIdx === 1) {
-                          cobNombre = 'Protección Total';
-                          cobPrecio = 67000;
-                        }
-                        const cobTotal = cobPrecio * dias;
-
-                        let kilNombre = r.reservaDetalles?.kilometraje || r.reservaDetalles?.tipoKm || r.kilometraje || 'Ilimitado';
-                        let kilPrecio = Number(r.reservaDetalles?.kilometrajePrecio || r.kilometrajePrecio || 0);
-                        if (r.reservaDetalles?.tipoKm === 'limitado' || kilNombre.toLowerCase() === 'limitado') {
-                          kilNombre = 'Kilometraje limitado';
-                          kilPrecio = r.vehiculo?.tarifas?.kmLimitado?.precio || 0;
-                        } else if (r.reservaDetalles?.tipoKm === 'ilimitado' || kilNombre.toLowerCase() === 'ilimitado') {
-                          kilNombre = 'Kilometraje ilimitado';
-                          kilPrecio = r.vehiculo?.tarifas?.kmIlimitado?.precio || 0;
-                        }
-                        const kilTotal = kilPrecio * dias;
-
-                        const extrasList = Array.isArray(r.serviciosSeleccionados) && r.serviciosSeleccionados.length > 0 
-                          ? r.serviciosSeleccionados 
-                          : (r.reservaDetalles?.serviciosAdicionales || r.serviciosAdicionales || []);
-                          
-                        let extrasPrecioTotal = 0;
-                        const extras = extrasList.length > 0 
-                          ? extrasList.map(s => {
-                              let sName = typeof s === 'string' ? s : s.nombre;
-                              let sPrecio = typeof s === 'object' ? Number(s.precio || 0) : 0;
-                              
-                              if (typeof s === 'string' && r.vehiculo?.servicios) {
-                                const found = r.vehiculo.servicios.find(xs => xs.id === s);
-                                if (found) {
-                                  sName = found.nombre;
-                                  sPrecio = found.precio;
-                                }
-                              }
-                              extrasPrecioTotal += sPrecio;
-                              return sName;
-                            }).join(', ') 
-                          : 'Ninguno'
-                        const extrasTotal = extrasPrecioTotal * dias;
+                        // Coberturas, kilometraje y servicios: nombre y subtotal calculados por el servidor (r.detalle)
+                        const det = r.detalle || {}
+                        const cobNombre = det.seguro?.nombre || ''
+                        const cobTotal = Number(det.seguro?.subtotal) || 0
+                        const kilNombre = det.kilometraje?.nombre || ''
+                        const kilTotal = Number(det.kilometraje?.subtotal) || 0
+                        const serviciosServidor = Array.isArray(det.servicios) ? det.servicios : []
+                        const extras = serviciosServidor.length > 0 ? serviciosServidor.map((sv) => sv.nombre).join(', ') : 'Ninguno'
+                        const extrasTotal = serviciosServidor.reduce((acc, sv) => acc + (Number(sv.total) || 0), 0)
 
                         return (
                           <tr key={r.id || cod}>
                             <td>{idx + 1}</td>
                             <td>
-                              <code>{cod}</code>
+                              <code role="button" tabIndex={0} title={t('hc.ver_detalle_de_la_reserva_y_novedades', 'Ver detalle de la reserva y novedades')} style={{ cursor: "pointer", textDecoration: "underline dotted" }} onClick={() => setModalDetalle(r)} onKeyDown={(e) => e.key === "Enter" && setModalDetalle(r)}>{cod}</code>
                             </td>
                             <td>{cobNombre === 'Protección Obligatoria' ? t('admin.reservationsManagement.protectionMandatory', 'Protección Obligatoria') : cobNombre === 'Protección Total' ? t('admin.reservationsManagement.protectionTotal', 'Protección Total') : cobNombre}</td>
                             <td style={{ fontWeight: 600 }}>{formatCurrency(cobTotal, moneda || 'COP', tasaUSD)}</td>
@@ -875,7 +806,7 @@ export default function ReservationManagementPage() {
                       {paginatedReservations.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
                         const dfName = r.reservaDetalles?.datosForm?.nombre || [r.reservaDetalles?.datosForm?.nombres, r.reservaDetalles?.datosForm?.apellidos].filter(Boolean).join(' ') || '';
-                        let cliNom = dfName || r.clienteNombre || 'Cliente Registrado'
+                        let cliNom = dfName || r.clienteNombre || t('hc2.cliente_registrado', 'Cliente Registrado')
                         if (cliNom === 'Cliente Registrado' || cliNom === 'Cliente Drivique') {
                           const rawCod = String(cod).replace('CTR-', '');
                           const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -889,23 +820,16 @@ export default function ReservationManagementPage() {
                         if (!cliTel.startsWith('+')) cliTel = `+57 ${cliTel.trim()}`
                         const formatDoc = (val) => {
                           const v = String(val).toUpperCase();
-                          if (v === 'CC' || v === 'CÉDULA DE CIUDADANÍA') return 'Cédula de Ciudadanía';
-                          if (v === 'CE' || v === 'CÉDULA DE EXTRANJERÍA') return 'Cédula de Extranjería';
+                          if (v === 'CC' || v === 'CÉDULA DE CIUDADANÍA') return t('hc2.cedula_de_ciudadania', 'Cédula de Ciudadanía');
+                          if (v === 'CE' || v === 'CÉDULA DE EXTRANJERÍA') return t('hc2.cedula_de_extranjeria', 'Cédula de Extranjería');
                           if (v === 'PAS' || v === 'PASAPORTE') return 'Pasaporte';
-                          return val || 'Cédula de Ciudadanía';
+                          return val || t('hc2.cedula_de_ciudadania', 'Cédula de Ciudadanía');
                         };
-                        const tipoDoc = formatDoc(r.clienteTipoDocumento || r.reservaDetalles?.datosForm?.tipoDoc || 'Cédula de Ciudadanía');
+                        const tipoDoc = formatDoc(r.clienteTipoDocumento || r.reservaDetalles?.datosForm?.tipoDoc || t('hc2.cedula_de_ciudadania', 'Cédula de Ciudadanía'));
                         const nacionalidad = r.clienteNacionalidad || 'Colombia'
                         const cuponCodigo = r.cuponCodigo || r.reservaDetalles?.cuponAplicado ? t('admin.reservationsManagement.appliedCoupon', 'Aplicó ({{code}})', { code: r.cuponCodigo || 'CUPON' }) : t('admin.reservationsManagement.noCoupons', 'Sin cupones')
                         const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
 
-                        const fInicioRaw = r.fechaInicio || ''
-                        const fFinRaw = r.fechaFin || ''
-                        const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
-                        const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
-                        const hoy = new Date().toISOString().slice(0, 10)
-                        const isPickupAllowed = fechaRetiroVal <= hoy
-                        const isReturnAllowed = fechaDevolucionVal <= hoy
 
                         const rawMetodo = String(
                           r.reservaDetalles?.metodoPago ||
@@ -919,7 +843,7 @@ export default function ReservationManagementPage() {
 
                         const esCobroPresencialPendiente =
                           esPagoEfectivo &&
-                          !Boolean(r.metodoPagoConfirmado) &&
+                          !r.metodoPagoConfirmado &&
                           r.pagoEstado !== 'aprobado'
 
                         const isPagoConfirmado =
@@ -932,7 +856,7 @@ export default function ReservationManagementPage() {
                           <tr key={r.id || cod}>
                             <td>{idx + 1}</td>
                             <td>
-                              <code>{cod}</code>
+                              <code role="button" tabIndex={0} title={t('hc.ver_detalle_de_la_reserva_y_novedades', 'Ver detalle de la reserva y novedades')} style={{ cursor: "pointer", textDecoration: "underline dotted" }} onClick={() => setModalDetalle(r)} onKeyDown={(e) => e.key === "Enter" && setModalDetalle(r)}>{cod}</code>
                             </td>
                             <td style={{ fontWeight: 600, color: 'var(--texto-primary, #0f172a)' }}>{cliNom}</td>
                             <td style={{ color: 'var(--texto-second, #64748b)', fontSize: 12 }}>{cliMail}</td>
@@ -944,7 +868,7 @@ export default function ReservationManagementPage() {
                               <div 
                                 style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '4px 8px', borderRadius: 6, transition: 'background 0.15s' }}
                                 onClick={() => handleOpenDocument(r, 'id')}
-                                title="Clic para ver Documento de Identidad"
+                                title={t('hc.clic_para_ver_documento_de_identidad', 'Clic para ver Documento de Identidad')}
                               >
                                 <FaFilePdf color="#ef4444" size={14} /> 
                                 <span style={{ fontSize: 12, color: 'var(--brand-primary, #2563eb)', textDecoration: 'underline', fontWeight: 600 }}>{r.documentoIdentidadPdf || `Cedula-${cliDoc}.pdf`}</span>
@@ -954,7 +878,7 @@ export default function ReservationManagementPage() {
                               <div 
                                 style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '4px 8px', borderRadius: 6, transition: 'background 0.15s' }}
                                 onClick={() => handleOpenDocument(r, 'license')}
-                                title="Clic para ver Licencia de Conducción"
+                                title={t('hc.clic_para_ver_licencia_de_conduccion', 'Clic para ver Licencia de Conducción')}
                               >
                                 <FaFilePdf color="#ef4444" size={14} /> 
                                 <span style={{ fontSize: 12, color: 'var(--brand-primary, #2563eb)', textDecoration: 'underline', fontWeight: 600 }}>{r.licenciaConduccionPdf || `Licencia-${cliDoc}.pdf`}</span>
@@ -976,7 +900,7 @@ export default function ReservationManagementPage() {
                                   fontWeight: 700,
                                   whiteSpace: 'nowrap',
                                   ...(r.estado === 'en_curso'
-                                    ? { background: '#dbeafe', color: 'var(--brand-primary, #1d4ed8)' }
+                                    ? { background: 'var(--brand-soft-strong)', color: 'var(--brand-primary, #1d4ed8)' }
                                     : r.estado === 'finalizada'
                                     ? { background: '#dcfce7', color: '#15803d' }
                                     : r.estado === 'cancelada'
@@ -1042,7 +966,7 @@ export default function ReservationManagementPage() {
                                     boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                                     whiteSpace: 'nowrap'
                                   }}
-                                  title="Ver contrato firmado y firma digital"
+                                  title={t('hc.ver_contrato_firmado_y_firma_digital', 'Ver contrato firmado y firma digital')}
                                 >
                                   <FaFileContract size={13} color="#059669" />
                                   <span>{t('admin.reservationsManagement.yes', 'Sí')} · {t('admin.contractsPage.view', 'Ver Contrato')}</span>
@@ -1096,6 +1020,16 @@ export default function ReservationManagementPage() {
                                     {t('admin.reservationsManagement.carDelivered', 'Auto Entregado')}
                                   </button>
                                 )}
+                                {(r.estado === 'en_curso' || r.estado === 'finalizada') && (
+                                  <button
+                                    type="button"
+                                    onClick={() => abrirNovedades(r)}
+                                    title={t('hc.ver_las_novedades_registradas_en_la_en', 'Ver las novedades registradas en la entrega y sus fotografías')}
+                                    style={{ background: 'var(--brand-soft, #eff6ff)', color: 'var(--brand-text, var(--brand-primary, #2563eb))', border: '1px solid var(--borde, #e2e8f0)', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', cursor: 'pointer' }}
+                                  >
+                                    Ver novedades
+                                  </button>
+                                )}
                               </div>
                             </td>
                             <td style={{ textAlign: 'center' }}>
@@ -1125,6 +1059,16 @@ export default function ReservationManagementPage() {
                                     style={{ background: 'var(--borde, #e2e8f0)', color: 'var(--texto-second, #64748b)', border: 'none', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', cursor: 'not-allowed' }}
                                   >
                                     {t('admin.reservationsManagement.carReturned', 'Auto Devuelto')}
+                                  </button>
+                                )}
+                                {r.estado === 'finalizada' && (
+                                  <button
+                                    type="button"
+                                    onClick={() => abrirNovedades(r)}
+                                    title={t('hc.ver_las_novedades_registradas_en_la_de', 'Ver las novedades registradas en la devolución y sus fotografías')}
+                                    style={{ background: 'var(--brand-soft, #eff6ff)', color: 'var(--brand-text, var(--brand-primary, #2563eb))', border: '1px solid var(--borde, #e2e8f0)', padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', cursor: 'pointer' }}
+                                  >
+                                    Ver novedades
                                   </button>
                                 )}
                               </div>
@@ -1225,7 +1169,7 @@ export default function ReservationManagementPage() {
                   </div>
                   <div className="reserva-detail-field">
                     <small>{t('admin.reservationsManagement.detailModal.dropoffDateTime', 'Fecha y Hora de Devolución:')}</small>
-                    <strong style={{ color: '#0284c7' }}>{modalDetalle.fechaFin?.replace('T', ' ')}</strong>
+                    <strong style={{ color: 'var(--brand-text)' }}>{modalDetalle.fechaFin?.replace('T', ' ')}</strong>
                   </div>
                 </div>
               </div>
@@ -1239,7 +1183,7 @@ export default function ReservationManagementPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div className="reserva-detail-field">
                     <small>{t('admin.reservationsManagement.detailModal.insuranceCoverage', 'Cobertura de Seguro:')}</small>
-                    <strong>{modalDetalle.reservaDetalles?.cobertura?.nombre || modalDetalle.cobertura || 'Protección Estándar CDW'}</strong>
+                    <strong>{modalDetalle.reservaDetalles?.cobertura?.nombre || modalDetalle.cobertura || t('hc2.proteccion_estandar_cdw', 'Protección Estándar CDW')}</strong>
                   </div>
 
                   <div className="reserva-detail-field">
@@ -1299,8 +1243,8 @@ export default function ReservationManagementPage() {
                     <small>{t('admin.reservationsManagement.detailModal.discountCoupon', 'Cupón de Descuento:')}</small>
                     <strong>
                       {modalDetalle.cuponCodigo || modalDetalle.reservaDetalles?.cuponAplicado
-                        ? `Aplicó (${modalDetalle.cuponCodigo || 'DRIVIQUE2026'})`
-                        : 'No aplicó'}
+                        ? t('hc3.coupon_applied', { defaultValue: 'Aplicó ({{codigo}})', codigo: modalDetalle.cuponCodigo || 'DRIVIQUE2026' })
+                        : t('hc2.no_aplico', 'No aplicó')}
                     </strong>
                   </div>
                 </div>
@@ -1319,13 +1263,13 @@ export default function ReservationManagementPage() {
                     <div>
                       <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>{t('admin.reservationsManagement.detailModal.paymentMethod', 'Medio de Pago:')}</small>
                       <strong style={{ display: 'block', fontSize: 12 }}>
-                        {modalDetalle.reservaDetalles?.metodoPago?.includes('efectivo') ? 'Pago Presencial en Sucursal' : 'Wompi - Pasarela Digital'}
+                        {modalDetalle.reservaDetalles?.metodoPago?.includes('efectivo') ? t('hc2.pago_presencial_en_sucursal', 'Pago Presencial en Sucursal') : 'Wompi - Pasarela Digital'}
                       </strong>
                     </div>
                     <div>
                       <small style={{ color: 'var(--city-muted)', fontSize: 11 }}>{t('admin.reservationsManagement.detailModal.paymentStatus', 'Estado del Pago:')}</small>
                       <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: 999, fontSize: 11, fontWeight: 700, background: modalDetalle.pagoEstado === 'aprobado' || modalDetalle.metodoPagoConfirmado ? '#ecfdf5' : '#fffbe1', color: modalDetalle.pagoEstado === 'aprobado' || modalDetalle.metodoPagoConfirmado ? '#047857' : '#b45309' }}>
-                        {modalDetalle.pagoEstado === 'aprobado' || modalDetalle.metodoPagoConfirmado ? 'Pago Recibido' : 'No Recibido'}
+                        {modalDetalle.pagoEstado === 'aprobado' || modalDetalle.metodoPagoConfirmado ? t('hc2.pago_recibido', 'Pago Recibido') : t('hc5.not_received', 'No Recibido')}
                       </span>
                     </div>
                   </div>
@@ -1348,6 +1292,8 @@ export default function ReservationManagementPage() {
               </div>
             </div>
 
+            <InspectionNovelties reserva={modalDetalle} formatMoney={(value) => formatCurrency(value, moneda || 'COP', tasaUSD)} />
+
             {/* Gestión de Logística a Domicilio (Encargado de Sucursal) */}
             {(modalDetalle.sucursalRetiro === 'domicilio' || modalDetalle.sucursalDevolucion === 'domicilio' || modalDetalle.domicilioDireccion) && (
               <div className="reserva-detail-card-box" style={{ background: 'var(--city-bg-sub, var(--bg-seccion1, #f8fafc))', border: '1.5px solid var(--brand-border-light, var(--borde, #cbd5e1))' }}>
@@ -1358,7 +1304,7 @@ export default function ReservationManagementPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
                   {modalDetalle.domicilioDireccion && (
                     <div className="reserva-detail-field">
-                      <small>Dirección de Entrega (Retiro):</small>
+                      <small>{t('hc.direccion_de_entrega_retiro', 'Dirección de Entrega (Retiro):')}</small>
                       <strong>{modalDetalle.domicilioDireccion}</strong>
                       {modalDetalle.domicilioBarrio && <small style={{ color: 'var(--city-muted)' }}>Barrio: {modalDetalle.domicilioBarrio}</small>}
                       {modalDetalle.domicilioReferencias && <small style={{ color: 'var(--city-muted)' }}>Ref: {modalDetalle.domicilioReferencias}</small>}
@@ -1366,20 +1312,20 @@ export default function ReservationManagementPage() {
                   )}
                   {modalDetalle.domicilioDevolucionDireccion && (
                     <div className="reserva-detail-field">
-                      <small>Dirección de Recogida (Devolución):</small>
+                      <small>{t('hc.direccion_de_recogida_devolucion', 'Dirección de Recogida (Devolución):')}</small>
                       <strong>{modalDetalle.domicilioDevolucionDireccion}</strong>
                     </div>
                   )}
                   {(modalDetalle.domicilioPuntos || []).map((p) => (
                     <div key={p.id} className="reserva-detail-field">
-                      <small>{p.tipo === 'PICKUP' ? 'Conductor de la entrega:' : 'Conductor de la devolución:'}</small>
+                      <small>{p.tipo === 'PICKUP' ? t('hc2.conductor_de_la_entrega', 'Conductor de la entrega:') : t('hc2.conductor_de_la_devolucion', 'Conductor de la devolución:')}</small>
                       <strong>
                         {p.conductor
                           ? `${p.conductor}${p.conductorTelefono ? ` · ${p.conductorTelefono}` : ''}`
-                          : 'Sin conductor asignado'}
+                          : t('hc2.sin_conductor_asignado', 'Sin conductor asignado')}
                       </strong>
                       <small style={{ color: 'var(--city-muted)' }}>
-                        Estado: {p.estado === 'COMPLETED' ? 'Completado' : p.estado === 'ASSIGNED' ? 'Asignado' : 'Pendiente'}
+                        {t('hc5.status_label', 'Estado')}: {p.estado === 'COMPLETED' ? t('hc5.completed_m', 'Completado') : p.estado === 'ASSIGNED' ? t('hc5.assigned_m', 'Asignado') : t('hc5.pending_m', 'Pendiente')}
                       </small>
                     </div>
                   ))}
@@ -1660,7 +1606,7 @@ export default function ReservationManagementPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>{zoomImage.title}</h3>
-                <span style={{ fontSize: 12, color: 'var(--texto-second, #64748b)' }}>Vista ampliada del vehículo</span>
+                <span style={{ fontSize: 12, color: 'var(--texto-second, #64748b)' }}>{t('hc.vista_ampliada_del_vehiculo', 'Vista ampliada del vehículo')}</span>
               </div>
               <button
                 type="button"
@@ -1738,7 +1684,7 @@ export default function ReservationManagementPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, borderBottom: '1px solid var(--borde, #e2e8f0)', paddingBottom: 14 }}>
               <div>
                 <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--brand-primary, #2563eb)' }}>
-                  {zoomPdf.docType === 'license' ? 'Licencia de Conducción Oficial' : 'Documento de Identidad Oficial'}
+                  {zoomPdf.docType === 'license' ? t('hc2.licencia_de_conduccion_oficial', 'Licencia de Conducción Oficial') : t('hc2.documento_de_identidad_oficial', 'Documento de Identidad Oficial')}
                 </span>
                 <h3 style={{ margin: '4px 0 0', fontSize: 18, fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>
                   {zoomPdf.title}
@@ -1812,7 +1758,7 @@ export default function ReservationManagementPage() {
                     style={{ width: '100%', height: '62vh', borderRadius: 12, border: 'none' }}
                   >
                     <p style={{ textAlign: 'center', padding: 24, color: 'var(--texto-second, #64748b)' }}>
-                      El visor embebido no pudo cargar el PDF. <a href={zoomPdf.url} target="_blank" rel="noreferrer" style={{ color: 'var(--brand-primary, #2563eb)', fontWeight: 700 }}>Abrir en pestaña nueva</a>
+                      El visor embebido no pudo cargar el PDF. <a href={zoomPdf.url} target="_blank" rel="noreferrer" style={{ color: 'var(--brand-primary, #2563eb)', fontWeight: 700 }}>{t('hc.abrir_en_pestana_nueva', 'Abrir en pestaña nueva')}</a>
                     </p>
                   </object>
                 </div>
@@ -1826,17 +1772,17 @@ export default function ReservationManagementPage() {
                   boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.04)',
                 }}>
                   {/* Encabezado del Documento Oficial */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid #2563eb', paddingBottom: 14, marginBottom: 18 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid var(--brand-primary)', paddingBottom: 14, marginBottom: 18 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, var(--brand-primary-hover) 0%, var(--brand-primary) 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <FaIdCard size={22} />
                       </div>
                       <div>
-                        <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: '0.12em', color: '#1e3a8a', textTransform: 'uppercase' }}>
+                        <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: '0.12em', color: 'var(--brand-text)', textTransform: 'uppercase' }}>
                           REPÚBLICA DE COLOMBIA · SISTEMA NACIONAL RUNT
                         </span>
                         <h4 style={{ margin: 0, fontSize: 16, fontWeight: 900, color: 'var(--texto-primary, #0f172a)' }}>
-                          {zoomPdf.docType === 'license' ? 'LICENCIA DE CONDUCCIÓN VEHICULAR' : 'DOCUMENTO NACIONAL DE IDENTIDAD'}
+                          {zoomPdf.docType === 'license' ? t('hc2.licencia_de_conduccion_vehicular', 'LICENCIA DE CONDUCCIÓN VEHICULAR') : t('hc2.documento_nacional_de_identidad', 'DOCUMENTO NACIONAL DE IDENTIDAD')}
                         </h4>
                       </div>
                     </div>
@@ -1870,7 +1816,7 @@ export default function ReservationManagementPage() {
                       <span style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>
                         Número de Documento
                       </span>
-                      <strong style={{ fontSize: 15, color: '#2563eb', fontFamily: 'monospace', display: 'block' }}>
+                      <strong style={{ fontSize: 15, color: 'var(--brand-text)', fontFamily: 'monospace', display: 'block' }}>
                         {zoomPdf.cliDoc || '10203040'}
                       </strong>
                     </div>
@@ -1880,16 +1826,16 @@ export default function ReservationManagementPage() {
                         Tipo de Documento
                       </span>
                       <strong style={{ fontSize: 13, color: 'var(--texto-primary, #0f172a)', display: 'block' }}>
-                        {zoomPdf.tipoDoc || 'Cédula de Ciudadanía'}
+                        {zoomPdf.tipoDoc || t('hc2.cedula_de_ciudadania', 'Cédula de Ciudadanía')}
                       </strong>
                     </div>
 
                     <div style={{ background: 'var(--bg-tarjeta, #ffffff)', padding: '12px 14px', borderRadius: 12, border: '1px solid var(--borde, #e2e8f0)' }}>
                       <span style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', display: 'block', marginBottom: 4 }}>
-                        {zoomPdf.docType === 'license' ? 'Categorías Autorizadas' : 'Nacionalidad'}
+                        {zoomPdf.docType === 'license' ? t('hc2.categorias_autorizadas', 'Categorías Autorizadas') : 'Nacionalidad'}
                       </span>
                       <strong style={{ fontSize: 13, color: 'var(--texto-primary, #0f172a)', display: 'block' }}>
-                        {zoomPdf.docType === 'license' ? 'B1, C1 (Automóviles y Camionetas)' : 'Colombiana'}
+                        {zoomPdf.docType === 'license' ? t('hc2.b1_c1_automoviles_y_camionetas', 'B1, C1 (Automóviles y Camionetas)') : 'Colombiana'}
                       </strong>
                     </div>
                   </div>
@@ -1904,12 +1850,12 @@ export default function ReservationManagementPage() {
                     padding: '12px 16px',
                     borderRadius: 12,
                     background: 'var(--bg-tarjeta, #ffffff)',
-                    border: '1px dashed #3b82f6'
+                    border: '1px dashed var(--brand-primary)'
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <FaShieldAlt size={22} color="#2563eb" />
+                      <FaShieldAlt size={22} color="var(--brand-primary)" />
                       <div>
-                        <span style={{ fontSize: 11, fontWeight: 800, color: '#1e3a8a', display: 'block' }}>
+                        <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--brand-text)', display: 'block' }}>
                           Expediente Validado en Sucursal Drivique
                         </span>
                         <span style={{ fontSize: 11, color: 'var(--texto-second, #64748b)' }}>
@@ -1919,7 +1865,7 @@ export default function ReservationManagementPage() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#059669', fontWeight: 700 }}>
                       <FaCheckCircle size={13} />
-                      <span>Conforme Ley 769 de 2002</span>
+                      <span>{t('hc.conforme_ley_769_de_2002', 'Conforme Ley 769 de 2002')}</span>
                     </div>
                   </div>
                 </div>

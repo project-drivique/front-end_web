@@ -1,4 +1,5 @@
 import { PaymentStrategy } from './PaymentStrategy';
+import i18n from '@/i18n'
 
 /**
  * Estrategia Concreta: CashPaymentStrategy
@@ -6,7 +7,7 @@ import { PaymentStrategy } from './PaymentStrategy';
  */
 export class CashPaymentStrategy extends PaymentStrategy {
   constructor() {
-    super('cash', 'Pago en Mostrador de Sucursal');
+    super('cash', i18n.t('hc2.pago_en_mostrador_de_sucursal', 'Pago en Mostrador de Sucursal'));
   }
 
   /**
@@ -19,7 +20,7 @@ export class CashPaymentStrategy extends PaymentStrategy {
 
     return {
       success: true,
-      message: 'Instrucciones de pago en sucursal registradas.',
+      message: i18n.t('hc.instrucciones_de_pago_en_sucursal_regi', 'Instrucciones de pago en sucursal registradas.'),
       reference,
       amountInCents,
       isOffline: true,

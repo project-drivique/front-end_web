@@ -241,7 +241,7 @@ export default function CatalogoPage() {
               <button
                 type="button"
                 onClick={() => setModalFechasAbierto(true)}
-                aria-label="Buscar por fechas y sucursal"
+                aria-label={t('hc.buscar_por_fechas_y_sucursal', 'Buscar por fechas y sucursal')}
                 style={{
                   height: '44px',
                   width: '44px',
@@ -256,7 +256,7 @@ export default function CatalogoPage() {
                   cursor: 'pointer',
                   boxShadow: '0 2px 10px rgba(var(--brand-secondary-rgb), 0.04)',
                 }}
-                title="Seleccionar ciudad, sucursal y fechas"
+                title={t('hc.seleccionar_ciudad_sucursal_y_fechas', 'Seleccionar ciudad, sucursal y fechas')}
               >
                 <FaCalendarAlt size={17} color={c.accentText} />
               </button>

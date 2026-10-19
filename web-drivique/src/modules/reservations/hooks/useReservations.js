@@ -24,8 +24,8 @@ export function useHistorialReservas() {
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
 
-  const cargarReservas = useCallback(async () => {
-    setCargando(true)
+  const cargarReservas = useCallback(async (silencioso = false) => {
+    if (!silencioso) setCargando(true)
     setError(null)
     try {
       const data = await reservationsService.getReservas()
@@ -45,13 +45,15 @@ export function useHistorialReservas() {
              eligibility = await reservationsService.checkReviewEligibility(r.id)
           }
 
-          const vehiculoFinal = vehiculoCatalog || r.vehiculo || (r.vehicleModel ? {
-            id: vehiculoId,
-            nombre: r.vehicleModel,
-            marca: r.vehicleModel,
-            placa: r.vehiclePlate,
-            sucursal: r.sucursal || '',
-          } : null)
+          const rawPlate = r.vehiclePlate || r.plate || r.placa || vehiculoCatalog?.placa || vehiculoCatalog?.plate || r.vehiculo?.placa || r.reservaDetalles?.placa || ''
+          const vehiculoFinal = (vehiculoCatalog || r.vehiculo || r.vehicleModel) ? {
+            ...(vehiculoCatalog || r.vehiculo || {}),
+            id: vehiculoId || vehiculoCatalog?.id || r.vehiculo?.id,
+            nombre: vehiculoCatalog?.nombre || r.vehiculo?.nombre || r.vehicleModel || '',
+            marca: vehiculoCatalog?.marca || r.vehiculo?.marca || r.vehicleModel || '',
+            placa: rawPlate,
+            sucursal: vehiculoCatalog?.sucursal || r.sucursal || r.vehiculo?.sucursal || '',
+          } : null
 
           return {
             ...r,
@@ -83,13 +85,28 @@ export function useHistorialReservas() {
       console.error('[useHistorialReservas] Error:', err)
       setError(t('reservas.error', 'No se pudieron cargar las reservas'))
     } finally {
-      setCargando(false)
+      if (!silencioso) setCargando(false)
     }
   }, [t])
 
   useEffect(() => {
     cargarReservas()
   }, [cargarReservas])
+
+  // Polling automático cada 4 segundos cuando hay reservas pendientes de validación de documentos o de pago
+  useEffect(() => {
+    const tienePendientes = reservas.some(r => {
+      const st = String(r.status || r.estado || r.estadoRaw || '').toUpperCase()
+      return st.includes('PENDING') || st.includes('PENDIENTE')
+    })
+    if (!tienePendientes) return
+
+    const interval = setInterval(() => {
+      cargarReservas(true)
+    }, 4000)
+
+    return () => clearInterval(interval)
+  }, [reservas, cargarReservas])
 
   const cancelarReserva = async (id) => {
     await reservationsService.cancelarReserva(id)
@@ -99,10 +116,18 @@ export function useHistorialReservas() {
   const guardarValoracion = async (id, valoracion) => {
     const guardada = await reservationsService.guardarValoracion(id, valoracion)
     setReservas(prev => prev.map(r => r.id === id
-      ? { ...r, valoracion: guardada, eligibility: { ...(r.eligibility || {}), canReviewVehicle: false } }
+      ? { ...r, valoracion: guardada, eligibility: { ...(r.eligibility || {}), canReviewVehicle: false, vehicleReview: { rating: valoracion.estrellas, comment: valoracion.comentario || '' } } }
       : r))
     return guardada
   }
 
-  return { reservas, cargando, error, recargar: cargarReservas, cancelarReserva, guardarValoracion }
+  const guardarResenaSucursal = async (id, branchId, resena) => {
+    const guardada = await reservationsService.guardarResenaSucursal(id, branchId, resena)
+    setReservas(prev => prev.map(r => r.id === id
+      ? { ...r, eligibility: { ...(r.eligibility || {}), canReviewBranch: false, branchReview: { rating: resena.estrellas, comment: resena.comentario || '' } } }
+      : r))
+    return guardada
+  }
+
+  return { reservas, cargando, error, recargar: cargarReservas, cancelarReserva, guardarValoracion, guardarResenaSucursal }
 }

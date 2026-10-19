@@ -1,17 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  FaEnvelope,
-  FaMobileAlt,
-  FaBell,
-  FaLaptop,
-  FaBullhorn,
-  FaSave,
-  FaCheckCircle,
-  FaExclamationTriangle,
-  FaShieldAlt,
-  FaSpinner,
-} from 'react-icons/fa'
+import { FaEnvelope, FaBell, FaLaptop, FaBullhorn, FaSave, FaCheckCircle, FaExclamationTriangle, FaShieldAlt, FaSpinner } from 'react-icons/fa'
 import { userService } from '@/services/userService'
 import './DeliveryPreferencesForm.css'
 
@@ -109,18 +98,18 @@ export default function DeliveryPreferencesForm({ onGuardadoExitoso }) {
       titulo: t('notificaciones.canales.emailTitulo', 'Correo electrónico'),
       descripcion: t(
         'notificaciones.canales.emailDesc',
-        'Recibe confirmaciones de reservas, contratos digitales, facturas y alertas críticas en tu buzón.'
+        t('hc2.recibe_confirmaciones_de_reservas_cont', 'Recibe confirmaciones de reservas, contratos digitales, facturas y alertas críticas en tu buzón.')
       ),
       icono: <FaEnvelope />,
-      colorIcono: '#2563eb',
-      bgIcono: 'rgba(37, 99, 235, 0.1)',
+      colorIcono: 'var(--brand-primary)',
+      bgIcono: 'rgba(var(--brand-primary-rgb), 0.1)',
     },
     {
       id: 'pushNotifications',
       titulo: t('notificaciones.canales.pushTitulo', 'Notificaciones Push Móviles'),
       descripcion: t(
         'notificaciones.canales.pushDesc',
-        'Alertas instantáneas en tu dispositivo móvil sobre el estado de tu alquiler en tiempo real.'
+        t('hc2.alertas_instantaneas_en_tu_dispositivo', 'Alertas instantáneas en tu dispositivo móvil sobre el estado de tu alquiler en tiempo real.')
       ),
       icono: <FaBell />,
       colorIcono: '#8b5cf6',
@@ -131,10 +120,10 @@ export default function DeliveryPreferencesForm({ onGuardadoExitoso }) {
       titulo: t('notificaciones.canales.inAppTitulo', 'Notificaciones en Plataforma Web'),
       descripcion: t(
         'notificaciones.canales.inAppDesc',
-        'Muestra alertas en la bandeja de entrada y el badge del contador de la barra de navegación.'
+        t('hc2.muestra_alertas_en_la_bandeja_de_entra', 'Muestra alertas en la bandeja de entrada y el badge del contador de la barra de navegación.')
       ),
       icono: <FaLaptop />,
-      colorIcono: '#0284c7',
+      colorIcono: 'var(--brand-primary)',
       bgIcono: 'rgba(2, 132, 199, 0.1)',
     },
     {
@@ -142,7 +131,7 @@ export default function DeliveryPreferencesForm({ onGuardadoExitoso }) {
       titulo: t('notificaciones.canales.marketingTitulo', 'Promociones y Ofertas Comerciales'),
       descripcion: t(
         'notificaciones.canales.marketingDesc',
-        'Consentimiento para recibir cupones de descuento, promociones exclusivas y lanzamientos de flota.'
+        t('hc2.consentimiento_para_recibir_cupones_de', 'Consentimiento para recibir cupones de descuento, promociones exclusivas y lanzamientos de flota.')
       ),
       icono: <FaBullhorn />,
       colorIcono: '#f59e0b',
@@ -170,7 +159,7 @@ export default function DeliveryPreferencesForm({ onGuardadoExitoso }) {
             <p>
               {t(
                 'notificaciones.prefSubtitulo',
-                'Elige por qué canales deseas recibir notificaciones. Las alertas de alta criticidad (seguridad y pagos) se envían siempre.'
+                t('hc2.elige_por_que_canales_deseas_recibir_n', 'Elige por qué canales deseas recibir notificaciones. Las alertas de alta criticidad (seguridad y pagos) se envían siempre.')
               )}
             </p>
           </div>
@@ -211,7 +200,7 @@ export default function DeliveryPreferencesForm({ onGuardadoExitoso }) {
                 <div className="pref-canal-nombre-row">
                   <h4>{canal.titulo}</h4>
                   {canal.esConsentimiento && (
-                    <span className="pref-tag-consentimiento">Consentimiento</span>
+                    <span className="pref-tag-consentimiento">{t('hc4.consentimiento', 'Consentimiento')}</span>
                   )}
                 </div>
                 <p>{canal.descripcion}</p>

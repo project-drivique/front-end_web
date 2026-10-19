@@ -123,7 +123,7 @@ body.dark .branch-breadcrumb-title,
 }
 
 .branch-icon-btn:focus-visible {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.2);
 }
 
 .branch-notification-badge {
@@ -257,7 +257,7 @@ body.dark .branch-breadcrumb-title,
 }
 
 .branch-notif-mark-btn:hover {
-  background: rgba(37, 99, 235, 0.08);
+  background: rgba(var(--brand-primary-rgb), 0.08);
 }
 
 .branch-notif-list {
@@ -284,7 +284,7 @@ body.dark .branch-breadcrumb-title,
 }
 
 .branch-notif-item--unread {
-  background: rgba(37, 99, 235, 0.03);
+  background: rgba(var(--brand-primary-rgb), 0.03);
 }
 
 .branch-notif-icon-box {
@@ -434,14 +434,14 @@ body.dark .branch-breadcrumb-title,
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: rgba(37, 99, 235, 0.1);
+  background: rgba(var(--brand-primary-rgb), 0.1);
   color: var(--brand-primary, #2563eb);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 2px 8px rgba(var(--brand-primary-rgb), 0.12);
 }
 
 .branch-notif-drawer-title-row {
@@ -516,7 +516,7 @@ body.dark .branch-breadcrumb-title,
   background: var(--brand-primary, #2563eb) !important;
   color: #ffffff !important;
   border-color: var(--brand-primary, #2563eb) !important;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 2px 6px rgba(var(--brand-primary-rgb), 0.25);
 }
 
 .branch-notif-drawer-body {
@@ -662,7 +662,7 @@ body.dark .branch-breadcrumb-title,
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: rgba(37, 99, 235, 0.08);
+  background: rgba(var(--brand-primary-rgb), 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -729,7 +729,7 @@ body.dark .branch-breadcrumb-title,
 
 body.dark .branch-notif-empty-icon-box,
 .management-shell--dark .branch-notif-empty-icon-box {
-  background: rgba(37, 99, 235, 0.15);
+  background: rgba(var(--brand-primary-rgb), 0.15);
 }
 
 body.dark .branch-notif-empty-alert-box,
@@ -813,7 +813,7 @@ body.dark .branch-notif-modal-card,
 
 body.dark .branch-notif-modal-card--unread,
 .management-shell--dark .branch-notif-modal-card--unread {
-  background: rgba(37, 99, 235, 0.08);
+  background: rgba(var(--brand-primary-rgb), 0.08);
 }
 
 body.dark .branch-notif-modal-card-title,
@@ -838,7 +838,7 @@ body.dark .branch-notif-card-bottom-actions,
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.18);
+  box-shadow: 0 8px 24px rgba(var(--brand-primary-rgb), 0.18);
   box-sizing: border-box;
 }
 
@@ -959,7 +959,7 @@ body.dark .branch-notif-card-bottom-actions,
 .branch-kpi-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
-  border-color: rgba(37, 99, 235, 0.3);
+  border-color: rgba(var(--brand-primary-rgb), 0.3);
 }
 
 .branch-kpi-card-header {
@@ -1133,7 +1133,7 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-kpi-progress-bar--brand {
-  background: #2563eb;
+  background: var(--brand-primary);
 }
 
 .branch-kpi-card-footer {
@@ -1227,7 +1227,7 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-title-icon-box--blue {
-  background: #eff6ff;
+  background: var(--brand-soft);
   color: var(--brand-primary, #2563eb);
 }
 
@@ -1257,7 +1257,7 @@ body.dark .branch-notif-card-bottom-actions,
 .branch-hourly-stats-pill {
   font-size: 12.5px;
   color: var(--brand-primary, #2563eb);
-  background: #eff6ff;
+  background: var(--brand-soft);
   padding: 4px 12px;
   border-radius: 20px;
   font-weight: 600;
@@ -1321,7 +1321,7 @@ body.dark .branch-notif-card-bottom-actions,
 .branch-schedule-pill-tab--active {
   background: var(--brand-primary, #2563eb);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 4px 12px rgba(var(--brand-primary-rgb), 0.25);
 }
 
 .branch-empty-row {
@@ -1442,9 +1442,9 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-avatar--soft-blue {
-  background: #eff6ff;
-  color: #1d4ed8;
-  border: 1px solid #dbeafe;
+  background: var(--brand-soft);
+  color: var(--brand-text);
+  border: 1px solid var(--brand-soft-strong);
 }
 
 .branch-avatar--soft-teal {
@@ -1530,9 +1530,9 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-status-badge--blue {
-  background: rgba(37, 99, 235, 0.08);
-  color: #1d4ed8;
-  border: 1px solid rgba(37, 99, 235, 0.22);
+  background: rgba(var(--brand-primary-rgb), 0.08);
+  color: var(--brand-text);
+  border: 1px solid rgba(var(--brand-primary-rgb), 0.22);
 }
 
 .branch-status-badge--cyan {
@@ -1575,7 +1575,7 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-action-icon-btn--eye:hover {
-  background: #eff6ff;
+  background: var(--brand-soft);
   color: var(--brand-primary, #2563eb);
   border-color: var(--brand-primary, #2563eb);
 }
@@ -1587,7 +1587,7 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-action-icon-btn:focus-visible {
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 0 0 2px rgba(var(--brand-primary-rgb), 0.3);
 }
 
 .branch-schedule-footer {
@@ -1614,7 +1614,7 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-link-btn:hover {
-  background: #eff6ff;
+  background: var(--brand-soft);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -1686,7 +1686,7 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-inline-calendar .react-datepicker__day:hover {
-  background-color: #eff6ff;
+  background-color: var(--brand-soft);
   color: var(--brand-primary, #2563eb);
 }
 
@@ -1739,7 +1739,7 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-preset-btn:hover {
-  background: #eff6ff;
+  background: var(--brand-soft);
   color: var(--brand-primary, #2563eb);
 }
 
@@ -1819,8 +1819,8 @@ body.dark .branch-notif-card-bottom-actions,
 
 .branch-dot--amber { background: #f59e0b; }
 .branch-dot--red { background: #ef4444; }
-.branch-dot--blue { background: #2563eb; }
-.branch-dot--cyan { background: #0284c7; }
+.branch-dot--blue { background: var(--brand-primary); }
+.branch-dot--cyan { background: var(--brand-primary); }
 .branch-dot--green { background: #10b981; }
 
 .branch-arrow {
@@ -1960,7 +1960,7 @@ body.dark .branch-notif-card-bottom-actions,
 }
 
 .branch-fleet-bar-seg--blue {
-  background: #3b82f6;
+  background: var(--brand-primary);
 }
 
 .branch-fleet-bar-seg--cyan {
@@ -2309,8 +2309,8 @@ html.dark .branch-action-icon-btn,
 
 html.dark .branch-kpi-circle-icon--blue,
 .management-shell--dark .branch-kpi-circle-icon--blue {
-  background: rgba(37, 99, 235, 0.2);
-  color: #60a5fa;
+  background: rgba(var(--brand-primary-rgb), 0.2);
+  color: var(--brand-text);
 }
 
 html.dark .branch-kpi-circle-icon--green,
@@ -2469,7 +2469,7 @@ html.dark .branch-schedule-pill-tab--active,
 }
 
 .native-cal-nav-btn:hover {
-  background: #eff6ff;
+  background: var(--brand-soft);
   color: var(--brand-primary, #2563eb);
   border-color: var(--brand-primary, #2563eb);
 }
@@ -2511,7 +2511,7 @@ html.dark .branch-schedule-pill-tab--active,
 }
 
 .native-cal-day:hover:not(.native-cal-day--disabled) {
-  background: #eff6ff;
+  background: var(--brand-soft);
   color: var(--brand-primary, #2563eb);
 }
 
@@ -2541,7 +2541,7 @@ html.dark .branch-schedule-pill-tab--active,
 }
 
 .native-cal-day--in-range {
-  background: #eff6ff !important;
+  background: var(--brand-soft) !important;
   color: var(--brand-primary, #2563eb) !important;
   border-radius: 0;
   font-weight: 600;
@@ -2813,10 +2813,10 @@ html.dark .branch-schedule-pill-tab--active,
 }
 
 .branch-stepper-step--active .branch-stepper-circle {
-  background: #eff6ff;
-  border-color: #2563eb;
-  color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  background: var(--brand-soft);
+  border-color: var(--brand-primary);
+  color: var(--brand-text);
+  box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.15);
 }
 
 .branch-stepper-step--pending .branch-stepper-circle {

@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
-import { useAuthStore } from '../../../store/authStore'
-import { promotionManagementService } from '../../../services/promotionManagementService'
 import { formatCurrency } from '@/utils/currencyUtils'
 
 import { FaHeart, FaRegHeart, FaCogs, FaGasPump, FaCar, FaStar, FaMapMarkerAlt, FaChevronRight, FaChevronLeft } from 'react-icons/fa'
@@ -12,18 +10,13 @@ function getSafeImages(vehiculo) {
   const imgs = vehiculo.imagenes || vehiculo.fotos || []
   const arrayFiltrado = Array.isArray(imgs) ? imgs.filter(Boolean) : []
 
-  if (arrayFiltrado.length > 1) {
-    return arrayFiltrado.slice(0, 3)
+  if (arrayFiltrado.length > 0) {
+    return arrayFiltrado.slice(0, 8)
   }
 
-  const fotoBase = arrayFiltrado[0] || vehiculo.imagen || vehiculo.foto
-
+  const fotoBase = vehiculo.imagen || vehiculo.foto
   if (fotoBase) {
-    return [
-      fotoBase,
-      'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80',
-      'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80',
-    ]
+    return [fotoBase]
   }
 
   return ['']
@@ -49,7 +42,8 @@ const CAT_KEYS = {
 }
 
 function normalizeRating(vehiculo) {
-  if (!vehiculo.comentarios || vehiculo.comentarios.length === 0) return 0;
+  const total = Number(vehiculo.totalResenas ?? vehiculo.reviewCount ?? vehiculo.comentarios?.length ?? 0)
+  if (!total) return 0
   const r = Number(vehiculo.calificacion ?? vehiculo.rating ?? 0)
   return Number.isFinite(r) ? r : 0
 }
@@ -103,8 +97,6 @@ export default function TarjetaVehiculo({
   const rating = normalizeRating(vehiculo)
   const totalImagenes = imagenes.length
 
-  const estadoDisponible = true
-  const disponibleEnFechas = true
   const puedeReservar = true
 
   const badgeTexto = t('catalogo.available')
@@ -130,6 +122,10 @@ export default function TarjetaVehiculo({
 
   const handleReservar = (e) => {
     e.stopPropagation()
+    if (invitado) {
+      onGuestBlocked()
+      return
+    }
     if (!puedeReservar) return
     sessionStorage.setItem('drivique_selected_vehicle', JSON.stringify(vehiculo))
     sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
@@ -268,10 +264,10 @@ export default function TarjetaVehiculo({
 
         {totalImagenes > 1 && (
           <>
-            <button type="button" onClick={irImagenAnterior} aria-label="Imagen anterior" style={botonFlechaStyle('left')}>
+            <button type="button" onClick={irImagenAnterior} aria-label={t('hc4.imagen_anterior', 'Imagen anterior')} style={botonFlechaStyle('left')}>
               <FaChevronLeft size={10} />
             </button>
-            <button type="button" onClick={irImagenSiguiente} aria-label="Imagen siguiente" style={botonFlechaStyle('right')}>
+            <button type="button" onClick={irImagenSiguiente} aria-label={t('hc4.imagen_siguiente', 'Imagen siguiente')} style={botonFlechaStyle('right')}>
               <FaChevronRight size={10} />
             </button>
           </>
@@ -293,7 +289,7 @@ export default function TarjetaVehiculo({
               whiteSpace: 'nowrap',
             }}
           >
-            {CAT_KEYS[vehiculo.categoria] ? t(CAT_KEYS[vehiculo.categoria]) : (vehiculo.categoria || 'Económico')}
+            {CAT_KEYS[vehiculo.categoria] ? t(CAT_KEYS[vehiculo.categoria]) : (vehiculo.categoria || t('hc2.economico', 'Económico'))}
           </span>
 
           <span
