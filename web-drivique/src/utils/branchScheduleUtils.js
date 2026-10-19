@@ -1,4 +1,5 @@
 import { showAlert } from './swalConfig'
+import i18n from '@/i18n'
 
 export function getHorarioInfo(nombreSucursal) {
   if (!nombreSucursal) {
@@ -40,22 +41,39 @@ export function getHorarioInfo(nombreSucursal) {
   }
 }
 
-export function generarHorasDisponibles(lugar, minHora, maxHora) {
+export function generarHorasDisponibles(lugar, minHora, maxHora, fecha) {
   const { apertura, cierre } = getHorarioInfo(lugar)
   const [hInicio, mInicio] = apertura.split(':').map(Number)
   const [hFin, mFin] = cierre.split(':').map(Number)
 
+  const ahora = new Date()
+  const year = ahora.getFullYear()
+  const month = String(ahora.getMonth() + 1).padStart(2, '0')
+  const day = String(ahora.getDate()).padStart(2, '0')
+  const hoyStr = `${year}-${month}-${day}`
+
+  const cleanFecha = fecha ? String(fecha).split('T')[0] : null
+  const esHoy = cleanFecha === hoyStr
+  const esPasado = cleanFecha ? cleanFecha < hoyStr : false
+  const ahoraMinutos = ahora.getHours() * 60 + ahora.getMinutes()
+
   let minMins = -1
   if (minHora) {
-    const [mh, mm] = minHora.split(':').map(Number)
-    minMins = mh * 60 + mm
+    const [mh, mm] = String(minHora).split(':').map(Number)
+    if (!isNaN(mh) && !isNaN(mm)) {
+      minMins = mh * 60 + mm
+    }
   }
 
   let maxMins = Infinity
   if (maxHora) {
-    const [mh, mm] = maxHora.split(':').map(Number)
-    maxMins = mh * 60 + mm
+    const [mh, mm] = String(maxHora).split(':').map(Number)
+    if (!isNaN(mh) && !isNaN(mm)) {
+      maxMins = mh * 60 + mm
+    }
   }
+
+  if (esPasado) return []
 
   const horas = []
   for (let h = hInicio; h <= hFin; h++) {
@@ -64,8 +82,9 @@ export function generarHorasDisponibles(lugar, minHora, maxHora) {
       if (h === hFin && m > mFin) continue
 
       const totalMins = h * 60 + m
-      if (totalMins <= minMins) continue
-      if (totalMins > maxMins) continue
+      if (esHoy && totalMins <= ahoraMinutos) continue
+      if (minMins >= 0 && totalMins <= minMins) continue
+      if (maxMins < Infinity && totalMins > maxMins) continue
 
       horas.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`)
     }
@@ -90,9 +109,9 @@ export function verificarSiSucursalCerradaHoy(fechaISO, nombreSucursal) {
 
       showAlert({
         icon: 'warning',
-        title: 'Sucursal cerrada por hoy',
-        text: `La sucursal ${nombreFinal} atiende ${info.dias} · ${info.aperturaTexto} – ${info.cierreTexto}. Puedes reservar a partir de mañana.`,
-        confirmButtonText: 'Aceptar',
+        title: i18n.t('hc.sucursal_cerrada_por_hoy', 'Sucursal cerrada por hoy'),
+        text: i18n.t('hc3.branch_closed_today', { defaultValue: 'La sucursal {{sucursal}} atiende {{dias}} · {{apertura}} – {{cierre}}. Puedes reservar a partir de mañana.', sucursal: nombreFinal, dias: info.dias, apertura: info.aperturaTexto, cierre: info.cierreTexto }),
+        confirmButtonText: i18n.t('hc4.aceptar', 'Aceptar'),
       })
       return true
     }

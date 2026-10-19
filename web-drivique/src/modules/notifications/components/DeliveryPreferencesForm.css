@@ -88,9 +88,9 @@
 }
 
 .pref-canal-row.activo {
-  border-color: rgba(37, 99, 235, 0.4);
+  border-color: rgba(var(--brand-primary-rgb), 0.4);
   background: var(--bg-tarjeta, #ffffff);
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.05);
+  box-shadow: 0 4px 16px rgba(var(--brand-primary-rgb), 0.05);
 }
 
 .pref-canal-icon-wrap {
@@ -218,7 +218,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 4px 14px rgba(var(--brand-primary-rgb), 0.25);
   transition: all 150ms ease;
 }
 

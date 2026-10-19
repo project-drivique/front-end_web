@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { FaTimes, FaCar, FaTag } from 'react-icons/fa'
-import { useAuthStore } from '../../../store/authStore'
+import { isValidAuthToken, useAuthStore } from '../../../store/authStore'
 import { useLanding } from '../../landing/LandingContext'
 import { promotionManagementService } from '../../../services/promotionManagementService'
 import { formatCurrency } from '@/utils/currencyUtils'
@@ -33,9 +33,9 @@ export default function VehicleDetailsModal({
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const token = useAuthStore((s) => s.token)
   const usuario = useAuthStore((s) => s.usuario)
-  const esAutenticado = Boolean(token && token !== 'null' && token !== 'undefined' && usuario)
+  const token = useAuthStore((s) => s.token)
+  const esAutenticado = Boolean(usuario) && isValidAuthToken(token)
   const { tema, moneda } = useLanding()
   const esModoOscuro = tema === 'oscuro'
 
@@ -87,7 +87,7 @@ export default function VehicleDetailsModal({
       ...baseVehiculo,
       caracteristicas: baseVehiculo.caracteristicas || [],
       equipamientoTecnologico: baseVehiculo.equipamientoTecnologico || [],
-      seguros: baseVehiculo.seguros || [{ nombre: 'Protección Básica Estándar', precio: 0, descripcion: 'Cobertura estándar' }],
+      seguros: baseVehiculo.seguros || [{ nombre: t('hc2.proteccion_basica_estandar', 'Protección Básica Estándar'), precio: 0, descripcion: t('hc2.cobertura_estandar', 'Cobertura estándar') }],
       servicios: baseVehiculo.servicios || [],
       imagenes: baseVehiculo.imagenes || (baseVehiculo.imagen ? [baseVehiculo.imagen] : []),
       sucursalInfo: baseVehiculo.sucursalInfo || {
@@ -133,6 +133,10 @@ export default function VehicleDetailsModal({
   }
 
   const handleReservar = () => {
+    if (!esAutenticado) {
+      setBannerVisible(true)
+      return
+    }
     sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
     const q = promo?.codigo ? `?promo=${promo.codigo}` : ''
     onClose?.()
@@ -205,7 +209,7 @@ export default function VehicleDetailsModal({
                   <ImageGallery
                     imagenes={vehiculo.imagenes || []}
                     nombreVehiculo={vehiculo.nombre}
-                    calificacion={vehiculo.comentarios?.length ? vehiculo.calificacion : 0}
+                    calificacion={(vehiculo.comentarios?.length || vehiculo.totalResenas) ? vehiculo.calificacion : 0}
                     c={c}
                   />
                 </div>

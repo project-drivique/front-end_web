@@ -12,9 +12,18 @@ import {
 /**
  * Patrón Strategy / Factory: Generadores de notificaciones desacoplados por dominio operativo.
  */
+// Estados en los que ya no hay nada que gestionar: no se avisa de entregas/devoluciones ya resueltas
+const ENTREGA_LISTA = new Set(['CONFIRMADA', 'CONFIRMED'])
+// Sólo se espera recibir un vehículo que ya salió (reserva en curso); una reserva pendiente o sin entregar no tiene devolución por recibir
+const DEVOLUCION_PENDIENTE = new Set(['EN_CURSO', 'ACTIVE', 'IN_PROGRESS'])
+
 const NotificationFactory = {
   createDeliveryNotifications(deliveries = [], t) {
-    return deliveries.map((item, idx) => {
+    return deliveries.filter((item) => {
+      const estado = String(item.estado || '').toUpperCase()
+      // Sólo hay entrega por gestionar cuando la reserva está confirmada (pagada y firmada); pendientes de pago/firma/horario no
+      return estado.includes('DOCUMENT') || estado.includes('SCHEDULE') || ENTREGA_LISTA.has(estado)
+    }).map((item, idx) => {
       const isDocReview = String(item.estado || '').toUpperCase().includes('DOCUMENT')
       const isPendingSchedule = String(item.estado || '').toUpperCase().includes('SCHEDULE')
       const isDone = ['CONFIRMADA', 'COMPLETADA', 'ENTREGADA', 'completada'].includes(
@@ -35,8 +44,8 @@ const NotificationFactory = {
           badgeBg: 'rgba(217, 119, 6, 0.1)',
           badgeColor: '#b45309',
           codigo: resCode,
-          text: `Nueva Reserva #${resCode}: ${item.clienteNombre}`,
-          detail: `Vehículo ${item.vehiculoNombre} (${t('notifications.plate', 'Placa')}: ${item.vehiculoPlaca || 'Asignada'}). Requiere validación de documentos por el encargado.`,
+          text: t('hc3.notif_new_reservation', { defaultValue: 'Nueva Reserva #{{codigo}}: {{cliente}}', codigo: resCode, cliente: item.clienteNombre }),
+          detail: t('hc5.notif_vehicle_detail', { defaultValue: 'Vehículo {{vehiculo}} ({{etiqueta}}: {{placa}}). Requiere validación de documentos por el encargado.', vehiculo: item.vehiculoNombre, etiqueta: t('notifications.plate', 'Placa'), placa: item.vehiculoPlaca || t('hc5.assigned_f', 'Asignada') }),
           time: `${t('notifications.today', 'Hoy')} · ${item.hora || 'Prioritario'}`,
           isRead: false,
           route: '/encargado/documents',
@@ -55,11 +64,11 @@ const NotificationFactory = {
         category: 'operations',
         categoryLabel: t('notifications.scheduledDelivery', 'Entrega Programada'),
         icon: FaClipboardList,
-        iconColor: '#2563eb',
-        iconBg: '#eff6ff',
-        accentBorder: '#2563eb',
-        badgeBg: 'rgba(37, 99, 235, 0.1)',
-        badgeColor: '#1d4ed8',
+        iconColor: 'var(--brand-primary)',
+        iconBg: 'var(--brand-soft)',
+        accentBorder: 'var(--brand-primary)',
+        badgeBg: 'rgba(var(--brand-primary-rgb), 0.1)',
+        badgeColor: 'var(--brand-primary-hover)',
         codigo: resCode,
         text: `${t('notifications.delivery', 'Entrega')} #${resCode}: ${item.clienteNombre}`,
         detail: `${t('notifications.vehicle', 'Vehículo')} ${item.vehiculoNombre} (${t('notifications.plate', 'Placa')}: ${item.vehiculoPlaca || t('notifications.assigned', 'Asignada')}) ${t('notifications.scheduledFor', 'programado para las')} ${item.hora}.`,
@@ -70,6 +79,7 @@ const NotificationFactory = {
           search: resCode,
           openCodigo: resCode,
           autoOpen: true,
+          tab: 'datos_pago',
         },
         actionLabel: t('notifications.manageDelivery', 'Gestionar entrega'),
       }
@@ -77,7 +87,7 @@ const NotificationFactory = {
   },
 
   createReturnNotifications(returns = [], t) {
-    return returns.map((item, idx) => {
+    return returns.filter((item) => DEVOLUCION_PENDIENTE.has(String(item.estado || '').toUpperCase())).map((item, idx) => {
       const isDone = ['RECIBIDO', 'RECIBIDA', 'COMPLETADA', 'FINALIZADA'].includes(
         String(item.estado || '').toUpperCase()
       )
@@ -103,6 +113,7 @@ const NotificationFactory = {
           search: resCode,
           openCodigo: resCode,
           autoOpen: true,
+          tab: 'datos_pago',
         },
         actionLabel: t('notifications.receiveVehicle', 'Recibir vehículo'),
       }
@@ -129,7 +140,7 @@ const NotificationFactory = {
           badgeColor: '#b45309',
           codigo: code,
           text: `Validar Documentos: ${docItem.clienteNombre} (${code})`,
-          detail: `Vehículo: ${docItem.vehiculoNombre}. Cédula y Licencia en espera de verificación para entrega.`,
+          detail: t('hc3.notif_docs_waiting', { defaultValue: 'Vehículo: {{vehiculo}}. Cédula y Licencia en espera de verificación para entrega.', vehiculo: docItem.vehiculoNombre }),
           time: t('notifications.priority', 'Prioritario'),
           isRead: false,
           route: '/encargado/documents',
@@ -160,8 +171,89 @@ const NotificationFactory = {
       })
     }
 
-    // 2. Incidencias Abiertas
-    if (attentionNeeded.openIncidents > 0) {
+    // 1b. Reservas pendientes (registradas fuera de horario, sin pago o sin revisión): aviso para el encargado
+    if (Array.isArray(attentionNeeded.pendingReservationsList)) {
+      attentionNeeded.pendingReservationsList.forEach((r) => {
+        alerts.push({
+          id: `pending-res-${r.id}`,
+          type: 'pendingDocument',
+          category: 'attention',
+          categoryLabel: t('hc6.pending_reservation', 'Reserva pendiente'),
+          icon: FaClipboardList,
+          iconColor: '#d97706',
+          iconBg: '#fffbeb',
+          accentBorder: '#d97706',
+          badgeBg: 'rgba(217, 119, 6, 0.1)',
+          badgeColor: '#b45309',
+          codigo: r.codigo,
+          text: t('hc3.notif_new_reservation', { defaultValue: 'Nueva Reserva #{{codigo}}: {{cliente}}', codigo: r.codigo, cliente: r.clienteNombre }),
+          detail: `${r.vehiculoNombre || ''}${r.vehiculoPlaca ? ` (${r.vehiculoPlaca})` : ''} · ${r.fecha || ''} ${r.hora || ''}`.trim(),
+          time: t('hc6.pending_reservation', 'Reserva pendiente'),
+          isRead: false,
+          route: '/encargado/reservations',
+          navigationState: { search: r.codigo, openCodigo: r.codigo, autoOpen: true },
+          actionLabel: t('hc6.view_reservation', 'Ver reserva'),
+        })
+      })
+    }
+
+    // 1c. Entregas/devoluciones a domicilio sin conductor asignado
+    if (Array.isArray(attentionNeeded.pendingHomeDeliveries)) {
+      attentionNeeded.pendingHomeDeliveries.forEach((d) => {
+        const esDevolucion = d.tipo === 'RETURN'
+        alerts.push({
+          id: `home-${d.id}`,
+          type: 'pendingDocument',
+          category: 'attention',
+          categoryLabel: esDevolucion ? t('hc6.home_return', 'Devolución a domicilio') : t('hc6.home_delivery', 'Entrega a domicilio'),
+          icon: FaCar,
+          iconColor: '#d97706',
+          iconBg: '#fffbeb',
+          accentBorder: '#d97706',
+          badgeBg: 'rgba(217, 119, 6, 0.1)',
+          badgeColor: '#b45309',
+          codigo: d.codigo,
+          text: `${esDevolucion ? t('hc6.home_return', 'Devolución a domicilio') : t('hc6.home_delivery', 'Entrega a domicilio')} #${d.codigo}: ${d.clienteNombre}`,
+          detail: `${[d.direccion, d.barrio, d.ciudad].filter(Boolean).join(', ')} · ${d.fecha || ''} ${d.hora || ''}`.trim(),
+          time: t('hc6.assign_driver', 'Asignar conductor'),
+          isRead: false,
+          route: '/encargado/deliveries',
+          navigationState: { search: d.codigo },
+          actionLabel: t('hc6.assign_driver', 'Asignar conductor'),
+        })
+      })
+    }
+
+    // 2. Incidencias Abiertas: una notificación por cada incidencia (datos reales del servidor)
+    if (Array.isArray(attentionNeeded.openIncidentsList) && attentionNeeded.openIncidentsList.length > 0) {
+      attentionNeeded.openIncidentsList.forEach((inc) => {
+        const urgente = inc.prioridad === 'urgente' || inc.prioridad === 'alta'
+        const fecha = inc.fechaIso ? new Date(inc.fechaIso) : null
+        const hora = fecha && !Number.isNaN(fecha.getTime())
+          ? fecha.toLocaleString('es-CO', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+          : t('notifications.urgent', 'Urgente')
+        alerts.push({
+          id: `incident-${inc.id}`,
+          type: 'openIncident',
+          category: 'attention',
+          categoryLabel: t('notifications.operativeIncident', 'Incidencia Operativa'),
+          icon: FaExclamationTriangle,
+          iconColor: '#dc2626',
+          iconBg: '#fef2f2',
+          accentBorder: '#dc2626',
+          badgeBg: 'rgba(220, 38, 38, 0.1)',
+          badgeColor: '#b91c1c',
+          codigo: inc.codigo,
+          text: `${t('notifications.newIncident', 'Nueva incidencia')} ${inc.codigo}${urgente ? ` (${t('notifications.urgent', 'Urgente')})` : ''}`,
+          detail: [inc.tipo || inc.titulo, [inc.vehiculo, inc.placa].filter(Boolean).join(' · '), inc.reservaCodigo ? `${t('notifications.reservation', 'Reserva')} ${inc.reservaCodigo}` : ''].filter(Boolean).join(' — '),
+          time: hora,
+          isRead: false,
+          route: '/encargado/incidents',
+          navigationState: { search: inc.codigo },
+          actionLabel: t('notifications.viewIncidents', 'Ver incidencias'),
+        })
+      })
+    } else if (attentionNeeded.openIncidents > 0) {
       alerts.push({
         id: 'open-incident-alert',
         type: 'openIncident',
@@ -182,6 +274,32 @@ const NotificationFactory = {
       })
     }
 
+    // 2b. Incidencias atendidas en los últimos 3 días: se conservan como aviso informativo (ya leído)
+    if (Array.isArray(attentionNeeded.recentClosedIncidents)) {
+      attentionNeeded.recentClosedIncidents.forEach((inc) => {
+        alerts.push({
+          id: `incident-closed-${inc.id}`,
+          type: 'closedIncident',
+          category: 'attention',
+          categoryLabel: t('notifications.operativeIncident', 'Incidencia Operativa'),
+          icon: FaExclamationTriangle,
+          iconColor: '#16a34a',
+          iconBg: '#f0fdf4',
+          accentBorder: '#16a34a',
+          badgeBg: 'rgba(22, 163, 74, 0.1)',
+          badgeColor: '#15803d',
+          codigo: inc.codigo,
+          text: `${t('hc6.incident_resolved', 'Incidencia atendida')} ${inc.codigo}`,
+          detail: [inc.tipo || inc.titulo, [inc.vehiculo, inc.placa].filter(Boolean).join(' · '), inc.reservaCodigo ? `${t('notifications.reservation', 'Reserva')} ${inc.reservaCodigo}` : ''].filter(Boolean).join(' — '),
+          time: inc.fechaIso ? new Date(inc.fechaIso).toLocaleString('es-CO', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '',
+          isRead: true,
+          route: '/encargado/incidents',
+          navigationState: { search: inc.codigo },
+          actionLabel: t('notifications.viewIncidents', 'Ver incidencias'),
+        })
+      })
+    }
+
     // 3. Cobros Pendientes en Mostrador
     if (attentionNeeded.pendingPayments > 0) {
       alerts.push({
@@ -190,11 +308,11 @@ const NotificationFactory = {
         category: 'operations',
         categoryLabel: t('notifications.deskCharge', 'Cobro en Mostrador'),
         icon: FaCashRegister,
-        iconColor: '#2563eb',
-        iconBg: '#eff6ff',
-        accentBorder: '#2563eb',
-        badgeBg: 'rgba(37, 99, 235, 0.1)',
-        badgeColor: '#1d4ed8',
+        iconColor: 'var(--brand-primary)',
+        iconBg: 'var(--brand-soft)',
+        accentBorder: 'var(--brand-primary)',
+        badgeBg: 'rgba(var(--brand-primary-rgb), 0.1)',
+        badgeColor: 'var(--brand-primary-hover)',
         text: `${attentionNeeded.pendingPayments} ${t('notifications.chargesPending', 'cobro(s) de garantía/reserva en taquilla')}`,
         detail: t('notifications.chargesDetail', 'Pendiente recepción y asentamiento de pago presencial en mostrador.'),
         time: t('notifications.today', 'Hoy'),
@@ -237,6 +355,9 @@ const NotificationFactory = {
 export function useBranchNotifications(user, dashboardData) {
   const { t, i18n } = useTranslation()
   const [notifications, setNotifications] = useState([])
+  const claveLeidas = `drivique:notif-leidas:${user?.correo || user?.email || 'anon'}`
+  const leerLeidas = () => { try { return new Set(JSON.parse(localStorage.getItem(claveLeidas) || '[]')) } catch { return new Set() } }
+  const guardarLeidas = (ids) => { try { localStorage.setItem(claveLeidas, JSON.stringify([...ids].slice(-300))) } catch { /* sin almacenamiento */ } }
   const [filter, setFilter] = useState('all') // 'all' | 'unread' | 'operations' | 'attention'
 
   // Sincronización reactiva con datos operativos reales
@@ -256,13 +377,16 @@ export function useBranchNotifications(user, dashboardData) {
       t
     )
 
-    const rawNotifs = [...deliveries, ...returns, ...alerts]
+    // Las incidencias abiertas van primero: son lo más urgente
+    const incidents = alerts.filter((a) => a.type === 'openIncident')
+    const rawNotifs = [...incidents, ...deliveries, ...returns, ...alerts.filter((a) => a.type !== 'openIncident')]
 
     setNotifications((prev) => {
       const readStateMap = new Map(prev.map((n) => [n.id, n.isRead]))
+      const leidas = leerLeidas()
       return rawNotifs.map((item) => ({
         ...item,
-        isRead: readStateMap.has(item.id) ? readStateMap.get(item.id) : item.isRead,
+        isRead: item.isRead || leidas.has(item.id) || (readStateMap.has(item.id) ? readStateMap.get(item.id) : false),
       }))
     })
   }, [dashboardData, t, i18n.language])
@@ -285,13 +409,17 @@ export function useBranchNotifications(user, dashboardData) {
   }, [notifications, filter])
 
   const markAsRead = useCallback((notifId) => {
+    const l = leerLeidas(); l.add(notifId); guardarLeidas(l)
     setNotifications((prev) =>
       prev.map((n) => (n.id === notifId ? { ...n, isRead: true } : n))
     )
   }, [])
 
   const markAllAsRead = useCallback(() => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
+    setNotifications((prev) => {
+      const l = leerLeidas(); prev.forEach((n) => l.add(n.id)); guardarLeidas(l)
+      return prev.map((n) => ({ ...n, isRead: true }))
+    })
   }, [])
 
   return {

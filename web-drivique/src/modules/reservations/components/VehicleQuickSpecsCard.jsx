@@ -45,7 +45,7 @@ export default function VehicleQuickSpecsCard({ vehiculo, c }) {
     { 
       Icon: FaBolt, 
       label: t('vehiculo.engine', 'Motor'), 
-      value: vehiculo.cilindraje || 'Estándar' 
+      value: vehiculo.cilindraje || t('hc2.estandar', 'Estándar') 
     },
     { 
       Icon: FaTag, 
@@ -82,7 +82,7 @@ export default function VehicleQuickSpecsCard({ vehiculo, c }) {
             width: 32,
             height: 32,
             borderRadius: 10,
-            background: esModoOscuro ? 'rgba(59,130,246,0.2)' : 'var(--brand-soft-light)',
+            background: esModoOscuro ? 'rgba(var(--brand-primary-rgb),0.2)' : 'var(--brand-soft-light)',
             color: esModoOscuro ? 'var(--brand-accent)' : 'var(--brand-primary)',
             display: 'flex',
             alignItems: 'center',
@@ -97,9 +97,9 @@ export default function VehicleQuickSpecsCard({ vehiculo, c }) {
         </div>
 
         <span style={{
-          background: esModoOscuro ? 'rgba(59,130,246,0.15)' : '#f0f9ff',
+          background: esModoOscuro ? 'rgba(var(--brand-primary-rgb),0.15)' : '#f0f9ff',
           color: esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-text-light)',
-          border: `1px solid ${esModoOscuro ? 'rgba(59,130,246,0.3)' : '#bae6fd'}`,
+          border: `1px solid ${esModoOscuro ? 'rgba(var(--brand-primary-rgb),0.3)' : '#bae6fd'}`,
           padding: '4px 12px',
           borderRadius: 9999,
           fontSize: 12,
@@ -136,7 +136,7 @@ export default function VehicleQuickSpecsCard({ vehiculo, c }) {
                 width: 34,
                 height: 34,
                 borderRadius: 10,
-                background: esModoOscuro ? 'rgba(59,130,246,0.15)' : '#ffffff',
+                background: esModoOscuro ? 'rgba(var(--brand-primary-rgb),0.15)' : '#ffffff',
                 border: `1px solid ${esModoOscuro ? 'rgba(255,255,255,0.08)' : '#e2e8f0'}`,
                 color: esModoOscuro ? 'var(--brand-accent)' : 'var(--brand-primary-hover)',
                 display: 'flex',

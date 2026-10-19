@@ -35,7 +35,9 @@ api.interceptors.response.use(
     const refreshToken = sessionStorage.getItem(REFRESH_TOKEN_KEY)
     const isRefreshRequest = request?.url?.includes('/auth/refresh')
 
-    if (error.response?.status !== 401 || request?._retried || isRefreshRequest || !refreshToken) {
+    // Solo se renueva la sesión si la petición iba con sesión: un visitante (sin token) no debe quedar logueado
+    const teniaSesion = Boolean(request?.headers?.Authorization)
+    if (error.response?.status !== 401 || request?._retried || isRefreshRequest || !refreshToken || !teniaSesion) {
       return Promise.reject(error)
     }
 

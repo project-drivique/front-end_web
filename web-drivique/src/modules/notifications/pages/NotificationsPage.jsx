@@ -1,27 +1,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaBell,
-  FaTag,
-  FaCheckCircle,
-  FaCreditCard,
-  FaFileAlt,
-  FaComments,
-  FaCar,
-  FaExclamationCircle,
-  FaHourglassHalf,
-  FaCheckDouble,
-  FaTicketAlt,
-  FaInbox,
-  FaCog,
-  FaSlidersH,
-  FaSyncAlt,
-  FaFilter,
-  FaFileContract,
-  FaShieldAlt,
-  FaArrowRight,
-} from 'react-icons/fa'
+import { FaBell, FaTag, FaCheckCircle, FaCreditCard, FaFileAlt, FaComments, FaCar, FaExclamationCircle, FaHourglassHalf, FaCheckDouble, FaTicketAlt, FaInbox, FaSlidersH, FaSyncAlt, FaFileContract, FaShieldAlt, FaArrowRight } from 'react-icons/fa'
 import { useLanding } from '@/modules/landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
@@ -55,9 +35,7 @@ export default function NotificationsPage({ defaultTab }) {
 
   const {
     notificaciones,
-    conteoNoLeidas,
     cargando,
-    error,
     cargarNotificaciones,
     marcarLeida,
     marcarTodasLeidas,
@@ -139,7 +117,7 @@ export default function NotificationsPage({ defaultTab }) {
       return <FaFileAlt style={{ color: '#059669' }} />
     }
     if (raw.includes('soporte') || raw.includes('incidencia') || raw.includes('support')) {
-      return <FaComments style={{ color: '#0284c7' }} />
+      return <FaComments style={{ color: 'var(--brand-text)' }} />
     }
     if (raw.includes('entrega') || raw.includes('devolucion') || raw.includes('alquiler') || raw.includes('vehiculo')) {
       return <FaCar style={{ color: 'var(--brand-text)' }} />
@@ -154,7 +132,7 @@ export default function NotificationsPage({ defaultTab }) {
   const renderChipCriticidad = (criticidad = 'MEDIUM') => {
     const c = String(criticidad).toUpperCase()
     if (c === 'HIGH' || c === 'CRITICAL' || c === 'ALTA' || c === 'URGENTE') {
-      return <span className="notif-chip-criticidad alta">Alta</span>
+      return <span className="notif-chip-criticidad alta">{t('hc4.alta', 'Alta')}</span>
     }
     if (c === 'LOW' || c === 'BAJA') {
       return <span className="notif-chip-criticidad baja">Info</span>
@@ -293,7 +271,7 @@ export default function NotificationsPage({ defaultTab }) {
                 <button
                   type="button"
                   className="notif-filtro-chip"
-                  title="Sincronizar notificaciones"
+                  title={t('hc4.sincronizar_notificaciones', 'Sincronizar notificaciones')}
                   onClick={() => cargarNotificaciones()}
                 >
                   <FaSyncAlt /> {t('comun.actualizar', 'Actualizar')}
@@ -311,7 +289,7 @@ export default function NotificationsPage({ defaultTab }) {
             {cargando && notificacionesVisibles.length === 0 ? (
               <div className="notif-loading-banner">
                 <FaSyncAlt className="pref-spinner" />
-                <span>Cargando notificaciones del servidor...</span>
+                <span>{t('hc.cargando_notificaciones_del_servidor', 'Cargando notificaciones del servidor...')}</span>
               </div>
             ) : notificacionesFiltradas.length === 0 ? (
               /* Sin notificaciones */
@@ -331,7 +309,7 @@ export default function NotificationsPage({ defaultTab }) {
             ) : (
               /* Lista de Notificaciones */
               <div className="notificaciones-lista">
-                {notificacionesFiltradas.map((n) => {
+                {notificacionesFiltradas.map((n, idxNotificacion) => {
                   const chipVencimiento = calcularChipVencimiento(n.expiracionMs)
                   const titulo = (n.tituloKey ? t(n.tituloKey, n.tituloFallback || n.titulo || n.title || '') : (n.titulo || n.tituloFallback || n.title || '')).trim()
                   const mensaje = (n.mensajeKey ? t(n.mensajeKey, n.mensajeFallback || n.mensaje || n.message || '') : (n.mensaje || n.mensajeFallback || n.message || '')).trim()
@@ -339,7 +317,7 @@ export default function NotificationsPage({ defaultTab }) {
 
                   return (
                     <div
-                      key={n.id || Math.random()}
+                      key={n.id || `notificacion-${idxNotificacion}`}
                       className={`notificacion-card-item ${!n.leida ? 'no-leida' : ''}`}
                       onClick={() => handleCardClick(n)}
                       style={{ cursor: 'pointer' }}
@@ -376,7 +354,7 @@ export default function NotificationsPage({ defaultTab }) {
                                     gap: '4px',
                                   }}
                                 >
-                                  {esRechazado ? '✕ Pago Rechazado' : '✓ Pago Exitoso'}
+                                  {esRechazado ? t('hc2.pago_rechazado', '✕ Pago Rechazado') : t('hc2.pago_exitoso', '✓ Pago Exitoso')}
                                 </span>
                               );
                             })()}
@@ -423,7 +401,7 @@ export default function NotificationsPage({ defaultTab }) {
                                 cursor: 'pointer',
                               }}
                             >
-                              <span>{n.metadata.actionLabel || 'Continuar con mi reserva'}</span>
+                              <span>{n.metadata.actionLabel || t('hc2.continuar_con_mi_reserva', 'Continuar con mi reserva')}</span>
                               <FaArrowRight size={11} />
                             </button>
                           </div>
@@ -496,7 +474,7 @@ export default function NotificationsPage({ defaultTab }) {
                               <img
                                 key={idx}
                                 src={img}
-                                alt="Vehículo elegible"
+                                alt={t('hc.vehiculo_elegible', 'Vehículo elegible')}
                                 className="cupon-thumb-img"
                               />
                             ))}
@@ -617,7 +595,7 @@ export default function NotificationsPage({ defaultTab }) {
                           <span style={{ fontSize: '18px', fontWeight: 900, color: '#059669' }}>
                             {formatCurrency(precioRebajado, moneda)}
                           </span>
-                          <span style={{ fontSize: '11px', color: '#64748b' }}>/día</span>
+                          <span style={{ fontSize: '11px', color: '#64748b' }}>{t('hc.dia', '/día')}</span>
                         </div>
 
                         <div className="promo-vehiculo-footer">

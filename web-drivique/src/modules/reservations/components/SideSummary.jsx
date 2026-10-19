@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLanding } from '../../landing/LandingContext'
 import { formatCurrency } from '@/utils/currencyUtils'
-import { FaTicketAlt, FaTrashAlt } from 'react-icons/fa'
+import { FaTicketAlt } from 'react-icons/fa'
 import { promotionManagementService } from '@/services/promotionManagementService'
 
 const formatearFechaExp = (fechaStr) => {
@@ -301,8 +301,8 @@ export default function ResumenLateral({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                background: c?.isDark ? 'rgba(59, 130, 246, 0.08)' : '#EFF6FF',
-                border: `1.5px solid ${c?.isDark ? 'rgba(59, 130, 246, 0.25)' : '#BFDBFE'}`,
+                background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.08)' : 'var(--brand-soft)',
+                border: `1.5px solid ${c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.25)' : 'var(--brand-border)'}`,
                 borderRadius: 12,
                 padding: '12px 14px',
                 gap: 10
@@ -312,7 +312,7 @@ export default function ResumenLateral({
                     width: 24,
                     height: 24,
                     borderRadius: '50%',
-                    background: '#2563eb',
+                    background: 'var(--brand-primary)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -842,7 +842,7 @@ export default function ResumenLateral({
                             ))
                           ) : (
                             <div style={{ height: 38, display: 'flex', alignItems: 'center', color: c?.textSecondary || '#94a3b8', fontSize: 11 }}>
-                              🚗 {promo.categoriaVehiculo ? `Categoría: ${promo.categoriaVehiculo.toUpperCase()}` : 'Todos los vehículos'}
+                              🚗 {promo.categoriaVehiculo ? t('hc3.promo_category_colon', { defaultValue: 'Categoría: {{categoria}}', categoria: promo.categoriaVehiculo.toUpperCase() }) : t('hc2.todos_los_vehiculos', 'Todos los vehículos')}
                             </div>
                           )}
                         </div>
@@ -910,7 +910,7 @@ export default function ResumenLateral({
                       <div style={{
                         width: '36%',
                         minWidth: 125,
-                        background: c?.isDark ? 'rgba(59, 130, 246, 0.06)' : '#f8fbff',
+                        background: c?.isDark ? 'rgba(var(--brand-primary-rgb), 0.06)' : '#f8fbff',
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
@@ -922,7 +922,7 @@ export default function ResumenLateral({
                           {valorDescFormatted}
                         </span>
                         <span style={{ fontSize: 10.5, color: c?.textSecondary || '#64748b', margin: '4px 0 10px', lineHeight: 1.2, fontWeight: 500 }}>
-                          {promo.vehiculoNombre || (promo.categoriaVehiculo ? `Categoría ${promo.categoriaVehiculo.toUpperCase()}` : t('promotions.allVehicles', 'Todos los vehículos'))}
+                          {promo.vehiculoNombre || (promo.categoriaVehiculo ? t('hc3.promo_category', { defaultValue: 'Categoría {{categoria}}', categoria: promo.categoriaVehiculo.toUpperCase() }) : t('promotions.allVehicles', 'Todos los vehículos'))}
                         </span>
                         <button
                           type="button"
@@ -946,7 +946,7 @@ export default function ResumenLateral({
                             fontSize: 12,
                             fontWeight: 800,
                             cursor: 'pointer',
-                            boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)',
+                            boxShadow: '0 2px 6px rgba(var(--brand-primary-rgb), 0.25)',
                             transition: 'all 0.2s'
                           }}
                         >
@@ -1056,8 +1056,8 @@ export default function ResumenLateral({
               }}>
                 {viewingCondicionesPromo.descripcion ||
                   (viewingCondicionesPromo.tipoDescuento === 'porcentaje'
-                    ? `Descuento del ${viewingCondicionesPromo.valorDescuento}% exclusivo para reservas del ${viewingCondicionesPromo.vehiculoNombre || (vehiculo?.nombre ? vehiculo.nombre : 'vehículo seleccionado')}.`
-                    : `Descuento de $${Number(viewingCondicionesPromo.valorDescuento).toLocaleString('es-CO')} COP exclusivo para reservas del ${viewingCondicionesPromo.vehiculoNombre || (vehiculo?.nombre ? vehiculo.nombre : 'vehículo seleccionado')}.`)}
+                    ? t('hc3.promo_percent_desc', { defaultValue: 'Descuento del {{valor}}% exclusivo para reservas del {{vehiculo}}.', valor: viewingCondicionesPromo.valorDescuento, vehiculo: viewingCondicionesPromo.vehiculoNombre || (vehiculo?.nombre ? vehiculo.nombre : t('hc3.selected_vehicle', 'vehículo seleccionado')) })
+                    : t('hc3.promo_amount_desc', { defaultValue: 'Descuento de ${{valor}} COP exclusivo para reservas del {{vehiculo}}.', valor: Number(viewingCondicionesPromo.valorDescuento).toLocaleString('es-CO'), vehiculo: viewingCondicionesPromo.vehiculoNombre || (vehiculo?.nombre ? vehiculo.nombre : t('hc3.selected_vehicle', 'vehículo seleccionado')) }))}
               </p>
 
               {/* Terms & Conditions Header */}

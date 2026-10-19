@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { eachDayOfInterval, format, parseISO } from 'date-fns'
 import { reservationsService } from '../../../services/reservationsService'
+import i18n from '@/i18n'
 
 export function useDisponibilidadVehiculo(vehiculoId) {
   const [reservas, setReservas] = useState([])
@@ -16,7 +17,7 @@ export function useDisponibilidadVehiculo(vehiculoId) {
 
     reservationsService.getReservasPorVehiculo(vehiculoId)
       .then(data => { if (activo) setReservas(data) })
-      .catch(() => { if (activo) setError('No se pudo cargar la disponibilidad') })
+      .catch(() => { if (activo) setError(i18n.t('hc.no_se_pudo_cargar_la_disponibilidad', 'No se pudo cargar la disponibilidad')) })
       .finally(() => { if (activo) setCargando(false) })
 
     return () => { activo = false }

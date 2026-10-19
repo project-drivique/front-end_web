@@ -70,7 +70,7 @@ export default function ModalBusquedaMovil({ abierto, onCerrar, c, limpiar = () 
             <button
               type="button"
               onClick={onCerrar}
-              aria-label="Cerrar"
+              aria-label={t('hc4.cerrar', 'Cerrar')}
               style={{
                 width: '30px',
                 height: '30px',

@@ -1,4 +1,5 @@
 import { FaTimes, FaShieldAlt } from 'react-icons/fa'
+import i18n from '@/i18n'
 
 export default function ReportDetailModal({ reporte, onClose }) {
   if (!reporte) return null
@@ -6,14 +7,14 @@ export default function ReportDetailModal({ reporte, onClose }) {
   const getEstadoBadge = (estado) => {
     switch (estado) {
       case 'resuelto':
-        return { text: 'Resuelto', bg: '#dcfce7', color: '#15803d', dot: '#16a34a' }
+        return { text: i18n.t('hc4.resuelto', 'Resuelto'), bg: '#dcfce7', color: '#15803d', dot: '#16a34a' }
       case 'en_atencion':
-        return { text: 'En atención', bg: '#e0f2fe', color: '#0369a1', dot: '#0284c7' }
+        return { text: i18n.t('hc.en_atencion', 'En atención'), bg: '#e0f2fe', color: '#0369a1', dot: 'var(--brand-primary)' }
       case 'en_revision':
-        return { text: 'En revisión', bg: '#fef3c7', color: '#b45309', dot: '#d97706' }
+        return { text: i18n.t('hc.en_revision', 'En revisión'), bg: '#fef3c7', color: '#b45309', dot: '#d97706' }
       case 'recibido':
       default:
-        return { text: 'Recibido', bg: 'var(--brand-soft-strong-light)', color: 'var(--brand-text-light)', dot: 'var(--brand-primary)' }
+        return { text: i18n.t('hc4.recibido', 'Recibido'), bg: 'var(--brand-soft-strong-light)', color: 'var(--brand-text-light)', dot: 'var(--brand-primary)' }
     }
   }
 
@@ -115,7 +116,7 @@ export default function ReportDetailModal({ reporte, onClose }) {
               Vehículo / Reserva:
             </span>
             <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--texto-primary, #0f172a)' }}>
-              {reporte.vehiculo} {reporte.placa && `(Placa: ${reporte.placa})`}
+              {reporte.vehiculo} {reporte.placa && i18n.t('hc3.plate_paren', { defaultValue: '(Placa: {{placa}})', placa: reporte.placa })}
             </span>
           </div>
 
