@@ -42,7 +42,8 @@ const CAT_KEYS = {
 }
 
 function normalizeRating(vehiculo) {
-  if (!vehiculo.comentarios || vehiculo.comentarios.length === 0) return 0;
+  const total = Number(vehiculo.totalResenas ?? vehiculo.reviewCount ?? vehiculo.comentarios?.length ?? 0)
+  if (!total) return 0
   const r = Number(vehiculo.calificacion ?? vehiculo.rating ?? 0)
   return Number.isFinite(r) ? r : 0
 }
