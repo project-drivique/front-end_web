@@ -80,6 +80,7 @@ export default function TarjetaVehiculo({
   onFavorito = () => {},
   c,
   invitado = false,
+  onGuestBlocked = () => {},
   onGuestFavorito = () => {},
   onVerDetalles = null,
 }) {
@@ -121,6 +122,10 @@ export default function TarjetaVehiculo({
 
   const handleReservar = (e) => {
     e.stopPropagation()
+    if (invitado) {
+      onGuestBlocked()
+      return
+    }
     if (!puedeReservar) return
     sessionStorage.setItem('drivique_selected_vehicle', JSON.stringify(vehiculo))
     sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
