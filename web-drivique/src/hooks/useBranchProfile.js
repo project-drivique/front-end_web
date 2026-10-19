@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { api } from '../services/httpClient'
 import { getPlaceSchedule, formatSchedule } from '../utils/branchSchedules'
+import i18n from '@/i18n'
 
 const esAeropuerto = (p) => {
   const abre = String(p.openingTime || '').slice(0, 5)
@@ -37,7 +38,7 @@ function mapear(p) {
   }
 }
 
-const errorDe = (error) => new Error(error?.response?.data?.detail || error?.message || 'No fue posible guardar el perfil')
+const errorDe = (error) => new Error(error?.response?.data?.detail || error?.message || i18n.t('hc2.no_fue_posible_guardar_el_perfil', 'No fue posible guardar el perfil'))
 
 /** Perfil de la sucursal asignada al encargado, tomado y guardado en el servidor. */
 export function useBranchProfile(user, branchId = null) {

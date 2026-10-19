@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import {
   FaTimes,
@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fa'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import './KpiDetailModal.css'
+import i18n from '@/i18n'
 
 export default function KpiDetailModal({
   metricKey,
@@ -27,20 +28,20 @@ export default function KpiDetailModal({
   const getMetricIcon = () => {
     switch (metricKey) {
       case 'ingresos':
-        return <FaDollarSign style={{ color: '#2563eb' }} />
+        return <FaDollarSign style={{ color: 'var(--brand-text)' }} />
       case 'entregas':
         return <FaCalendarCheck style={{ color: '#16a34a' }} />
       case 'devoluciones':
         return <FaUndo style={{ color: '#d97706' }} />
       case 'ocupacion':
-        return <FaCar style={{ color: '#1e3a8a' }} />
+        return <FaCar style={{ color: 'var(--brand-text)' }} />
       default:
-        return <FaChartBar style={{ color: '#2563eb' }} />
+        return <FaChartBar style={{ color: 'var(--brand-text)' }} />
     }
   }
 
   const { title, headers, rows, kpis, filename } = kpiData || {
-    title: metricTitle || 'Detalle de Métrica',
+    title: metricTitle || i18n.t('hc2.detalle_de_metrica', 'Detalle de Métrica'),
     headers: [],
     rows: [],
     kpis: [],
@@ -68,7 +69,7 @@ export default function KpiDetailModal({
   const handleExportPdf = () => {
     exportPdf({
       title: `Reporte Oficial — ${title}`,
-      subtitle: 'Sistema de Gestión y Control Operativo Drivique',
+      subtitle: i18n.t('hc2.sistema_de_gestion_y_control_operativo', 'Sistema de Gestión y Control Operativo Drivique'),
       headers,
       rows,
       kpis,
@@ -98,14 +99,14 @@ export default function KpiDetailModal({
             <span className="kpi-modal-icon">{getMetricIcon()}</span>
             <div>
               <h3 className="kpi-modal-title">{title}</h3>
-              <p className="kpi-modal-subtitle">Desglose completo y métricas de auditoría</p>
+              <p className="kpi-modal-subtitle">{i18n.t('hc.desglose_completo_y_metricas_de_audito', 'Desglose completo y métricas de auditoría')}</p>
             </div>
           </div>
           <button
             type="button"
             className="kpi-modal-close-btn"
             onClick={onClose}
-            title="Cerrar modal"
+            title={i18n.t('hc2.cerrar_modal', 'Cerrar modal')}
           >
             <FaTimes />
           </button>
@@ -129,7 +130,7 @@ export default function KpiDetailModal({
             <FaSearch className="kpi-search-icon" />
             <input
               type="text"
-              placeholder="Buscar en el detalle..."
+              placeholder={i18n.t('hc.buscar_en_el_detalle', 'Buscar en el detalle...')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -140,7 +141,7 @@ export default function KpiDetailModal({
               type="button"
               className="kpi-action-btn kpi-action-btn--excel"
               onClick={handleExportExcel}
-              title="Exportar a Excel"
+              title={i18n.t('hc4.exportar_a_excel', 'Exportar a Excel')}
             >
               <FaFileExcel /> <span>Excel</span>
             </button>
@@ -149,7 +150,7 @@ export default function KpiDetailModal({
               type="button"
               className="kpi-action-btn kpi-action-btn--pdf"
               onClick={handleExportPdf}
-              title="Exportar a PDF"
+              title={i18n.t('hc4.exportar_a_pdf', 'Exportar a PDF')}
             >
               <FaFilePdf /> <span>PDF</span>
             </button>
@@ -158,16 +159,16 @@ export default function KpiDetailModal({
               type="button"
               className="kpi-action-btn kpi-action-btn--print"
               onClick={handlePrint}
-              title="Imprimir reporte"
+              title={i18n.t('hc4.imprimir_reporte', 'Imprimir reporte')}
             >
-              <FaPrint /> <span>Imprimir</span>
+              <FaPrint /> <span>{i18n.t('hc4.imprimir', 'Imprimir')}</span>
             </button>
 
             <button
               type="button"
               className="kpi-action-btn kpi-action-btn--reports"
               onClick={onGoToReports}
-              title="Ir al módulo completo de reportes"
+              title={i18n.t('hc.ir_al_modulo_completo_de_reportes', 'Ir al módulo completo de reportes')}
             >
               <FaChartBar /> <span>Ir a Reportes</span>
             </button>

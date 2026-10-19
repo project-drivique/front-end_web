@@ -133,16 +133,16 @@ export default function AdminRolesManagementPage() {
       setErrorModal('')
       await roleManagementService.createAccount(formCuenta)
       setNotice(
-        t(
-          'admin.roles.accountCreated',
-          `Cuenta de ${formCuenta.nombre} creada exitosamente. Recibirá un código por correo para definir su contraseña.`
-        )
+        t('admin.roles.accountCreated', {
+          defaultValue: 'Cuenta de {{nombre}} creada exitosamente. Recibirá un código por correo para definir su contraseña.',
+          nombre: formCuenta.nombre,
+        })
       )
       setModalCrearCuenta(false)
       setFormCuenta({ nombre: '', correo: '', telefono: '', rolId: '', sucursal: '' })
       cargarDatos()
     } catch (err) {
-      setErrorModal(err.message || 'Error al crear la cuenta administrativa.')
+      setErrorModal(err.message || t('hc2.error_al_crear_la_cuenta_administrativ', 'Error al crear la cuenta administrativa.'))
     }
   }
 
@@ -164,11 +164,11 @@ export default function AdminRolesManagementPage() {
     try {
       setErrorModal('')
       await roleManagementService.updateAccount(formCuenta.id, formCuenta)
-      setNotice(t('admin.roles.accountUpdated', `Cuenta de ${formCuenta.nombre} actualizada.`))
+      setNotice(t('admin.roles.accountUpdated', { defaultValue: 'Cuenta de {{nombre}} actualizada.', nombre: formCuenta.nombre }))
       setModalEditarCuenta(null)
       cargarDatos()
     } catch (err) {
-      setErrorModal(err.message || 'Error al actualizar la cuenta.')
+      setErrorModal(err.message || t('hc2.error_al_actualizar_la_cuenta', 'Error al actualizar la cuenta.'))
     }
   }
 
@@ -182,7 +182,7 @@ export default function AdminRolesManagementPage() {
     setNotice(
       t(
         acc.activo ? 'admin.roles.accountDeactivated' : 'admin.roles.accountActivated',
-        `Cuenta de ${acc.nombre} ${acc.activo ? 'desactivada' : 'activada'}.`
+        (acc.activo ? t('hc3.account_deactivated', { defaultValue: 'Cuenta de {{nombre}} desactivada.', nombre: acc.nombre }) : t('hc3.account_activated', { defaultValue: 'Cuenta de {{nombre}} activada.', nombre: acc.nombre }))
       )
     )
     cargarDatos()
@@ -195,7 +195,7 @@ export default function AdminRolesManagementPage() {
       setErrorModal(err.message)
       return
     }
-    setNotice(t('admin.roles.accountDeleted', `Cuenta de ${acc.nombre} eliminada.`))
+    setNotice(t('admin.roles.accountDeleted', { defaultValue: 'Cuenta de {{nombre}} eliminada.', nombre: acc.nombre }))
     setModalEliminarCuenta(null)
     cargarDatos()
   }
@@ -206,11 +206,11 @@ export default function AdminRolesManagementPage() {
     try {
       setErrorModal('')
       await roleManagementService.createRole(formRol)
-      setNotice(t('admin.roles.roleCreated', `Rol ${formRol.nombre} creado exitosamente.`))
+      setNotice(t('admin.roles.roleCreated', { defaultValue: 'Rol {{nombre}} creado exitosamente.', nombre: formRol.nombre }))
       setModalCrearRol(false)
       cargarDatos()
     } catch (err) {
-      setErrorModal(err.message || 'Error al crear el rol.')
+      setErrorModal(err.message || t('hc2.error_al_crear_el_rol', 'Error al crear el rol.'))
     }
   }
 
@@ -230,11 +230,11 @@ export default function AdminRolesManagementPage() {
     try {
       setErrorModal('')
       await roleManagementService.updateRole(formRol.id, formRol)
-      setNotice(t('admin.roles.roleUpdated', `Permisos del rol ${formRol.nombre} actualizados.`))
+      setNotice(t('admin.roles.roleUpdated', { defaultValue: 'Permisos del rol {{nombre}} actualizados.', nombre: formRol.nombre }))
       setModalEditarRol(null)
       cargarDatos()
     } catch (err) {
-      setErrorModal(err.message || 'Error al actualizar el rol.')
+      setErrorModal(err.message || t('hc2.error_al_actualizar_el_rol', 'Error al actualizar el rol.'))
     }
   }
 
@@ -242,11 +242,11 @@ export default function AdminRolesManagementPage() {
     try {
       setErrorModal('')
       await roleManagementService.removeRole(r.id)
-      setNotice(t('admin.roles.roleDeleted', `Rol ${r.nombre} eliminado.`))
+      setNotice(t('admin.roles.roleDeleted', { defaultValue: 'Rol {{nombre}} eliminado.', nombre: r.nombre }))
       setModalEliminarRol(null)
       cargarDatos()
     } catch (err) {
-      setErrorModal(err.message || 'Error al eliminar el rol.')
+      setErrorModal(err.message || t('hc2.error_al_eliminar_el_rol', 'Error al eliminar el rol.'))
     }
   }
 
@@ -258,7 +258,7 @@ export default function AdminRolesManagementPage() {
   }
 
   // --- Exportación ---
-  const headersExportAccounts = ['Nombre', 'Correo', 'Teléfono', 'Rol Asignado', 'Sucursal', 'Estado']
+  const headersExportAccounts = ['Nombre', 'Correo', t('hc2.telefono', 'Teléfono'), 'Rol Asignado', 'Sucursal', 'Estado']
   const rowsExportAccounts = cuentasFiltradas.map((acc) => [
     acc.nombre,
     acc.correo,
@@ -289,7 +289,7 @@ export default function AdminRolesManagementPage() {
               <p className="cities-subtitle">
                 {t(
                   'admin.rolesSubtitle',
-                  'Control de acceso, creación de cuentas administrativas y matriz de permisos por rol.'
+                  t('hc2.control_de_acceso_creacion_de_cuentas_', 'Control de acceso, creación de cuentas administrativas y matriz de permisos por rol.')
                 )}
               </p>
             </div>
@@ -396,8 +396,8 @@ export default function AdminRolesManagementPage() {
 
                 <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                   <option value="all">{t('admin.rolesPage.allStatuses', 'Todos los Estados')}</option>
-                  <option value="active">Activas</option>
-                  <option value="inactive">Inactivas</option>
+                  <option value="active">{t('hc4.activas', 'Activas')}</option>
+                  <option value="inactive">{t('hc4.inactivas', 'Inactivas')}</option>
                 </select>
 
                 <select value={branchFilter} onChange={(e) => setBranchFilter(e.target.value)}>
@@ -430,7 +430,7 @@ export default function AdminRolesManagementPage() {
                 <div className="cities-empty">
                   <FaUserShield />
                   <h2>{t('admin.rolesPage.noAccountsFound', 'No se encontraron cuentas')}</h2>
-                  <p>Ajusta el término de búsqueda o cambia los filtros seleccionados.</p>
+                  <p>{t('hc.ajusta_el_termino_de_busqueda_o_cambia', 'Ajusta el término de búsqueda o cambia los filtros seleccionados.')}</p>
                 </div>
               ) : (
                 <div className="cities-table-wrap">
@@ -440,8 +440,8 @@ export default function AdminRolesManagementPage() {
                         <th>{t('admin.rolesPage.colaborador', 'Colaborador')}</th>
                         <th>{t('admin.rolesPage.contacto', 'Contacto')}</th>
                         <th>{t('admin.rolesPage.rolAsignado', 'Rol Asignado')}</th>
-                        <th>Sucursal</th>
-                        <th>Estado Cuenta</th>
+                        <th>{t('hc4.sucursal', 'Sucursal')}</th>
+                        <th>{t('hc.estado_cuenta', 'Estado Cuenta')}</th>
                         <th>{t('admin.rolesPage.tableActions', 'Acciones')}</th>
                       </tr>
                     </thead>
@@ -480,7 +480,7 @@ export default function AdminRolesManagementPage() {
                           </td>
 
                           <td>
-                            <span style={{ fontSize: 13, color: 'var(--city-text, #0f172a)' }}>{acc.sucursal ? acc.sucursal : 'Global (Todas)'}</span>
+                            <span style={{ fontSize: 13, color: 'var(--city-text, #0f172a)' }}>{acc.sucursal ? acc.sucursal : t('hc2.global_todas', 'Global (Todas)')}</span>
                           </td>
 
                           <td>

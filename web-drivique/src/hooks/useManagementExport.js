@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { exportExcel, exportPdf, printTable } from '../utils/listExportUtils'
+import i18n from '@/i18n'
 
 /**
  * Custom Hook: useManagementExport (Patrón Custom Hook & Facade)
@@ -25,7 +26,7 @@ export function useManagementExport(setNotice) {
     (exportData) => {
       try {
         exportPdf(exportData)
-        if (setNotice) setNotice('Documento PDF generado correctamente')
+        if (setNotice) setNotice(i18n.t('hc2.documento_pdf_generado_correctamente', 'Documento PDF generado correctamente'))
       } catch (err) {
         console.error('Error al exportar PDF:', err)
       }
@@ -37,7 +38,7 @@ export function useManagementExport(setNotice) {
     (exportData) => {
       try {
         printTable(exportData)
-        if (setNotice) setNotice('Vista de impresión desplegada')
+        if (setNotice) setNotice(i18n.t('hc.vista_de_impresion_desplegada', 'Vista de impresión desplegada'))
       } catch (err) {
         console.error('Error al imprimir:', err)
       }

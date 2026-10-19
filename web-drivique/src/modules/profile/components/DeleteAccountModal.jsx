@@ -34,7 +34,7 @@ export default function DeleteAccountModal({ isOpen, onClose, c, esModoOscuro })
         icon: 'success',
         title: t('perfil.accountDeletedTitle', 'Cuenta eliminada'),
         text: t('perfil.accountDeletedText', 'Tu cuenta ha sido eliminada permanentemente.'),
-        confirmButtonText: 'Entendido',
+        confirmButtonText: t('hc4.entendido', 'Entendido'),
         confirmButtonColor: '#dc2626',
       })
 

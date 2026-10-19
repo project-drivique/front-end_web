@@ -5,11 +5,7 @@ import { FaSpinner } from 'react-icons/fa';
 import { reservationsService } from '@/services/reservationsService';
 
 export default function RespuestaPagoPage() {
-  if (typeof window !== 'undefined' && (window.location.hostname === 'localtest.me' || window.location.hostname === 'lvh.me')) {
-    const targetUrl = window.location.href.replace(window.location.hostname, 'localhost');
-    window.location.replace(targetUrl);
-    return null;
-  }
+  const esHostDePrueba = typeof window !== 'undefined' && (window.location.hostname === 'localtest.me' || window.location.hostname === 'lvh.me');
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -18,6 +14,10 @@ export default function RespuestaPagoPage() {
   const procesadoRef = useRef(false);
 
   useEffect(() => {
+    if (esHostDePrueba) {
+      window.location.replace(window.location.href.replace(window.location.hostname, 'localhost'));
+      return;
+    }
     if (procesadoRef.current) return;
     procesadoRef.current = true;
 
@@ -38,8 +38,9 @@ export default function RespuestaPagoPage() {
           if (status === 'APPROVED') {
             if (holdId) {
               reservationsService.confirmarPago(holdId)
-                .then(() => {
-                  navigate(`/contrato/${encodeURIComponent(holdId)}`, { replace: true });
+                .then((confirmedRes) => {
+                  const target = confirmedRes?.id || confirmedRes?.code || holdId;
+                  navigate(`/contrato/${encodeURIComponent(target)}`, { replace: true, state: { reserva: confirmedRes } });
                 })
                 .catch(err => {
                   console.error('Error confirming payment:', err);
@@ -61,7 +62,9 @@ export default function RespuestaPagoPage() {
     } else {
       navigate('/reservas', { replace: true });
     }
-  }, [transactionId, searchParams, navigate]);
+  }, [transactionId, searchParams, navigate, esHostDePrueba]);
+
+  if (esHostDePrueba) return null;
 
   return (
     <div

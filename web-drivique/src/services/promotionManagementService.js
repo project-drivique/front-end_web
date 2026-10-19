@@ -1,4 +1,5 @@
 import { api } from './httpClient'
+import i18n from '@/i18n'
 
 const PUBLICATION_EVENT = 'drivique:promotions-updated'
 
@@ -19,7 +20,7 @@ const notify = () => {
 
 const errorCode = (error) => {
   const detail = error?.response?.data?.detail
-  return new Error(detail || error?.message || 'No fue posible completar la operación')
+  return new Error(detail || error?.message || i18n.t('hc2.no_fue_posible_completar_la_operacion_279', 'No fue posible completar la operación'))
 }
 
 function fromApi(p) {

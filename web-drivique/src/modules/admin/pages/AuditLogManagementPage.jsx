@@ -1,36 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  FaShieldAlt,
-  FaSearch,
-  FaFileExcel,
-  FaFilePdf,
-  FaPrint,
-  FaEye,
-  FaLock,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaExclamationTriangle,
-  FaBan,
-  FaBuilding,
-  FaUserShield,
-  FaCalendarAlt,
-  FaDesktop,
-  FaCopy,
-  FaTimes,
-  FaRedo,
-  FaGlobe,
-  FaUser,
-  FaFilter,
-  FaLayerGroup,
-  FaHistory,
-  FaCheck,
-  FaSlidersH,
-  FaChevronRight,
-} from 'react-icons/fa'
+import { FaShieldAlt, FaSearch, FaFileExcel, FaFilePdf, FaPrint, FaEye, FaLock, FaCheckCircle, FaTimesCircle, FaExclamationTriangle, FaBan, FaBuilding, FaCalendarAlt, FaDesktop, FaCopy, FaTimes, FaRedo, FaGlobe, FaUser, FaFilter, FaLayerGroup, FaCheck, FaSlidersH } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
-import { useBrand } from '../../../contexts/BrandContext'
 import { accessAuditService, hasMatchingBranch } from '../../../services/accessAuditService'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
@@ -41,9 +13,8 @@ import './AuditLogManagementPage.css'
 
 export default function AuditLogManagementPage({ branchOnly = false }) {
   const { t } = useTranslation()
-  const { tema, moneda, tasaUSD } = useLanding()
+  const { tema, tasaUSD } = useLanding()
   const user = useAuthStore((state) => state.usuario)
-  const { brand } = useBrand()
   const esModoOscuro = tema === 'oscuro'
 
   const esEncargado =
@@ -55,7 +26,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
 
   const TIPOS_EVENTO = [
     { value: 'all', label: t('admin.audit_module.types.all', 'Todos los tipos de evento') },
-    { value: 'COBRO_SUCURSAL', label: 'Cobro en Mostrador / Sucursal' },
+    { value: 'COBRO_SUCURSAL', label: t('hc.cobro_en_mostrador_sucursal', 'Cobro en Mostrador / Sucursal') },
     { value: 'GESTION_RESERVAS', label: t('admin.audit_module.types.reservations', 'Gestión de Reservas') },
     { value: 'AUTENTICACION', label: t('admin.audit_module.types.auth', 'Autenticación y Acceso') },
     { value: 'SEGURIDAD_2FA', label: t('admin.audit_module.types.security2fa', 'Seguridad y 2FA') },
@@ -353,7 +324,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
         : t('admin.audit_module.title', 'Auditoría Centralizada y Registro de Actividad'),
       headers,
       rows,
-      subtitle: `Generado por ${user?.nombre || 'Administrador'} (${user?.correo}) - ${new Date().toLocaleString()}`,
+      subtitle: t('hc3.audit_generated_by', { defaultValue: 'Generado por {{usuario}} ({{correo}}) - {{fecha}}', usuario: user?.nombre || t('hc3.administrator', 'Administrador'), correo: user?.correo, fecha: new Date().toLocaleString() }),
     })
   }
 
@@ -409,7 +380,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
           <div className="audit-scope-text">
             <strong>
               {esEncargado
-                ? t('admin.audit_module.branchScope', { branch: sucursalEncargado || 'Sucursal Autorizada' })
+                ? t('admin.audit_module.branchScope', { branch: sucursalEncargado || t('hc2.sucursal_autorizada', 'Sucursal Autorizada') })
                 : t('admin.audit_module.globalScope', 'Alcance Global del Sistema (Supervisión Total)')}
             </strong>
             <p>
@@ -497,7 +468,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 type="button"
                 className="audit-btn-action audit-btn-action--excel"
                 onClick={handleExportExcel}
-                title="Exportar a Microsoft Excel"
+                title={t('hc4.exportar_a_microsoft_excel', 'Exportar a Microsoft Excel')}
               >
                 <FaFileExcel size={12} /> {t('admin.audit_module.exportExcel', 'Excel')}
               </button>
@@ -506,7 +477,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 type="button"
                 className="audit-btn-action audit-btn-action--pdf"
                 onClick={handleExportPdf}
-                title="Exportar a PDF"
+                title={t('hc4.exportar_a_pdf', 'Exportar a PDF')}
               >
                 <FaFilePdf size={12} /> {t('admin.audit_module.exportPdf', 'PDF')}
               </button>
@@ -515,7 +486,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 type="button"
                 className="audit-btn-action audit-btn-action--print"
                 onClick={handlePrint}
-                title="Imprimir listado"
+                title={t('hc4.imprimir_listado', 'Imprimir listado')}
               >
                 <FaPrint size={12} /> {t('admin.audit_module.print', 'Imprimir')}
               </button>
@@ -648,7 +619,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                 type="button"
                 className="audit-btn-reset"
                 onClick={handleResetFilters}
-                title="Restablecer todos los filtros"
+                title={t('hc.restablecer_todos_los_filtros', 'Restablecer todos los filtros')}
               >
                 <FaRedo size={11} /> {t('admin.audit_module.resetFilters', 'Limpiar')}
               </button>
@@ -808,7 +779,7 @@ export default function AuditLogManagementPage({ branchOnly = false }) {
                         <span><FaBuilding size={10} /> {log.sucursal}</span>
                         <span><FaDesktop size={10} /> {log.ip}</span>
                       </div>
-                      <button type="button" className="audit-mobile-btn-view" title="Ver detalle">
+                      <button type="button" className="audit-mobile-btn-view" title={t('hc.ver_detalle', 'Ver detalle')}>
                         <FaEye size={11} /> {t('admin.audit_module.table.detail', 'Detalle')}
                       </button>
                     </div>
