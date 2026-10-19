@@ -59,10 +59,6 @@ export const authService = {
     return data
   },
 
-  async eliminarCuenta(contrasena) {
-    await api.delete('/users/me', { data: { password: contrasena } })
-  },
-
   async enviarCodigoVerificacion(correo) {
     const { data } = await api.post('/auth/resend-verification', { email: correo })
     return data

@@ -2,15 +2,16 @@
 import { api } from './httpClient'
 import { branchManagementService } from './branchManagementService'
 import { documentVerificationService } from './documentVerificationService'
+import i18n from '@/i18n'
 
 // Último resultado del servidor (list() es síncrono para los componentes)
 let cache = []
 
-const ROL_UI = { CUSTOMER: 'cliente', EMPLOYEE: 'encargado', BRANCH_ADMIN: 'encargado', SUPER_ADMIN: 'administrador' }
+const ROL_UI = { CUSTOMER: 'cliente', BRANCH_ADMIN: 'encargado', SUPER_ADMIN: 'administrador' }
 
 const errorDe = (error) => {
   const detail = error?.response?.data?.detail
-  return new Error(detail || error?.message || 'No fue posible completar la operación')
+  return new Error(detail || error?.message || i18n.t('hc2.no_fue_posible_completar_la_operacion_279', 'No fue posible completar la operación'))
 }
 
 function mapear(u, expediente) {
@@ -36,16 +37,16 @@ function mapear(u, expediente) {
   }
 }
 
-// Código de rol que espera el servidor; un encargado conserva el rol operativo que ya tenía
-function codigoDeRol(rolUi, actual) {
+// Código de rol que espera el servidor
+function codigoDeRol(rolUi) {
   if (rolUi === 'administrador') return 'SUPER_ADMIN'
-  if (rolUi === 'encargado') return ['EMPLOYEE', 'BRANCH_ADMIN'].includes(actual?.rolCodigo) ? actual.rolCodigo : 'BRANCH_ADMIN'
+  if (rolUi === 'encargado') return 'BRANCH_ADMIN'
   return 'CUSTOMER'
 }
 
 function cuerpo(data, actual) {
   const rolCodigo = codigoDeRol(data.rol, actual)
-  const sucursal = ['EMPLOYEE', 'BRANCH_ADMIN'].includes(rolCodigo)
+  const sucursal = rolCodigo === 'BRANCH_ADMIN'
     ? branchManagementService.list().find((b) => b.nombre === data.sucursal)
     : null
   return {

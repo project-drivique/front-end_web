@@ -34,6 +34,8 @@ function dataUrlToBlob(dataUrl) {
 
 export const contractService = {
   obtenerPorReserva: getOrGenerate,
+  // Lectura del contrato completo por su id (no genera nada si no existe)
+  obtenerPorId: async (contractId) => normalize((await api.get(`/contracts/${contractId}`)).data),
   obtenerOCrearCodigo: async (reservationId) => (await getOrGenerate(reservationId))?.contractNumber || '',
   completarContratoOriginal: async (reservationId) => getOrGenerate(reservationId),
   guardarFirma: async (reservationId, { firmaUsuarioDataUrl, firmaTrazos = '[]', signedCityId, documentVersion = 'v1.0' }) => {
@@ -41,8 +43,11 @@ export const contractService = {
     if (!contract) throw new Error('No se pudo generar el contrato para la reserva.')
     const form = new FormData()
     form.append('signature', dataUrlToBlob(firmaUsuarioDataUrl), 'signature.png')
-    form.append('signatureStrokeData', firmaTrazos)
-    form.append('signedCityId', signedCityId || contract.pickupCityId)
+    form.append('signatureStrokeData', firmaTrazos || '[]')
+    const cityIdToUse = signedCityId || contract.pickupCityId || contract.cityId || contract.pickupBranch?.city?.id
+    if (cityIdToUse && cityIdToUse !== 'undefined') {
+      form.append('signedCityId', String(cityIdToUse))
+    }
     form.append('consentAccepted', 'true')
     form.append('documentVersion', documentVersion)
     return normalize((await api.post(`/contracts/${contract.id}/sign`, form, { headers: { 'Content-Type': 'multipart/form-data' } })).data)

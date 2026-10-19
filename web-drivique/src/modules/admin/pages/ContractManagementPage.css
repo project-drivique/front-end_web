@@ -103,7 +103,7 @@
 }
 
 .management-shell--dark .res-status--vigente {
-  background: rgba(59, 130, 246, 0.2);
+  background: rgba(var(--brand-primary-rgb), 0.2);
   color: var(--brand-text-dark, #93c5fd);
 }
 

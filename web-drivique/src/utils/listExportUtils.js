@@ -1,3 +1,4 @@
+import i18n from '@/i18n'
 // src/utils/listExportUtils.js
 
 function downloadBlob(content, type, filename) {
@@ -108,7 +109,7 @@ export function exportExcel({
 
   const nowStr = new Date().toLocaleString('es-CO')
   const titleRow = `<Row ss:Height="30"><Cell ss:StyleID="TitleStyle"><Data ss:Type="String">${escapeXml(reportTitle)}</Data></Cell></Row>`
-  const metaRow = `<Row ss:Height="18"><Cell ss:StyleID="MetaStyle"><Data ss:Type="String">Fecha de emisión: ${nowStr} | Total registros: ${rows.length}</Data></Cell></Row><Row ss:Height="8"/>`
+  const metaRow = `<Row ss:Height="18"><Cell ss:StyleID="MetaStyle"><Data ss:Type="String">${i18n.t('hc3.export_meta_row', { defaultValue: 'Fecha de emisión: {{fecha}} | Total registros: {{total}}', fecha: nowStr, total: rows.length })}</Data></Cell></Row><Row ss:Height="8"/>`
 
   let kpiRows = ''
   if (Array.isArray(kpis) && kpis.length > 0) {
@@ -171,7 +172,7 @@ export function exportExcel({
  */
 export function exportPdf({
   title = 'Reporte Drivique',
-  subtitle = 'Sistema Operativo de Gestión e Inspección de Alquiler de Vehículos',
+  subtitle = i18n.t('hc2.sistema_operativo_de_gestion_e_inspecc', 'Sistema Operativo de Gestión e Inspección de Alquiler de Vehículos'),
   headers = [],
   rows = [],
   items = [],
@@ -205,7 +206,7 @@ export function exportPdf({
   const filtersHtml = Array.isArray(filtersSummary) && filtersSummary.length > 0
     ? `
       <div class="filters-summary">
-        <strong>Filtros aplicados:</strong>
+        <strong>${i18n.t('hc4.filtros_aplicados', 'Filtros aplicados:')}</strong>
         ${filtersSummary.map((f) => `<span class="filter-chip"><em>${escapeXml(f.label)}:</em> ${escapeXml(f.value)}</span>`).join('')}
       </div>
     `
@@ -391,7 +392,7 @@ export function exportPdf({
   </table>
 
   <div class="report-footer">
-    Documento generado automáticamente por ${escapeXml(brand.name)}. Todos los derechos reservados.
+    ${i18n.t('hc5.export_auto_footer', { defaultValue: 'Documento generado automáticamente por {{marca}}. Todos los derechos reservados.', marca: escapeXml(brand.name) })}
   </div>
 
   <script>
@@ -413,7 +414,7 @@ export function exportPdf({
  */
 export function exportWord({
   title = 'Reporte Drivique',
-  subtitle = 'Sistema Operativo de Gestión e Inspección de Alquiler de Vehículos',
+  subtitle = i18n.t('hc2.sistema_operativo_de_gestion_e_inspecc', 'Sistema Operativo de Gestión e Inspección de Alquiler de Vehículos'),
   headers = [],
   rows = [],
   kpis = [],
@@ -449,7 +450,7 @@ export function exportWord({
     ? `
       <table style="width:100%; border-collapse:collapse; margin-bottom:16px; font-family:Calibri,sans-serif; font-size:9.5pt;">
         <tr style="background-color:#E2E8F0;">
-          <th colspan="2" style="padding:6px 10px; text-align:left; border:1px solid #CBD5E1; color:#1E293B;">Parámetros y Filtros del Reporte</th>
+          <th colspan="2" style="padding:6px 10px; text-align:left; border:1px solid #CBD5E1; color:#1E293B;">${i18n.t('hc.parametros_y_filtros_del_reporte', 'Parámetros y Filtros del Reporte')}</th>
         </tr>
         ${filtersSummary
           .map(
@@ -550,22 +551,22 @@ export function exportWord({
             </td>
             <td style="border:none; text-align:right; vertical-align:middle; width:160px;">
               <div style="font-size:14pt; font-weight:bold; color:${brand.hover};">${escapeXml(brand.name).toUpperCase()}</div>
-              <div style="font-size:8.5pt; color:#94A3B8;">REPORTE OFICIAL</div>
+              <div style="font-size:8.5pt; color:#94A3B8;">${i18n.t('hc4.reporte_oficial', 'REPORTE OFICIAL')}</div>
             </td>
           </tr>
         </table>
       </div>
 
       <div style="margin-bottom:14px; font-size:9pt; color:#475569; display:flex; justify-content:space-between;">
-        <strong>Fecha de Emisión:</strong> ${nowStr} &nbsp;|&nbsp; 
-        <strong>Generado por:</strong> ${escapeXml(author)} &nbsp;|&nbsp; 
-        <strong>Total de Registros:</strong> ${rows.length}
+        <strong>${i18n.t('hc.fecha_de_emision', 'Fecha de Emisión:')}</strong> ${nowStr} &nbsp;|&nbsp; 
+        <strong>${i18n.t('hc.generado_por', 'Generado por:')}</strong> ${escapeXml(author)} &nbsp;|&nbsp; 
+        <strong>${i18n.t('hc.total_de_registros', 'Total de Registros:')}</strong> ${rows.length}
       </div>
 
       ${kpisHtml}
       ${filtersHtml}
 
-      <h2>Detalle del Reporte</h2>
+      <h2>${i18n.t('hc.detalle_del_reporte', 'Detalle del Reporte')}</h2>
       <table>
         <thead>
           <tr>${tableHeaderHtml}</tr>
@@ -579,12 +580,12 @@ export function exportWord({
         <table style="width:100%; border:none;">
           <tr>
             <td style="border:none; width:50%; text-align:left;">
-              <strong>Control de Auditoría:</strong> Generado por plataforma administrativa ${escapeXml(brand.name)}.<br/>
-              <em>Válido para supervisión interna, gestión financiera y contabilidad.</em>
+              <strong>${i18n.t('hc.control_de_auditoria', 'Control de Auditoría:')}</strong> ${i18n.t('hc5.export_audit_platform', { defaultValue: 'Generado por plataforma administrativa {{marca}}.', marca: escapeXml(brand.name) })}<br/>
+              <em>${i18n.t('hc.valido_para_supervision_interna_gestio', 'Válido para supervisión interna, gestión financiera y contabilidad.')}</em>
             </td>
             <td style="border:none; width:50%; text-align:right; vertical-align:bottom;">
               _____________________________________<br/>
-              Firma Responsable / Auditoría
+              ${i18n.t('hc5.export_signature_line', 'Firma Responsable / Auditoría')}
             </td>
           </tr>
         </table>
@@ -599,7 +600,7 @@ export function exportWord({
 /**
  * IMPRIMIR LISTADO CON ESTILO Y COLORES
  */
-export function printTable({ title = 'Reporte Drivique', headers = [], rows = [], items = [], kpis = [] }) {
+export function printTable({ title = 'Reporte Drivique', headers = [], rows = [], items = [] }) {
   exportPdf({ title, headers, rows, items, filename: 'impresion' })
 }
 

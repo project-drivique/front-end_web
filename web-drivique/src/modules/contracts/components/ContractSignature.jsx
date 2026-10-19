@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaFileSignature, FaCheckCircle, FaDownload, FaArrowLeft, FaEnvelope } from 'react-icons/fa';
 import logo from '@/assets/logo.png';
@@ -14,10 +14,6 @@ import SignatureCanvas from './SignatureCanvas';
 const LOCALES_FECHA = { es: 'es-CO', en: 'en-US', fr: 'fr-FR', pt: 'pt-PT', br: 'pt-BR' };
 
 /** "Toyota Corolla 2024" -> { marca: "Toyota", modelo: "Corolla 2024" } */
-function separarMarcaModelo(nombre = '') {
-  const partes = nombre.trim().split(' ');
-  return { marca: partes[0] || '', modelo: partes.slice(1).join(' ') || '' };
-}
 
 const Campo = ({ label, value }) => (
   <div className="contrato-campo" style={{
@@ -52,7 +48,7 @@ export default function FirmaContrato({
   const [errorFirma, setErrorFirma] = useState('');
   const [firmando, setFirmando] = useState(false);
 
-  const { datosForm = {}, reservaDetalles = {}, referencia, seguroIdx, serviciosSeleccionados = [] } = reservaGuardada || {};
+  const { datosForm = {}, reservaDetalles = {}, referencia } = reservaGuardada || {};
   const [contratoApi, setContratoApi] = useState(contratoFirmado?.contractNumber ? contratoFirmado : null);
 
   const directSignature = (
@@ -67,14 +63,14 @@ export default function FirmaContrato({
   const contratoIdFirmado = contratoFirmado?.id || (contratoApi?.signedAt ? contratoApi.id : null);
 
   // Normalización exhaustiva de los datos del cliente
-  const clienteNombre = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || reservaGuardada?.clienteNombre || usuarioStore?.nombre || contratoApi?.customerFullName || 'Cliente Drivique';
+  const clienteNombre = datosForm.nombre || [datosForm.nombres, datosForm.apellidos].filter(Boolean).join(' ') || reservaGuardada?.clienteNombre || usuarioStore?.nombre || contratoApi?.customerFullName || t('hc2.cliente_drivique', 'Cliente Drivique');
 
   const generateSvgSignature = (name) => {
-    const cleanName = String(name || 'Cliente Drivique').trim();
+    const cleanName = String(name || t('hc2.cliente_drivique', 'Cliente Drivique')).trim();
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 100" width="380" height="100">
       <text x="25" y="60" font-family="'Brush Script MT', 'Dancing Script', 'Caveat', 'Segoe Script', cursive" font-size="32" font-style="italic" fill="#0f172a" letter-spacing="1">${cleanName}</text>
-      <path d="M 25 74 Q 170 86 340 70" stroke="#2563eb" stroke-width="2" fill="none" opacity="0.75"/>
-      <circle cx="346" cy="69" r="3" fill="#2563eb"/>
+      <path d="M 25 74 Q 170 86 340 70" stroke="var(--brand-primary)" stroke-width="2" fill="none" opacity="0.75"/>
+      <circle cx="346" cy="69" r="3" fill="var(--brand-primary)"/>
     </svg>`;
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   };
@@ -111,13 +107,25 @@ export default function FirmaContrato({
   useEffect(() => {
     if (contratoFirmado?.contractNumber) setContratoApi(contratoFirmado);
   }, [contratoFirmado]);
+
+  // Vista de solo lectura (encargado / administrador): quien la abre suele pasar un contrato resumido (número, firma
+  // y datos del cliente). Se completa con el contrato del servidor: vehículo, sucursal, ciudad, dirección y licencia.
+  const contratoLecturaId = contratoFirmado?.id;
+  useEffect(() => {
+    if (!soloLectura || !contratoLecturaId || contratoFirmado?.vehiclePlate) return undefined;
+    let activo = true;
+    contractService.obtenerPorId(contratoLecturaId)
+      .then((completo) => { if (activo && completo) setContratoApi((previo) => ({ ...(previo || {}), ...completo })); })
+      .catch(() => { /* se conserva el resumen recibido */ });
+    return () => { activo = false; };
+  }, [soloLectura, contratoLecturaId, contratoFirmado?.vehiclePlate]);
   const total = contratoApi?.finalAmount ?? contratoApi?.baseAmount ?? reservaGuardada?.total ?? 0;
   const clienteTipoDoc = datosForm.tipoDoc || datosForm.tipoDocumento || usuarioStore?.tipoDocumento || 'CC';
   const clienteNumDoc = datosForm.numDoc || datosForm.documento || datosForm.cedula || contratoApi?.customerDocumentNumber || reservaGuardada?.clienteDocumento || usuarioStore?.cedula || '';
   const clienteCorreo = datosForm.correo || datosForm.email || reservaGuardada?.clienteCorreo || usuarioStore?.correo || usuarioStore?.email || contratoApi?.customerEmail || '';
   const clienteTelefono = contratoApi?.customerPhone || datosForm.celular || datosForm.telefono || reservaGuardada?.clienteTelefono || usuarioStore?.telefono || '';
   const clienteDireccion = contratoApi?.customerAddress || datosForm.direccion || reservaGuardada?.clienteDireccion || usuarioStore?.direccion || '';
-  const ESTADO_LICENCIA = { APPROVED: 'Vigente (validada por la sucursal)', PENDING: 'Pendiente de validación', REJECTED: 'Rechazada' };
+  const ESTADO_LICENCIA = { APPROVED: t('hc2.vigente_validada_por_la_sucursal', 'Vigente (validada por la sucursal)'), PENDING: t('hc2.pendiente_de_validacion', 'Pendiente de validación'), REJECTED: 'Rechazada' };
   const clienteLicencia = ESTADO_LICENCIA[contratoApi?.driverLicenseStatus] || '';
 
   // Normalización exhaustiva de datos del vehículo
@@ -192,7 +200,7 @@ export default function FirmaContrato({
       onFirmado?.(contrato);
     } catch (error) {
       console.error('No se pudo guardar el contrato', error);
-      setErrorFirma('No fue posible guardar el contrato firmado. Intenta nuevamente.');
+      setErrorFirma(t('hc2.no_fue_posible_guardar_el_contrato_fir', 'No fue posible guardar el contrato firmado. Intenta nuevamente.'));
       setFirmando(false);
     }
   };
@@ -339,7 +347,7 @@ export default function FirmaContrato({
                     {firmaImagen ? (
                       <img
                         src={firmaImagen}
-                        alt="Firma del Arrendatario"
+                        alt={t('hc.firma_del_arrendatario', 'Firma del Arrendatario')}
                         style={{ maxHeight: 110, maxWidth: '90%', objectFit: 'contain' }}
                         onError={(e) => {
                           if (!firmaImagen.startsWith('data:image/svg')) {
@@ -350,7 +358,7 @@ export default function FirmaContrato({
                     ) : (
                       <img
                         src={generateSvgSignature(clienteNombre)}
-                        alt="Firma Digital"
+                        alt={t('hc4.firma_digital', 'Firma Digital')}
                         style={{ maxHeight: 110, maxWidth: '90%', objectFit: 'contain' }}
                       />
                     )}
@@ -363,9 +371,9 @@ export default function FirmaContrato({
                       }}
                     >
                       <FaCheckCircle color="#16a34a" size={16} />
-                      <span style={{ fontSize: 12, color: '#16a34a', fontWeight: 700 }}>✓ Firma Digital Auténtica Registrada</span>
+                      <span style={{ fontSize: 12, color: '#16a34a', fontWeight: 700 }}>{t('hc.firma_digital_autentica_registrada', '✓ Firma Digital Auténtica Registrada')}</span>
                     </div>
-                    <span style={{ fontSize: 11, color: 'var(--brand-text)', fontWeight: 700 }}>Firmado por el arrendatario</span>
+                    <span style={{ fontSize: 11, color: 'var(--brand-text)', fontWeight: 700 }}>{t('hc.firmado_por_el_arrendatario', 'Firmado por el arrendatario')}</span>
                   </div>
                 ) : (
                   <>
@@ -385,7 +393,7 @@ export default function FirmaContrato({
                   height: 160, borderRadius: 14, background: 'var(--bg-tarjeta)', border: '2px dashed var(--brand-border)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, marginBottom: 12,
                 }}>
-                  <img src={firmaDrivique} alt="Firma Drivique" style={{ maxHeight: 84, maxWidth: '78%', objectFit: 'contain' }} />
+                  <img src={firmaDrivique} alt={t('hc4.firma_drivique', 'Firma Drivique')} style={{ maxHeight: 84, maxWidth: '78%', objectFit: 'contain' }} />
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--brand-text)', fontWeight: 700 }}>
                     <FaCheckCircle color="var(--brand-text)" size={14} /> Firmado digitalmente
                   </span>
@@ -409,7 +417,7 @@ export default function FirmaContrato({
                   }}
                 >
                   <FaArrowLeft size={14} />
-                  <span>Volver a la reserva</span>
+                  <span>{t('hc.volver_a_la_reserva', 'Volver a la reserva')}</span>
                 </button>
               )}
               {onDescargar && (
@@ -423,7 +431,7 @@ export default function FirmaContrato({
                   }}
                 >
                   <FaDownload size={16} />
-                  <span>Descargar contrato (PDF)</span>
+                  <span>{t('hc.descargar_contrato_pdf', 'Descargar contrato (PDF)')}</span>
                 </button>
               )}
               {onEnviarCorreo && (

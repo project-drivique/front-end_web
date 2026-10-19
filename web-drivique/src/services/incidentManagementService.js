@@ -1,20 +1,22 @@
 // src/services/incidentManagementService.js
 //
-// Incidencias de soporte: todo viene del servidor (lista, detalle, evidencias, respuestas y cambios de estado).
-// Convierte la respuesta de la API a la forma que usan las pantallas de soporte, el tablero y los reportes.
+// Incidencias de soporte: gestión y validación de reportes de clientes e internos
+// para Administrador General (Supervisión y Auditoría) y Encargado de Sucursal (Validación Operativa).
 import { incidentService } from './incidentService'
 import { TIPOS_INCIDENCIA } from '../modules/support/data/supportCatalog'
+import i18n from '@/i18n'
 
 const INCIDENT_EVENT = 'drivique:incidents-updated'
+const STORAGE_KEY = 'drivique_incidents_v2'
 
 // Estados que ve el usuario <-> estados del servidor
 const ESTADO = { OPEN: 'recibido', IN_REVIEW: 'atendiendo', RESOLVED: 'resuelto', CLOSED: 'rechazado' }
 const ESTADO_API = { recibido: 'OPEN', atendiendo: 'IN_REVIEW', en_revision: 'IN_REVIEW', en_reparacion: 'IN_REVIEW', resuelto: 'RESOLVED', rechazado: 'CLOSED' }
 const PRIORIDAD = { LOW: 'baja', MEDIUM: 'media', HIGH: 'alta', CRITICAL: 'urgente' }
 const GRAVEDAD = { CRITICAL: 'alta', HIGH: 'alta', MEDIUM: 'media', LOW: 'baja' }
-const COLOR_ESTADO = { OPEN: '#d97706', IN_REVIEW: '#0284c7', RESOLVED: '#16a34a', CLOSED: '#991b1b' }
+const COLOR_ESTADO = { OPEN: '#d97706', IN_REVIEW: 'var(--brand-primary)', RESOLVED: '#16a34a', CLOSED: '#991b1b' }
 
-// Tipo de incidencia (catálogo de la pantalla) -> categoría del servidor
+// Tipo de incidencia -> categoría del servidor
 const CATEGORIA_DE_TIPO = {
   choque: 'VEHICLE',
   averia_mecanica: 'VEHICLE',
@@ -26,11 +28,45 @@ const CATEGORIA_DE_TIPO = {
   otro_problema: 'OTHER',
 }
 
-let cache = []
-const urlsDeEvidencia = new Map() // id de adjunto -> URL local del archivo
+// ─── REPOSITORIO DE REPORTES DE CLIENTES (CERO DATOS QUEMADOS) ────────
+
+function cargarStorage() {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    const limpios = (Array.isArray(parsed) ? parsed : []).filter(
+      (item) => item && !String(item.id || '').startsWith('inc-seed-')
+    )
+    if (limpios.length !== (parsed || []).length) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(limpios))
+    }
+    return limpios
+  } catch {
+    return []
+  }
+}
+
+function guardarStorage(lista) {
+  if (typeof window === 'undefined') return
+  try {
+    const limpios = (Array.isArray(lista) ? lista : []).filter(
+      (item) => item && !String(item.id || '').startsWith('inc-seed-')
+    )
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(limpios))
+  } catch {
+    /* ignore storage quota errors */
+  }
+}
+
+let cache = cargarStorage()
+const urlsDeEvidencia = new Map()
 
 const emitir = () => {
-  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent(INCIDENT_EVENT, { detail: cache.length }))
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(INCIDENT_EVENT, { detail: cache.length }))
+  }
 }
 
 const tipoDe = (subject) => {
@@ -53,19 +89,19 @@ const historial = (incident) => (incident.timeline || []).map((entry) => {
     return {
       ...base,
       estadoKey: ESTADO[incident.status] || 'recibido',
-      titulo: entry.authorRole === 'STAFF' ? 'Respuesta Enviada al Cliente' : 'Mensaje del cliente',
+      titulo: entry.authorRole === 'STAFF' ? i18n.t('hc2.respuesta_enviada_al_cliente', 'Respuesta Enviada al Cliente') : i18n.t('hc2.mensaje_del_cliente', 'Mensaje del cliente'),
       descripcion: entry.message || '',
-      color: entry.authorRole === 'STAFF' ? '#0284c7' : 'var(--brand-primary)',
+      color: entry.authorRole === 'STAFF' ? 'var(--brand-primary)' : 'var(--brand-primary)',
     }
   }
   if (entry.type === 'ASSIGNMENT') {
-    return { ...base, estadoKey: ESTADO[incident.status] || 'recibido', titulo: 'Cambio de Estado', descripcion: entry.message || `Asignada a ${incident.assignedToName || 'el equipo'}`, color: '#6366f1' }
+    return { ...base, estadoKey: ESTADO[incident.status] || 'recibido', titulo: i18n.t('hc2.cambio_de_estado', 'Cambio de Estado'), descripcion: entry.message || i18n.t('hc3.assigned_to', { defaultValue: 'Asignada a {{equipo}}', equipo: incident.assignedToName || i18n.t('hc3.the_team', 'el equipo') }), color: '#6366f1' }
   }
   if (!entry.fromStatus) {
     return {
       ...base,
       estadoKey: 'recibido',
-      titulo: incident.internal ? 'Reporte Interno Creado' : 'Reporte Creado por el Cliente',
+      titulo: incident.internal ? i18n.t('hc5.internal_report_created', 'Reporte Interno Creado') : i18n.t('hc2.reporte_creado_por_el_cliente', 'Reporte Creado por el Cliente'),
       descripcion: entry.message || '',
       color: 'var(--brand-primary)',
     }
@@ -73,63 +109,67 @@ const historial = (incident) => (incident.timeline || []).map((entry) => {
   return {
     ...base,
     estadoKey: ESTADO[entry.toStatus] || 'recibido',
-    titulo: 'Cambio de Estado',
+    titulo: i18n.t('hc2.cambio_de_estado', 'Cambio de Estado'),
     descripcion: entry.message || '',
     color: COLOR_ESTADO[entry.toStatus] || '#d97706',
   }
 })
 
 export const mapIncident = (i) => {
+  if (!i) return null
+  // Si ya es un objeto mapeado
+  if (i.codigo && i.contactoNombre && !i.subject) return i
+
   const tipo = tipoDe(i.subject)
   const adjuntos = i.attachments || []
   const fotos = adjuntos.filter((a) => String(a.contentType || '').startsWith('image/'))
   const video = adjuntos.find((a) => String(a.contentType || '').startsWith('video/'))
   const foto = (n) => fotos[n]
+
   return {
     id: i.id,
-    codigo: i.code,
-    codigoReserva: i.reservationCode || '',
+    codigo: i.code || i.codigo,
+    codigoReserva: i.reservationCode || i.codigoReserva || '',
     tipoIncidenciaId: tipo.id,
     tipoIncidenciaNombre: tipo.nombre,
     titulo: i.subject,
-    descripcion: i.description,
+    descripcion: i.description || i.descripcion,
     vehiculoId: i.vehicleId || null,
-    vehiculo: i.vehicleModel || '',
-    placa: i.vehiclePlate || '',
-    vehiculoPlaca: i.vehiclePlate || '',
-    vehiculoModelo: i.vehicleModel || '',
-    sucursal: i.branchName || '',
-    reservaCodigo: i.reservationCode || '',
-    contactoNombre: i.reporterName || '',
-    contactoEmail: i.reporterEmail || '',
-    contactoTelefono: '',
+    vehiculo: i.vehicleModel || i.vehiculo || '',
+    placa: i.vehiclePlate || i.placa || '',
+    vehiculoPlaca: i.vehiclePlate || i.placa || '',
+    vehiculoModelo: i.vehicleModel || i.vehiculo || '',
+    sucursal: i.branchName || i.sucursal || '',
+    reservaCodigo: i.reservationCode || i.codigoReserva || '',
+    contactoNombre: i.reporterName || i.contactoNombre || '',
+    contactoEmail: i.reporterEmail || i.contactoEmail || '',
+    contactoTelefono: i.reporterPhone || i.contactoTelefono || '',
     origen: i.internal ? 'administrador' : 'cliente',
-    estado: ESTADO[i.status] || 'recibido',
-    estadoCodigo: i.status,
-    prioridad: PRIORIDAD[i.priority] || 'media',
-    gravedad: GRAVEDAD[i.priority] || 'media',
-    categoria: i.category,
-    tiempoEstimado: horasDeAtencion(i),
-    slaVencido: i.slaBreached,
+    estado: ESTADO[i.status] || i.estado || 'recibido',
+    estadoCodigo: i.status || ESTADO_API[i.estado] || 'OPEN',
+    prioridad: PRIORIDAD[i.priority] || i.prioridad || 'media',
+    gravedad: GRAVEDAD[i.priority] || i.gravedad || 'media',
+    categoria: i.category || 'VEHICLE',
+    tiempoEstimado: horasDeAtencion(i) || i.tiempoEstimado || '2 a 4 horas',
+    slaVencido: i.slaBreached || false,
     permitidas: i.allowedTransitions || [],
-    fechaIso: i.createdAt,
-    fechaCreacion: i.createdAt,
-    fechaRegistro: i.createdAt,
-    evidenciasCount: adjuntos.length,
+    fechaIso: i.createdAt || i.fechaIso || new Date().toISOString(),
+    fechaCreacion: i.createdAt || i.fechaCreacion || new Date().toISOString(),
+    fechaRegistro: i.createdAt || i.fechaRegistro || new Date().toISOString(),
+    evidenciasCount: adjuntos.length || i.evidenciasCount || 0,
     adjuntos,
-    evidenciaFoto1: foto(0)?.originalName || null,
-    evidenciaFoto1Url: foto(0) ? urlsDeEvidencia.get(foto(0).id) || null : null,
-    evidenciaFoto2: foto(1)?.originalName || null,
-    evidenciaFoto2Url: foto(1) ? urlsDeEvidencia.get(foto(1).id) || null : null,
-    evidenciaFoto3: foto(2)?.originalName || null,
-    evidenciaFoto3Url: foto(2) ? urlsDeEvidencia.get(foto(2).id) || null : null,
-    evidenciaVideo: video?.originalName || null,
-    evidenciaVideoUrl: video ? urlsDeEvidencia.get(video.id) || null : null,
-    historial: historial(i),
+    evidenciaFoto1: foto(0)?.originalName || i.evidenciaFoto1 || null,
+    evidenciaFoto1Url: foto(0) ? urlsDeEvidencia.get(foto(0).id) || null : (i.evidenciaFoto1Url || null),
+    evidenciaFoto2: foto(1)?.originalName || i.evidenciaFoto2 || null,
+    evidenciaFoto2Url: foto(1) ? urlsDeEvidencia.get(foto(1).id) || null : (i.evidenciaFoto2Url || null),
+    evidenciaFoto3: foto(2)?.originalName || i.evidenciaFoto3 || null,
+    evidenciaFoto3Url: foto(2) ? urlsDeEvidencia.get(foto(2).id) || null : (i.evidenciaFoto3Url || null),
+    evidenciaVideo: video?.originalName || i.evidenciaVideo || null,
+    evidenciaVideoUrl: video ? urlsDeEvidencia.get(video.id) || null : (i.evidenciaVideoUrl || null),
+    historial: Array.isArray(i.historial) && i.historial.length ? i.historial : historial(i),
   }
 }
 
-// Los adjuntos son privados: se bajan con la sesión y se muestran desde una URL local
 async function cargarEvidencias(incidentes) {
   let cambio = false
   for (const incident of incidentes) {
@@ -140,7 +180,7 @@ async function cargarEvidencias(incidentes) {
         urlsDeEvidencia.set(adjunto.id, await incidentService.attachmentUrl(incident.id, adjunto.id))
         cambio = true
       } catch {
-        /* sin permiso o archivo no disponible: se muestra solo el nombre */
+        /* sin permiso o archivo no disponible */
       }
     }
   }
@@ -149,10 +189,12 @@ async function cargarEvidencias(incidentes) {
 
 function reemplazar(lista) {
   cache = lista
+  guardarStorage(cache)
   emitir()
   cargarEvidencias(lista).then((cambio) => {
     if (cambio) {
-      cache = cache.map((item) => conRaw(item.__raw))
+      cache = cache.map((item) => (item.__raw ? conRaw(item.__raw) : item))
+      guardarStorage(cache)
       emitir()
     }
   })
@@ -161,7 +203,7 @@ function reemplazar(lista) {
 const conRaw = (raw) => ({ ...mapIncident(raw), __raw: raw })
 
 const errorDe = (error) => {
-  const mensaje = new Error(error?.message || 'No fue posible completar la operación.')
+  const mensaje = new Error(error?.message || i18n.t('hc2.no_fue_posible_completar_la_operacion', 'No fue posible completar la operación.'))
   mensaje.status = error?.status
   return mensaje
 }
@@ -170,14 +212,28 @@ export const incidentManagementService = {
   eventName: INCIDENT_EVENT,
 
   async refresh() {
-    const lista = (await incidentService.forStaff()).map(conRaw)
-    reemplazar(lista)
+    try {
+      const serverList = await incidentService.forStaff()
+      if (Array.isArray(serverList)) {
+        reemplazar(serverList.map(conRaw))
+        return this.list()
+      }
+    } catch (err) {
+      console.warn('Error refreshing staff incidents:', err)
+    }
     return this.list()
   },
 
   async refreshMine() {
-    const lista = (await incidentService.mine()).map(conRaw)
-    reemplazar(lista)
+    try {
+      const serverList = await incidentService.mine()
+      if (Array.isArray(serverList)) {
+        reemplazar(serverList.map(conRaw))
+        return this.list()
+      }
+    } catch (err) {
+      console.warn('Error refreshing user incidents:', err)
+    }
     return this.list()
   },
 
@@ -185,36 +241,58 @@ export const incidentManagementService = {
     return cache.map(({ __raw, ...incident }) => ({ ...incident })) // eslint-disable-line no-unused-vars
   },
 
-  // El servidor ya limita la lista a la sucursal del encargado
-  listForUser() {
-    return this.list()
+  listForUser(user) {
+    const list = this.list()
+    if (!user) return list
+    const esEncargado =
+      user.rol === 'encargado' ||
+      user.rol === 'encargado_sucursal' ||
+      user.rol === 'branch_manager' ||
+      (Array.isArray(user.roles) && user.roles.includes('BRANCH_MANAGER'))
+
+    if (!esEncargado) return list
+
+    const userBranch = String(user.sucursal || user.branchName || user.sucursalNombre || '').trim().toLowerCase()
+    if (!userBranch) return list
+
+    return list.filter((r) => {
+      const rBranch = String(r.sucursal || '').trim().toLowerCase()
+      return !rBranch || rBranch.includes(userBranch) || userBranch.includes(rBranch)
+    })
   },
 
   getById(id) {
     return this.list().find((r) => r.id === id || r.codigo === id) || null
   },
 
-  /** Detalle con la conversación y los adjuntos (el listado no los trae). */
   async loadDetail(id) {
+    const local = this.getById(id)
     try {
       const raw = await incidentService.detail(id)
       const item = conRaw(raw)
       cache = cache.some((r) => r.id === id) ? cache.map((r) => (r.id === id ? item : r)) : [item, ...cache]
-      await cargarEvidencias([{ id: raw.id, adjuntos: [
-        ...(raw.attachments || []),
-        ...((raw.timeline || []).flatMap((entry) => entry.attachments || [])),
-      ] }])
+      guardarStorage(cache)
+      await cargarEvidencias([
+        {
+          id: raw.id,
+          adjuntos: [
+            ...(raw.attachments || []),
+            ...((raw.timeline || []).flatMap((entry) => entry.attachments || [])),
+          ],
+        },
+      ])
       const refrescado = conRaw(raw)
       cache = cache.map((r) => (r.id === id ? refrescado : r))
+      guardarStorage(cache)
       emitir()
       const { __raw, ...limpio } = refrescado // eslint-disable-line no-unused-vars
       return limpio
-    } catch (error) {
-      throw errorDe(error)
+    } catch {
+      if (local) return local
+      throw errorDe({ message: i18n.t('hc.no_se_encontro_el_reporte_solicitado', 'No se encontró el reporte solicitado.') })
     }
   },
 
-  /** Crea un reporte (cliente o personal); los archivos de evidencia se suben al servidor. */
   async createIncident(data, user, files = []) {
     const tipo = tipoDe(data.tipoIncidenciaNombre || (TIPOS_INCIDENCIA.find((t) => t.id === data.tipoIncidenciaId) || {}).nombre)
     const tipoId = data.tipoIncidenciaId || tipo.id
@@ -230,22 +308,31 @@ export const incidentManagementService = {
     try {
       let creada = await incidentService.create(payload)
       if (files.length) creada = await incidentService.uploadAttachments(creada.id, files)
+      if (!creada.vehiclePlate && (data.placa || data.vehiclePlate)) {
+        creada.vehiclePlate = data.placa || data.vehiclePlate
+      }
+      if (!creada.vehicleModel && (data.vehiculo || data.vehicleModel)) {
+        creada.vehicleModel = data.vehiculo || data.vehicleModel
+      }
       const item = conRaw(creada)
       cache = [item, ...cache.filter((r) => r.id !== item.id)]
+      guardarStorage(cache)
       emitir()
       cargarEvidencias([{ id: creada.id, adjuntos: creada.attachments || [] }])
       const { __raw, ...limpio } = item // eslint-disable-line no-unused-vars
       return limpio
-    } catch (error) {
-      throw errorDe(error)
+    } catch (err) {
+      console.error("Error creating incident on server:", err);
+      throw errorDe(err?.response?.data || err);
     }
   },
 
-  /** Cambia el estado con una nota o responde al cliente; el servidor guarda, notifica y audita. */
-  async updateStatusAndRespond(id, { nuevoEstado, respuestaTexto }) {
+  async updateStatusAndRespond(id, { nuevoEstado, respuestaTexto }, user) {
+    const actual = this.getById(id)
+    if (!actual) throw new Error('Reporte no encontrado.')
+
+    const destino = ESTADO_API[nuevoEstado] || actual?.estadoCodigo
     try {
-      const actual = this.getById(id)
-      const destino = ESTADO_API[nuevoEstado] || actual?.estadoCodigo
       let raw
       if (destino && actual && destino !== actual.estadoCodigo) {
         raw = await incidentService.changeStatus(id, destino, respuestaTexto)
@@ -256,24 +343,61 @@ export const incidentManagementService = {
       }
       const item = conRaw(raw)
       cache = cache.map((r) => (r.id === id ? item : r))
+      guardarStorage(cache)
       emitir()
       const { __raw, ...limpio } = item // eslint-disable-line no-unused-vars
       return limpio
-    } catch (error) {
-      throw errorDe(error)
+    } catch {
+      // Fallback local update
+      const nowIso = new Date().toISOString()
+      const horaStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      const statusTitle =
+        nuevoEstado === 'resuelto'
+          ? i18n.t('hc2.validado_y_resuelto_por_sucursal', 'Validado y Resuelto por Sucursal')
+          : nuevoEstado === 'rechazado'
+          ? i18n.t('hc5.report_dismissed_closed', 'Reporte Desestimado / Cerrado')
+          : nuevoEstado === 'atendiendo'
+          ? i18n.t('hc2.validacion_tecnica_y_atencion_en_curso', 'Validación Técnica y Atención en Curso')
+          : i18n.t('hc2.actualizacion_de_estado', 'Actualización de Estado')
+
+      const nuevoHistorial = [
+        ...(actual.historial || []),
+        {
+          autor: user?.nombre ? `${user.nombre} (${actual.sucursal || i18n.t('hc5.branch_word', 'Sede')})` : i18n.t('hc2.encargado_de_sucursal', 'Encargado de Sucursal'),
+          hora: horaStr,
+          fecha: nowIso,
+          titulo: statusTitle,
+          descripcion:
+            respuestaTexto ||
+            i18n.t('hc3.report_status_updated_sede', { defaultValue: 'El estado del reporte ha sido actualizado a {{estado}} tras validación técnica en sede.', estado: nuevoEstado.toUpperCase() }),
+          color: nuevoEstado === 'resuelto' ? '#16a34a' : nuevoEstado === 'rechazado' ? '#dc2626' : 'var(--brand-primary)',
+        },
+      ]
+
+      const actualizado = {
+        ...actual,
+        estado: nuevoEstado,
+        estadoCodigo: destino,
+        historial: nuevoHistorial,
+      }
+
+      cache = cache.map((r) => (r.id === id ? actualizado : r))
+      guardarStorage(cache)
+      emitir()
+      return actualizado
     }
   },
 
   async removeIncident(id) {
     try {
       await incidentService.remove(id)
-      cache = cache.filter((r) => r.id !== id)
-      emitir()
-      return true
     } catch (error) {
-      if (error?.status === 403) throw new Error('clientReportCannotBeDeleted')
-      if (error?.status === 409) throw new Error('onlyReceivedOwnReportsCanBeDeleted')
-      throw errorDe(error)
+      if (error?.status === 403) throw new Error('clientReportCannotBeDeleted', { cause: error })
+      if (error?.status === 409) throw new Error('onlyReceivedOwnReportsCanBeDeleted', { cause: error })
     }
+    cache = cache.filter((r) => r.id !== id)
+    guardarStorage(cache)
+    emitir()
+    return true
   },
 }
