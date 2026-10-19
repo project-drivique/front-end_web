@@ -1,5 +1,3 @@
-import { useAuthStore } from '../store/authStore'
-
 let apiInstance = null
 
 async function getApi() {
@@ -36,6 +34,13 @@ export const reservationsService = {
     return data
   },
   
+  // Puntos de entrega/devolución (sucursal o domicilio) de la reserva recién creada
+  configurarPuntosEntrega: async (reservationId, points) => {
+    const api = await getApi()
+    const { data } = await api.post(`/reservations/${reservationId}/delivery-points`, { points })
+    return data
+  },
+
   confirmarPago: async (holdId) => {
     const api = await getApi()
     const { data } = await api.post(`/reservations/checkout/confirm/${holdId}`)
@@ -62,6 +67,15 @@ export const reservationsService = {
       comment: valoracion.comentario || ''
     }
     const { data } = await api.post(`/reviews/vehicles`, payload)
+    return data
+  },
+
+  guardarResenaSucursal: async (id, branchId, resena) => {
+    const api = await getApi()
+    const { data } = await api.post('/reviews/branches', {
+      branchId,
+      review: { reservationId: id, rating: resena.estrellas, comment: resena.comentario || '' }
+    })
     return data
   },
 

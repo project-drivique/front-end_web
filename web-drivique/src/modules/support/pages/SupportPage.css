@@ -203,7 +203,7 @@
 
 .canal-icon-wrap.correo {
   background: #e0f2fe;
-  color: #0284c7;
+  color: var(--brand-text);
 }
 
 .canal-info {

@@ -1,4 +1,5 @@
 import { api } from './httpClient'
+import i18n from '@/i18n'
 
 /**
  * Normaliza una notificación del backend para asegurar consistencia
@@ -8,7 +9,7 @@ export function normalizarNotificacion(raw) {
   if (!raw || typeof raw !== 'object') return null
 
   const id = raw.id || raw.notificationId || raw.uuid || String(Math.random())
-  const titulo = raw.subject || raw.title || raw.titulo || raw.tituloKey || 'Notificación Drivique'
+  const titulo = raw.subject || raw.title || raw.titulo || raw.tituloKey || i18n.t('hc2.notificacion_drivique', 'Notificación Drivique')
   const mensaje = raw.message || raw.mensaje || raw.content || raw.body || ''
   const tipo = (raw.eventType || raw.tipo || raw.type || 'GENERAL').toLowerCase()
   const criticidad = (raw.criticality || raw.criticidad || raw.priority || 'MEDIUM').toUpperCase()

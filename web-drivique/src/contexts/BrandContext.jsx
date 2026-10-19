@@ -15,6 +15,8 @@ export function BrandProvider({ children }) {
 
   useLayoutEffect(() => {
     applyBrand(brand)
+    // Con la marca ya aplicada se puede mostrar la página (ver index.html)
+    document.documentElement.setAttribute('data-brand-ready', '1')
   }, [brand])
 
   useEffect(() => {

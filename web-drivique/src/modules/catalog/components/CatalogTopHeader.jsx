@@ -179,7 +179,7 @@ export default function CatalogTopHeader({
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
-                  boxShadow: '0 2px 8px rgba(37,99,235,0.25)',
+                  boxShadow: '0 2px 8px rgba(var(--brand-primary-rgb),0.25)',
                 }}
               >
                 {managementLabel}
@@ -207,7 +207,7 @@ export default function CatalogTopHeader({
                 className="catalogo-mobile-menu-btn"
                 onClick={() => setIsMobileMenuOpen(true)}
                 style={{ color: c.accentText }}
-                aria-label="Abrir menú"
+                aria-label={t('hc.abrir_menu', 'Abrir menú')}
               >
                 <FaBars size={22} />
               </button>
@@ -216,7 +216,7 @@ export default function CatalogTopHeader({
             {mostrarPerfil && (
               <Link
                 to="/perfil"
-                aria-label="Perfil"
+                aria-label={t('hc4.perfil', 'Perfil')}
                 className="catalogo-header-profile"
                 style={{ color: c.accentText, display: 'flex', alignItems: 'center' }}
               >
@@ -249,12 +249,12 @@ export default function CatalogTopHeader({
       {modoRegistrado && isMobileMenuOpen && (
         <div className="catalogo-mobile-menu-overlay" style={{ background: c.navBg }}>
           <div className="catalogo-mobile-menu-header" style={{ borderBottom: `1px solid ${c.navBorder}` }}>
-            <span className="catalogo-mobile-menu-title" style={{ color: c.textPrimary }}>Menú</span>
+            <span className="catalogo-mobile-menu-title" style={{ color: c.textPrimary }}>{t('hc.menu', 'Menú')}</span>
             <button
               className="catalogo-mobile-menu-close"
               onClick={() => setIsMobileMenuOpen(false)}
               style={{ color: c.textPrimary }}
-              aria-label="Cerrar menú"
+              aria-label={t('hc.cerrar_menu', 'Cerrar menú')}
             >
               <FaTimes size={24} />
             </button>

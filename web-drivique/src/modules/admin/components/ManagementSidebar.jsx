@@ -138,7 +138,7 @@ export default function ManagementSidebar({ branchOnly = false }) {
         <button 
           className="management-mobile-btn" 
           onClick={() => setIsOpen(!isOpen)}
-          aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
+          aria-label={isOpen ? t('hc2.cerrar_menu', 'Cerrar menú') : t('hc2.abrir_menu', 'Abrir menú')}
         >
           {isOpen ? <FaTimes /> : <FaBars />}
         </button>

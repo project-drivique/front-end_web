@@ -1,37 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import {
-  FaSearch,
-  FaBell,
-  FaCalendarAlt,
-  FaDollarSign,
-  FaCalendarCheck,
-  FaUndo,
-  FaCar,
-  FaTimes,
-  FaArrowUp,
-  FaCheckCircle,
-  FaClock,
-  FaClipboardList,
-  FaIdCard,
-  FaExclamationTriangle,
-  FaCashRegister,
-  FaCheckDouble,
-  FaChevronRight,
-  FaPlus,
-  FaEllipsisV,
-  FaEye,
-  FaReceipt,
-  FaPhone,
-  FaChartBar,
-  FaTimesCircle,
-  FaBellSlash,
-  FaInfoCircle,
-  FaFileExcel,
-  FaFilePdf,
-  FaPrint,
-} from 'react-icons/fa'
+import { FaBell, FaCalendarAlt, FaDollarSign, FaCalendarCheck, FaUndo, FaCar, FaTimes, FaCheckCircle, FaClock, FaClipboardList, FaExclamationTriangle, FaCheckDouble, FaPlus, FaEllipsisV, FaReceipt, FaChartBar, FaTimesCircle } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBranchDashboard, getScheduleForRange } from '../../../hooks/useBranchDashboard'
@@ -51,8 +21,6 @@ const diaLocal = (offset) => {
   return fecha.toLocaleDateString('en-CA')
 }
 const TODAY_STR = diaLocal(0)
-const YESTERDAY_STR = diaLocal(-1)
-const TOMORROW_STR = diaLocal(1)
 
 const getVehicleImage = (item) => {
   const name = (item?.vehiculoNombre || item?.vehiculo || '').toLowerCase()
@@ -422,7 +390,7 @@ function OperationalHourlyBarChart({ hourlyData = [] }) {
                   y={marginTop}
                   width={slotWidth - 4}
                   height={chartHeight}
-                  fill="rgba(37, 99, 235, 0.04)"
+                  fill="rgba(var(--brand-primary-rgb), 0.04)"
                   rx="4"
                 />
               )}
@@ -515,7 +483,7 @@ export default function BranchDashboard({ branchOnly = true }) {
     ? reservationManagementService.list().find((r) => String(r.id) === String(selectedScheduleItem.reservaId))
     : null
   const vehiculoDrawer = reservaDrawer ? vehicleManagementService.getById(reservaDrawer.vehiculoId) : null
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery] = useState('')
 
   // Rango de Fechas con objetos Date para el DatePicker Visibilidad Permanente (Inline)
   const [startDateObj, setStartDateObj] = useState(parseISOToDate(TODAY_STR))
@@ -530,35 +498,33 @@ export default function BranchDashboard({ branchOnly = true }) {
   const {
     notifications,
     unreadCount: unreadNotifCount,
-    filter: notifFilter,
-    setFilter: setNotifFilter,
-    filteredNotifications,
     markAsRead: handleMarkNotificationRead,
     markAllAsRead: handleMarkAllNotificationsRead,
   } = useBranchNotifications(usuario, dashboardData)
 
-  const drawerRef = useRef(null)
   const lastActiveElementRef = useRef(null)
-  const notifRef = useRef(null)
   const notifBtnRef = useRef(null)
 
   const reservationsRoute = '/encargado/reservations'
   const incidentsRoute = '/encargado/incidents'
   const documentsRoute = '/encargado/documents'
-  const cashRoute = '/encargado/cobro-sucursal'
   const vehiclesRoute = '/encargado/vehicles'
 
   const startDateStr = useMemo(() => formatDateToISO(startDateObj), [startDateObj])
   const endDateStr = useMemo(() => formatDateToISO(endDateObj || startDateObj), [endDateObj, startDateObj])
+
+  const scheduleForRange = useMemo(() => {
+    return getScheduleForRange(startDateStr, endDateStr)
+  }, [startDateStr, endDateStr, dashboardData])
+
+  const deliveriesForRange = useMemo(() => scheduleForRange.deliveries || [], [scheduleForRange])
+  const returnsForRange = useMemo(() => scheduleForRange.returns || [], [scheduleForRange])
 
   const handleToggleKpiMenu = (id, e) => {
     e.stopPropagation()
     setActiveKpiMenu((prev) => (prev === id ? null : id))
   }
 
-  const handleToggleNotifications = () => {
-    setIsNotificationsOpen((prev) => !prev)
-  }
 
   const handleNotificationClick = (notif) => {
     handleMarkNotificationRead(notif.id)
@@ -645,7 +611,7 @@ export default function BranchDashboard({ branchOnly = true }) {
         ],
         rows: vehiculos.map((v) => {
           const activa = reservas.find((r) => String(r.vehiculoId) === String(v.id) && r.estado !== 'cancelada' && r.estado !== 'finalizada')
-          return [v.placa, v.nombre, v.categoria, v.sucursal, estadoTexto(v.estadoEfectivo), activa ? activa.codigo : 'Sin reserva']
+          return [v.placa, v.nombre, v.categoria, v.sucursal, estadoTexto(v.estadoEfectivo), activa ? activa.codigo : t('hc2.sin_reserva', 'Sin reserva')]
         }),
         kpis: [
           { label: t('dashboard.export.occupancyRate', 'Tasa de Ocupación'), value: `${f.occupancyRate ?? 0}%` },
@@ -656,7 +622,7 @@ export default function BranchDashboard({ branchOnly = true }) {
       }
     }
 
-    return { title: 'Métrica Operativa', filename: 'reporte', headers: [], rows: [], kpis: [] }
+    return { title: t('hc.metrica_operativa', 'Métrica Operativa'), filename: 'reporte', headers: [], rows: [], kpis: [] }
   }
 
   const handleOpenKpiDetail = (metricKey) => {
@@ -682,7 +648,7 @@ export default function BranchDashboard({ branchOnly = true }) {
     const data = getKpiDataForExport(metricKey)
     exportPdf({
       title: `Reporte Oficial — ${data.title}`,
-      subtitle: `Sucursal: ${dashboardData?.branchName || ''}`,
+      subtitle: t('hc3.branch_subtitle', { defaultValue: 'Sucursal: {{sucursal}}', sucursal: dashboardData?.branchName || '' }),
       headers: data.headers,
       rows: data.rows,
       kpis: data.kpis,
@@ -720,13 +686,6 @@ export default function BranchDashboard({ branchOnly = true }) {
     }
     return `${t('dashboard.scheduleFor', 'Programación del')} ${formatDateLabel(startStr)} ${t('common.to', 'al')} ${formatDateLabel(endStr)}`
   }
-
-  const scheduleForRange = useMemo(() => {
-    return getScheduleForRange(startDateStr, endDateStr)
-  }, [startDateStr, endDateStr, dashboardData])
-
-  const deliveriesForRange = scheduleForRange.deliveries || []
-  const returnsForRange = scheduleForRange.returns || []
 
   const currentList = useMemo(() => {
     const rawList = activeTab === 'entregas' ? deliveriesForRange : returnsForRange
@@ -840,10 +799,6 @@ export default function BranchDashboard({ branchOnly = true }) {
   }
 
   const { fleet, attentionNeeded } = dashboardData
-  const totalF = fleet.totalVehicles || 0
-  const availPct = Math.round((fleet.availableVehicles / totalF) * 100)
-  const rentedPct = Math.round((fleet.rentedVehicles / totalF) * 100)
-  const maintPct = Math.max(0, 100 - availPct - rentedPct)
 
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
@@ -878,8 +833,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 className={`branch-icon-btn branch-notification-btn ${
                   isNotificationsOpen ? 'branch-icon-btn--active' : ''
                 }`}
-                title="Notificaciones y Alertas"
-                aria-label="Notificaciones y Alertas"
+                title={t('hc.notificaciones_y_alertas', 'Notificaciones y Alertas')}
+                aria-label={t('hc.notificaciones_y_alertas', 'Notificaciones y Alertas')}
                 aria-expanded={isNotificationsOpen}
                 onClick={(e) => {
                   e.preventDefault()
@@ -977,8 +932,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <button
                   type="button"
                   className="branch-kpi-menu-btn"
-                  title="Opciones de métrica"
-                  aria-label="Opciones de métrica"
+                  title={t('hc.opciones_de_metrica', 'Opciones de métrica')}
+                  aria-label={t('hc.opciones_de_metrica', 'Opciones de métrica')}
                   onClick={(e) => handleToggleKpiMenu('kpi-1', e)}
                 >
                   <FaEllipsisV aria-hidden="true" />
@@ -1056,8 +1011,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <button
                   type="button"
                   className="branch-kpi-menu-btn"
-                  title="Opciones de métrica"
-                  aria-label="Opciones de métrica"
+                  title={t('hc.opciones_de_metrica', 'Opciones de métrica')}
+                  aria-label={t('hc.opciones_de_metrica', 'Opciones de métrica')}
                   onClick={(e) => handleToggleKpiMenu('kpi-2', e)}
                 >
                   <FaEllipsisV aria-hidden="true" />
@@ -1132,8 +1087,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <button
                   type="button"
                   className="branch-kpi-menu-btn"
-                  title="Opciones de métrica"
-                  aria-label="Opciones de métrica"
+                  title={t('hc.opciones_de_metrica', 'Opciones de métrica')}
+                  aria-label={t('hc.opciones_de_metrica', 'Opciones de métrica')}
                   onClick={(e) => handleToggleKpiMenu('kpi-3', e)}
                 >
                   <FaEllipsisV aria-hidden="true" />
@@ -1208,8 +1163,8 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <button
                   type="button"
                   className="branch-kpi-menu-btn"
-                  title="Opciones de métrica"
-                  aria-label="Opciones de métrica"
+                  title={t('hc.opciones_de_metrica', 'Opciones de métrica')}
+                  aria-label={t('hc.opciones_de_metrica', 'Opciones de métrica')}
                   onClick={(e) => handleToggleKpiMenu('kpi-4', e)}
                 >
                   <FaEllipsisV aria-hidden="true" />
@@ -1823,7 +1778,7 @@ export default function BranchDashboard({ branchOnly = true }) {
                 <div className="branch-drawer-vehicle-banner">
                   <img
                     src={getVehicleImage(selectedScheduleItem)}
-                    alt={selectedScheduleItem.vehiculoNombre || selectedScheduleItem.vehiculo || 'Vehículo'}
+                    alt={selectedScheduleItem.vehiculoNombre || selectedScheduleItem.vehiculo || t('hc2.vehiculo', 'Vehículo')}
                     className="branch-drawer-vehicle-img"
                   />
                   <div className="branch-drawer-vehicle-banner-overlay">

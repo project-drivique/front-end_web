@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import i18nGlobal from '@/i18n'
 import { useLanding } from '../../landing/LandingContext'
 import { useBrand } from '../../../contexts/BrandContext'
 import { useAuthStore } from '../../../store/authStore'
@@ -130,7 +131,7 @@ function construirSucursales(sucursales, vehiculos) {
         horario: sede.horario,
         flota: modelos.join(', '),
         precioCOP: precios.length ? Math.min(...precios) : 0,
-        porQue: sede.telefono ? `Tel. ${sede.telefono}` : '',
+        porQue: sede.telefono ? i18nGlobal.t('hc3.phone_short', { defaultValue: 'Tel. {{telefono}}', telefono: sede.telefono }) : '',
       }
     })
 }

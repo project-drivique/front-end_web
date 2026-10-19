@@ -56,8 +56,8 @@
 }
 
 .management-shell--dark .fleet-tab-btn.is-active {
-  color: #60a5fa;
-  border-bottom-color: #60a5fa;
+  color: var(--brand-text);
+  border-bottom-color: var(--brand-accent);
 }
 
 .attached-to-tabs {
@@ -90,22 +90,22 @@
 
 .cities-modal__actions .incident-modal-btn-submit,
 .cities-modal__actions button.incident-modal-btn-submit {
-  background: #2563eb !important;
+  background: var(--brand-primary) !important;
   color: #ffffff !important;
-  border: 1px solid #2563eb !important;
+  border: 1px solid var(--brand-primary) !important;
   border-radius: 9999px !important;
   font-weight: 800 !important;
   font-size: 13px !important;
   padding: 8px 24px !important;
   min-height: auto !important;
   cursor: pointer !important;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3) !important;
+  box-shadow: 0 2px 6px rgba(var(--brand-primary-rgb), 0.3) !important;
   transition: all 0.2s ease !important;
 }
 .cities-modal__actions .incident-modal-btn-submit:hover,
 .cities-modal__actions button.incident-modal-btn-submit:hover {
-  background: #1d4ed8 !important;
-  border-color: #1d4ed8 !important;
+  background: var(--brand-primary-hover) !important;
+  border-color: var(--brand-primary-hover) !important;
 }
 
 .incident-modal-btn-create,
@@ -185,7 +185,7 @@ button.incident-modal-btn-create:hover {
 /* ─── DARK MODE BADGES ────────────────────────────────────────────────────── */
 .management-shell--dark .priority-badge.urgente { background: rgba(239,68,68,0.2); color: #fca5a5; }
 .management-shell--dark .priority-badge.alta { background: rgba(239,68,68,0.15); color: #fca5a5; }
-.management-shell--dark .priority-badge.media { background: rgba(59,130,246,0.2); color: var(--brand-text-dark, #93c5fd); }
+.management-shell--dark .priority-badge.media { background: rgba(var(--brand-primary-rgb),0.2); color: var(--brand-text-dark, #93c5fd); }
 .management-shell--dark .priority-badge.baja { background: rgba(34,197,94,0.2); color: #86efac; }
 .management-shell--dark .origin-badge.cliente { background: rgba(14,165,233,0.2); color: #7dd3fc; }
 .management-shell--dark .origin-badge.administrador { background: #1e293b; color: #cbd5e1; }
@@ -297,7 +297,7 @@ button.incident-modal-btn-create:hover {
 .management-shell--dark .incident-field select:focus,
 .management-shell--dark .incident-field textarea:focus {
   border-color: var(--brand-primary) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+  box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.2) !important;
 }
 
 /* ─── GRID DE DOS COLUMNAS ───────────────────────────────────────────────── */
@@ -648,7 +648,7 @@ html.dark .incident-card:hover {
 
 .toggle-btn.active {
   background: #ffffff;
-  color: #2563eb;
+  color: var(--brand-text);
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
@@ -658,7 +658,7 @@ html.dark .view-mode-toggle {
 }
 html.dark .toggle-btn.active {
   background: #334155;
-  color: #60a5fa;
+  color: var(--brand-text);
 }
 
 /* --- EXPORT PILLS (SAME AS RESERVATION MANAGEMENT) --------------- */
@@ -742,32 +742,32 @@ html.dark .toggle-btn.active {
 }
 
 .export-pill--print {
-  background: #eff6ff !important;
-  border: 1.5px solid #bfdbfe !important;
-  color: #2563eb !important;
+  background: var(--brand-soft) !important;
+  border: 1.5px solid var(--brand-border) !important;
+  color: var(--brand-text) !important;
 }
 .export-pill--print svg {
-  color: #2563eb !important;
+  color: var(--brand-text) !important;
   font-size: 14px !important;
 }
 .export-pill--print:hover {
-  background: #dbeafe !important;
-  border-color: #93c5fd !important;
+  background: var(--brand-soft-strong) !important;
+  border-color: var(--brand-border) !important;
   transform: translateY(-1px);
 }
 
 .management-shell--dark .export-pill--print {
-  background: rgba(59, 130, 246, 0.16) !important;
-  border-color: rgba(59, 130, 246, 0.4) !important;
-  color: #60a5fa !important;
+  background: rgba(var(--brand-primary-rgb), 0.16) !important;
+  border-color: rgba(var(--brand-primary-rgb), 0.4) !important;
+  color: var(--brand-text) !important;
 }
 .management-shell--dark .export-pill--print svg {
-  color: #60a5fa !important;
+  color: var(--brand-text) !important;
 }
 .management-shell--dark .export-pill--print:hover {
-  background: rgba(59, 130, 246, 0.28) !important;
-  border-color: rgba(59, 130, 246, 0.65) !important;
-  color: #93c5fd !important;
+  background: rgba(var(--brand-primary-rgb), 0.28) !important;
+  border-color: rgba(var(--brand-primary-rgb), 0.65) !important;
+  color: var(--brand-text) !important;
 }
 
 /* ─── BOTÓN RESPONDER (TABLE ACTION) ────────────────────────────── */
@@ -816,3 +816,378 @@ html.dark .toggle-btn.active {
   color: #f8fafc !important;
   border-color: #64748b !important;
 }
+
+/* ─── INCIDENT VALIDATION STEPPER ────────────────────────────────────────── */
+.incident-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0 20px;
+  position: relative;
+}
+
+.incident-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  text-align: center;
+}
+
+.incident-step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  background: var(--city-bg, #f1f5f9);
+  color: var(--city-muted, #64748b);
+  border: 2px solid #cbd5e1;
+  transition: all 0.25s ease;
+}
+
+.incident-step.is-active .incident-step-circle {
+  background: var(--brand-primary);
+  color: #ffffff;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 4px rgba(var(--brand-primary-rgb), 0.2);
+}
+
+.incident-step.is-completed .incident-step-circle {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+}
+
+.incident-step.is-rejected .incident-step-circle {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+.incident-step-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-top: 6px;
+  color: var(--city-muted, #64748b);
+}
+
+.incident-step.is-active .incident-step-label {
+  color: var(--brand-text);
+}
+
+.incident-step.is-completed .incident-step-label {
+  color: #10b981;
+}
+
+.incident-step.is-rejected .incident-step-label {
+  color: #ef4444;
+}
+
+.incident-step-desc {
+  font-size: 10px;
+  color: var(--city-muted, #94a3b8);
+  max-width: 120px;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.incident-stepper-line {
+  position: absolute;
+  top: 16px;
+  left: 10%;
+  right: 10%;
+  height: 3px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.incident-stepper-progress {
+  height: 100%;
+  background: #10b981;
+  transition: width 0.3s ease;
+}
+
+.incident-validation-box {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin: 16px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.incident-validation-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.incident-validation-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+/* ─── KPI METRICS GRID ─────────────────────────────────────────────────── */
+.incident-kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.incident-kpi-card {
+  background: var(--city-card, #ffffff);
+  border: 1.5px solid var(--city-border, #e2e8f0);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  user-select: none;
+}
+
+.incident-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--brand-primary, #2563eb);
+}
+
+.incident-kpi-card.is-active {
+  border-color: var(--brand-primary, #2563eb);
+  background: var(--city-soft, #f8fafc);
+  box-shadow: 0 0 0 3px rgba(var(--brand-primary-rgb), 0.15);
+}
+
+.incident-kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.incident-kpi-icon--total {
+  background: var(--brand-soft);
+  color: var(--brand-text);
+}
+
+.incident-kpi-icon--recibido {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.incident-kpi-icon--atendiendo {
+  background: #e0f2fe;
+  color: var(--brand-text);
+}
+
+.incident-kpi-icon--resuelto {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.incident-kpi-icon--rechazado {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.incident-kpi-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.incident-kpi-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--city-muted, #64748b);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.incident-kpi-value {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--city-text, #0f172a);
+  line-height: 1.1;
+}
+
+.incident-kpi-badge {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.incident-kpi-badge--alert {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+/* ─── EVIDENCES GALLERY (MODAL DETALLE) ─────────────────────────────────── */
+.incident-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.incident-gallery-card {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.incident-gallery-card:hover {
+  border-color: var(--brand-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.incident-gallery-preview {
+  width: 100%;
+  height: 105px;
+  object-fit: cover;
+  background: #f1f5f9;
+  display: block;
+}
+
+.incident-gallery-meta {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #ffffff;
+}
+
+.incident-gallery-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.incident-gallery-btn {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--brand-text);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ─── CHECKLIST DE VALIDACIÓN TÉCNICA ─────────────────────────────────── */
+.incident-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.incident-checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12.5px;
+  color: #334155;
+  cursor: pointer;
+  user-select: none;
+}
+
+.incident-checklist-item input[type="checkbox"] {
+  margin-top: 2px;
+  accent-color: var(--brand-primary);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* ─── DARK MODE ADJUSTMENTS ─────────────────────────────────────────────── */
+.management-shell--dark .incident-kpi-card {
+  background: var(--adm-card, #1e293b);
+  border-color: var(--adm-border, #334155);
+}
+
+.management-shell--dark .incident-kpi-card.is-active {
+  background: #1e293b;
+  border-color: var(--brand-accent);
+  box-shadow: 0 0 0 3px rgba(var(--brand-accent-rgb), 0.2);
+}
+
+.management-shell--dark .incident-kpi-label {
+  color: #94a3b8;
+}
+
+.management-shell--dark .incident-kpi-value {
+  color: #f8fafc;
+}
+
+.management-shell--dark .incident-validation-box {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.management-shell--dark .incident-validation-title {
+  color: #f8fafc;
+}
+
+.management-shell--dark .incident-checklist {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.management-shell--dark .incident-checklist-item {
+  color: #cbd5e1;
+}
+
+.management-shell--dark .incident-gallery-card {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.management-shell--dark .incident-gallery-meta {
+  background: #0f172a;
+}
+
+.management-shell--dark .incident-gallery-title {
+  color: #e2e8f0;
+}
+
+
