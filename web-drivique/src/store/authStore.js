@@ -175,6 +175,8 @@ export const useAuthStore = create(
         set({ token: null, usuario: null, sesion2FA: null, requiere2FA: false, verificacionCorreo: null, recuperacionCorreo: null })
         localStorage.removeItem(AUTH_KEYS.token)
         localStorage.removeItem(AUTH_KEYS.usuario)
+        // El token de renovación también debe borrarse: si queda, la próxima petición con 401 reabre la sesión sola
+        sessionStorage.removeItem('drivique_refresh_token')
       },
     }),
     {
