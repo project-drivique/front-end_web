@@ -46,23 +46,6 @@ const coloresTema = (oscuro) => ({
   heroCardBorder: oscuro ? '#334155' : '#d9e3f1',
 })
 
-const formatearFechaHoraReserva = (fecha) => {
-  if (!fecha) return '—'
-  try {
-    const d = new Date(fecha)
-    if (isNaN(d.getTime())) return String(fecha)
-    const pad = (n) => String(n).padStart(2, '0')
-    const dia = pad(d.getDate())
-    const mes = pad(d.getMonth() + 1)
-    const anio = d.getFullYear()
-    const horas = pad(d.getHours())
-    const minutos = pad(d.getMinutes())
-    const segundos = pad(d.getSeconds())
-    return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`
-  } catch {
-    return String(fecha || '—')
-  }
-}
 
 const fechaBonita = (fecha, idioma) => {
   if (!fecha) return '—'
@@ -442,39 +425,13 @@ function useContratoReal(reservationId) {
   return contract
 }
 
-function Contrato({ reserva, autoDesbloquear = false, onDesbloquear }) {
+function Contrato({ reserva }) {
   const { t } = useTranslation()
-  const { brand } = useBrand() || {}
-  const navigate = useNavigate()
   const usuario = useAuthStore(state => state.usuario)
-  const refBusqueda = reserva.referencia || reserva.codigo || reserva.id
   const contratoFirmado = useContratoReal(reserva.id)
   const reservaAlmacenada = null
 
-  const tieneContratoFirmado = Boolean(
-    contratoFirmado?.signatureUrl ||
-    contratoFirmado?.signedAt ||
-    contratoFirmado?.statusCode === 'ACTIVE' ||
-    contratoFirmado?.firmaUsuarioDataUrl
-  )
-  const backendStatus = String(reserva.status || reserva.estadoRaw || '').toUpperCase()
-  const rawEstado = reservaAlmacenada?.estado || reserva.estado || ''
-  const estadoNorm = String(rawEstado).toLowerCase()
-  const esPagoConfirmado =
-    backendStatus === 'CONFIRMED' ||
-    backendStatus === 'ACTIVE' ||
-    backendStatus === 'COMPLETED' ||
-    backendStatus === 'IN_PROGRESS' ||
-    backendStatus === 'PENDING_SIGNATURE' ||
-    estadoNorm === 'pagada' ||
-    estadoNorm === 'pago_confirmado' ||
-    reserva.pagoEstado === 'aprobado' ||
-    reservaAlmacenada?.pagoEstado === 'aprobado' ||
-    Boolean(reserva.fechaPagoConfirmado) ||
-    Boolean(reservaAlmacenada?.fechaPagoConfirmado)
-
   // REGLA: Si no se ha firmado el contrato, la reserva NO pasa a confirmada
-  const esConfirmada = esPagoConfirmado && tieneContratoFirmado
 
   const reservaParaContrato = useMemo(() => {
     const base = contratoFirmado?.contratoOriginal?.reserva || reservaAlmacenada || reserva || {}
@@ -558,7 +515,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const { brand } = useBrand() || {}
   const usuario = useAuthStore(state => state.usuario)
 
-  const refBusquedaModal = reserva.referencia || reserva.codigo || reserva.id
   const contrato = useContratoReal(reserva.id)
   const reservaOriginal = contrato?.contratoOriginal?.reserva
   const vehiculoOriginal = contrato?.contratoOriginal?.vehiculo || reserva.vehiculo
@@ -669,7 +625,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
     estadoNormModal === 'pending_payment' ||
     reserva.estado === 'PENDING_PAYMENT'
   )
-  const esWompiAprobado = !esEfectivo && esConfirmadaModal
 
   const sucursalPago = reservaOriginal?.reservaDetalles?.sucursalPagoEfectivo || reserva.vehiculo?.sucursal || ''
   const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
@@ -742,19 +697,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   }, [reserva, reservaOriginal, reservaParaContrato, vehiculoOriginal])
 
   // Normalización completa del vehículo para el contrato oficial
-  const vehiculoParaContrato = useMemo(() => {
-    const base = contrato?.contratoOriginal?.vehiculo || vehiculoOriginal || reserva.vehiculo || {}
-    return {
-      ...base,
-      nombre: base.nombre || (base.marca ? `${base.marca} ${base.modelo || ''}` : t('hc2.vehiculo_drivique', 'Vehículo Drivique')),
-      placa: base.placa || 'ABC-123',
-      color: base.color || 'Plata',
-      año: base.año || base.anio || 2024,
-      sucursal: base.sucursal || reserva.sucursal || '',
-      servicios: base.servicios || [],
-      seguros: base.seguros || [{ nombre: t('hc2.proteccion_basica_estandar', 'Protección Básica Estándar') }]
-    }
-  }, [reserva, contrato, vehiculoOriginal])
 
   // Resolver Lugar de Retiro y Devolución
   const resolverLugar = (loc, dom) => {
@@ -794,16 +736,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
   const [revelarPin, setRevelarPin] = useState(false)
   const [verMasDomicilio, setVerMasDomicilio] = useState(false)
-  const handleEnviarCorreoPin = async () => {
-    await showAlert({
-      icon: 'info',
-      title: t('hc.codigo_de_seguridad_de_entrega', 'Código de seguridad de entrega'),
-      text: domicilioPin
-        ? t('hc3.delivery_pin_msg', { defaultValue: 'Tu PIN de entrega es {{pin}}. Dáselo al conductor al recibir el vehículo para validar tu identidad.', pin: domicilioPin })
-        : t('hc2.el_pin_se_genera_cuando_la_sucursal_as', 'El PIN se genera cuando la sucursal asigna un conductor a tu domicilio.'),
-      confirmButtonText: t('hc4.entendido', 'Entendido'),
-    })
-  }
 
   // Resolver Medio / Canal de Pago
   const resolverMedioPago = () => {

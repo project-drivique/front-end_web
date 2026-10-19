@@ -54,7 +54,7 @@ export function useReservationFlow() {
       })
   }, [])
 
-  let selectedVehicle = null
+  let selectedVehicle
   try { selectedVehicle = JSON.parse(sessionStorage.getItem('drivique_selected_vehicle') || 'null') } catch { selectedVehicle = null }
   const baseVehiculo = vehicleManagementService.getById(id) || (String(selectedVehicle?.id) === String(id) ? selectedVehicle : null)
   const limitedMileagePlan = mileagePlans.find((plan) => plan.includedKm != null) || null
@@ -651,7 +651,7 @@ export function useReservationFlow() {
     try {
       let dRetiro = new Date(`${reserva.fechaInicio}T${reserva.horaInicio || '10:00'}:00`)
       let dDevolucion = new Date(`${reserva.fechaFin}T${reserva.horaFin || '10:00'}:00`)
-      const ahora = Date.now()
+      const ahora = new Date().getTime()
       if (dRetiro.getTime() < ahora) {
         const hoyLocal = new Date()
         const fInicioStr = reserva.fechaInicio ? String(reserva.fechaInicio).split('T')[0] : ''

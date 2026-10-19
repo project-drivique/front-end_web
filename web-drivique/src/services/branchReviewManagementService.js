@@ -33,7 +33,7 @@ export const branchReviewManagementService = {
       const { data } = await api.patch(`/v1/admin/reviews/branches/${id}/reply`, { reply: textoRespuesta })
       return mapear(data)
     } catch (error) {
-      throw new Error(error?.response?.data?.detail || 'No fue posible publicar la respuesta.')
+      throw new Error(error?.response?.data?.detail || 'No fue posible publicar la respuesta.', { cause: error })
     }
   },
 
@@ -42,7 +42,7 @@ export const branchReviewManagementService = {
       await api.delete(`/v1/admin/reviews/branches/${id}`)
       return true
     } catch (error) {
-      throw new Error(error?.response?.data?.detail || 'No fue posible eliminar la reseña.')
+      throw new Error(error?.response?.data?.detail || 'No fue posible eliminar la reseña.', { cause: error })
     }
   },
 }

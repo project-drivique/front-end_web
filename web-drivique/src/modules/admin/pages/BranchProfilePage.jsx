@@ -1,13 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { FaLock, FaInfoCircle, FaMapMarkerAlt, FaBuilding, FaDirections, FaExclamationTriangle, FaCreditCard, FaHourglassHalf, FaMoneyBillWave, FaUndo, FaSave, FaExternalLinkAlt } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { useBranchProfile } from '../../../hooks/useBranchProfile'
 import { showAlert } from '../../../utils/swalConfig'
-import { getPlaceSchedule, formatSchedule } from '../../../utils/branchSchedules'
-import { CIUDADES } from '../../catalog/constants'
 import ManagementSidebar from '../components/ManagementSidebar'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import './BranchProfilePage.css'
@@ -38,10 +35,9 @@ const CITY_COORDINATES = {
  * @returns {JSX.Element}
  */
 export default function BranchProfilePage() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { tema } = useLanding()
   const user = useAuthStore((state) => state.usuario)
-  const navigate = useNavigate()
 
   const {
     profile,
@@ -125,7 +121,7 @@ export default function BranchProfilePage() {
     // Teléfono opcional: solo dígitos, espacios, +, -, de 7 a 13 dígitos
     if (form.telefono.trim()) {
       const digitsOnly = form.telefono.replace(/[^\d]/g, '')
-      const validChars = /^[0-9\s+\-]+$/.test(form.telefono)
+      const validChars = /^[0-9\s+-]+$/.test(form.telefono)
       if (!validChars || digitsOnly.length < 7 || digitsOnly.length > 13) {
         errs.telefono = t(
           'branchProfile.errors.phoneInvalid',
@@ -255,44 +251,8 @@ export default function BranchProfilePage() {
   const googleMapsExternalUrl = `https://www.google.com/maps?q=${curLat},${curLng}`
 
   // Ciudad e infraestructura
-  const cityObj = useMemo(() => {
-    if (!profile?.ciudad) return null
-    const cleanCity = String(profile.ciudad).trim().toLowerCase()
-    return (
-      CIUDADES.find(
-        (c) =>
-          c.nombre?.toLowerCase() === cleanCity ||
-          c.id?.toLowerCase() === cleanCity ||
-          cleanCity.includes(c.nombre?.toLowerCase()) ||
-          c.nombre?.toLowerCase().includes(cleanCity)
-      ) || null
-    )
-  }, [profile?.ciudad])
 
   // Horarios usando branchSchedules.js
-  const branchScheduleObj = useMemo(() => {
-    return getPlaceSchedule({ branchType: profile?.branchType })
-  }, [profile?.branchType])
-
-  const homeScheduleObj = useMemo(() => {
-    return getPlaceSchedule({ kind: 'home_delivery' })
-  }, [])
-
-  const airportScheduleObj = useMemo(() => {
-    return getPlaceSchedule({ branchType: 'AIRPORT_TERMINAL' })
-  }, [])
-
-  const formattedBranchSchedule = useMemo(() => {
-    return formatSchedule(branchScheduleObj, i18n.language)
-  }, [branchScheduleObj, i18n.language])
-
-  const formattedHomeSchedule = useMemo(() => {
-    return formatSchedule(homeScheduleObj, i18n.language)
-  }, [homeScheduleObj, i18n.language])
-
-  const formattedAirportSchedule = useMemo(() => {
-    return formatSchedule(airportScheduleObj, i18n.language)
-  }, [airportScheduleObj, i18n.language])
 
   if (loading || !profile) {
     return (
@@ -311,10 +271,6 @@ export default function BranchProfilePage() {
       </div>
     )
   }
-
-  const isAirport =
-    profile.branchType === 'AIRPORT_TERMINAL' ||
-    String(profile.branchType).toLowerCase().includes('airport')
 
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>

@@ -21,8 +21,6 @@ const diaLocal = (offset) => {
   return fecha.toLocaleDateString('en-CA')
 }
 const TODAY_STR = diaLocal(0)
-const YESTERDAY_STR = diaLocal(-1)
-const TOMORROW_STR = diaLocal(1)
 
 const getVehicleImage = (item) => {
   const name = (item?.vehiculoNombre || item?.vehiculo || '').toLowerCase()
@@ -485,7 +483,7 @@ export default function BranchDashboard({ branchOnly = true }) {
     ? reservationManagementService.list().find((r) => String(r.id) === String(selectedScheduleItem.reservaId))
     : null
   const vehiculoDrawer = reservaDrawer ? vehicleManagementService.getById(reservaDrawer.vehiculoId) : null
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery] = useState('')
 
   // Rango de Fechas con objetos Date para el DatePicker Visibilidad Permanente (Inline)
   const [startDateObj, setStartDateObj] = useState(parseISOToDate(TODAY_STR))
@@ -500,35 +498,33 @@ export default function BranchDashboard({ branchOnly = true }) {
   const {
     notifications,
     unreadCount: unreadNotifCount,
-    filter: notifFilter,
-    setFilter: setNotifFilter,
-    filteredNotifications,
     markAsRead: handleMarkNotificationRead,
     markAllAsRead: handleMarkAllNotificationsRead,
   } = useBranchNotifications(usuario, dashboardData)
 
-  const drawerRef = useRef(null)
   const lastActiveElementRef = useRef(null)
-  const notifRef = useRef(null)
   const notifBtnRef = useRef(null)
 
   const reservationsRoute = '/encargado/reservations'
   const incidentsRoute = '/encargado/incidents'
   const documentsRoute = '/encargado/documents'
-  const cashRoute = '/encargado/cobro-sucursal'
   const vehiclesRoute = '/encargado/vehicles'
 
   const startDateStr = useMemo(() => formatDateToISO(startDateObj), [startDateObj])
   const endDateStr = useMemo(() => formatDateToISO(endDateObj || startDateObj), [endDateObj, startDateObj])
+
+  const scheduleForRange = useMemo(() => {
+    return getScheduleForRange(startDateStr, endDateStr)
+  }, [startDateStr, endDateStr, dashboardData])
+
+  const deliveriesForRange = useMemo(() => scheduleForRange.deliveries || [], [scheduleForRange])
+  const returnsForRange = useMemo(() => scheduleForRange.returns || [], [scheduleForRange])
 
   const handleToggleKpiMenu = (id, e) => {
     e.stopPropagation()
     setActiveKpiMenu((prev) => (prev === id ? null : id))
   }
 
-  const handleToggleNotifications = () => {
-    setIsNotificationsOpen((prev) => !prev)
-  }
 
   const handleNotificationClick = (notif) => {
     handleMarkNotificationRead(notif.id)
@@ -691,13 +687,6 @@ export default function BranchDashboard({ branchOnly = true }) {
     return `${t('dashboard.scheduleFor', 'Programación del')} ${formatDateLabel(startStr)} ${t('common.to', 'al')} ${formatDateLabel(endStr)}`
   }
 
-  const scheduleForRange = useMemo(() => {
-    return getScheduleForRange(startDateStr, endDateStr)
-  }, [startDateStr, endDateStr, dashboardData])
-
-  const deliveriesForRange = scheduleForRange.deliveries || []
-  const returnsForRange = scheduleForRange.returns || []
-
   const currentList = useMemo(() => {
     const rawList = activeTab === 'entregas' ? deliveriesForRange : returnsForRange
     if (!searchQuery.trim()) return rawList
@@ -810,10 +799,6 @@ export default function BranchDashboard({ branchOnly = true }) {
   }
 
   const { fleet, attentionNeeded } = dashboardData
-  const totalF = fleet.totalVehicles || 0
-  const availPct = Math.round((fleet.availableVehicles / totalF) * 100)
-  const rentedPct = Math.round((fleet.rentedVehicles / totalF) * 100)
-  const maintPct = Math.max(0, 100 - availPct - rentedPct)
 
   return (
     <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>

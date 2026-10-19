@@ -45,9 +45,7 @@ export default function ContractSigningPage() {
         let resData = contratoFirmado?.contratoOriginal?.reserva
 
         if (!resData && id) {
-          try {
-            resData = await reservationsService.getReservaById(id).catch(() => null)
-          } catch (e) {}
+          resData = await reservationsService.getReservaById(id).catch(() => null)
         }
         if (!resData) {
           const list = await reservationsService.getReservas()
@@ -92,7 +90,7 @@ export default function ContractSigningPage() {
     const cedName = df.cedulaPdf?.name || (typeof df.cedulaPdf === 'string' && df.cedulaPdf)  || ''
 
     const fInicio = rd.fechaInicio || reserva.fechaInicio || new Date().toISOString().slice(0, 10)
-    const fFin = rd.fechaFin || reserva.fechaFin || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
+    const fFin = rd.fechaFin || reserva.fechaFin || new Date(new Date().getTime() + 86400000 * 3).toISOString().slice(0, 10)
     const hInicio = rd.horaInicio || reserva.horaInicio || '08:00'
     const hFin = rd.horaFin || reserva.horaFin || '18:00'
     const sucRet = rd.sucursalRetiro || reserva.sucursalRetiro || reserva.sucursal || vehiculo?.sucursal || ''
@@ -206,7 +204,7 @@ export default function ContractSigningPage() {
     }
   }
 
-  const handleFirmado = async (contrato) => {
+  const handleFirmado = async () => {
     await showAlert({
       icon: 'success',
       title: t('hc.contrato_firmado_con_exito', '¡Contrato Firmado con Éxito!'),

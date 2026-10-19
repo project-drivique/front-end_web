@@ -1,20 +1,8 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import html2canvas from 'html2canvas'
 import { useTranslation } from 'react-i18next'
-import {
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-  addMonths,
-  subMonths,
-  format,
-  isSameMonth,
-  parseISO,
-} from 'date-fns'
-import { es } from 'date-fns/locale'
-import { FaMoneyBillWave, FaSearch, FaCheckCircle, FaCalendarAlt, FaPrint, FaShieldAlt, FaReceipt, FaCashRegister, FaChevronLeft, FaChevronRight, FaTimes, FaFileExcel, FaFilePdf, FaDownload } from 'react-icons/fa'
+import { format } from 'date-fns'
+import { FaMoneyBillWave, FaSearch, FaCheckCircle, FaPrint, FaShieldAlt, FaReceipt, FaCashRegister, FaTimes, FaFileExcel, FaFilePdf, FaDownload } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
 import { reservationManagementService } from '../../../services/reservationManagementService'
@@ -29,159 +17,9 @@ import './CityManagementPage.css'
 import './CashCollectionPage.css'
 
 // â”€â”€ COMPONENTE DE UN SOLO CALENDARIO REUTILIZABLE PARA SELECCIÓN DE RANGO DE FECHAS â”€â”€
-function SingleCalendarRangePicker({ dateRange, onChange }) {
-  const { t } = useTranslation()
-  const [isOpen, setIsOpen] = useState(false)
-  const [currentMonth, setCurrentMonth] = useState(new Date())
-
-  const startDate = dateRange?.start || ''
-  const endDate = dateRange?.end || ''
-
-  const days = useMemo(() => {
-    const start = startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 1 })
-    const end = endOfWeek(endOfMonth(currentMonth), { weekStartsOn: 1 })
-    return eachDayOfInterval({ start, end })
-  }, [currentMonth])
-
-  const handleDayClick = (day) => {
-    const iso = format(day, 'yyyy-MM-dd')
-    if (!startDate || (startDate && endDate)) {
-      onChange({ start: iso, end: '' })
-    } else {
-      if (iso < startDate) {
-        onChange({ start: iso, end: '' })
-      } else {
-        onChange({ start: startDate, end: iso })
-        setIsOpen(false)
-      }
-    }
-  }
-
-  const handleClear = (e) => {
-    e.stopPropagation()
-    onChange({ start: '', end: '' })
-  }
-
-  const formatButtonLabel = () => {
-    try {
-      if (startDate && endDate) {
-        const dStart = parseISO(startDate)
-        const dEnd = parseISO(endDate)
-        return `${format(dStart, 'dd MMM', { locale: es })} - ${format(dEnd, 'dd MMM yyyy', { locale: es })}`
-      }
-      if (startDate) {
-        const dStart = parseISO(startDate)
-        return `Desde ${format(dStart, 'dd MMM yyyy', { locale: es })}`
-      }
-    } catch {
-      // fallback
-    }
-    return t('admin.cash.filterByDate', 'Filtrar por Fecha')
-  }
-
-  return (
-    <div className="cash-calendar-picker-wrapper">
-      <button
-        type="button"
-        className={`cash-calendar-trigger-btn ${(startDate || endDate) ? 'has-value' : ''}`}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <FaCalendarAlt className="cash-cal-icon" />
-        <span>{formatButtonLabel()}</span>
-        {(startDate || endDate) && (
-          <span className="cash-cal-clear" onClick={handleClear} title={`${t('admin.cash.clearBtn', 'Limpiar')} ${t('admin.cash.dateRange', 'rango de fechas')}`}>
-            <FaTimes />
-          </span>
-        )}
-      </button>
-
-      {isOpen && (
-        <div className="cash-calendar-popover">
-          <div className="cash-cal-head">
-            <button
-              type="button"
-              className="cash-cal-nav"
-              onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-            >
-              <FaChevronLeft />
-            </button>
-
-            <span className="cash-cal-month-title">
-              {format(currentMonth, 'MMMM yyyy', { locale: es })}
-            </span>
-
-            <button
-              type="button"
-              className="cash-cal-nav"
-              onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-
-          <div className="cash-cal-weekdays">
-            {['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'].map((d) => (
-              <span key={d}>{d}</span>
-            ))}
-          </div>
-
-          <div className="cash-cal-days-grid">
-            {days.map((day) => {
-              const dayIso = format(day, 'yyyy-MM-dd')
-              const isSelectedStart = startDate === dayIso
-              const isSelectedEnd = endDate === dayIso
-              const isInRange =
-                startDate && endDate && dayIso >= startDate && dayIso <= endDate
-              const isCurrentMonth = isSameMonth(day, currentMonth)
-
-              let dayClass = 'cash-cal-day'
-              if (!isCurrentMonth) dayClass += ' outside-month'
-              if (isSelectedStart) dayClass += ' range-start'
-              if (isSelectedEnd) dayClass += ' range-end'
-              if (isInRange) dayClass += ' in-range'
-
-              return (
-                <button
-                  key={dayIso}
-                  type="button"
-                  className={dayClass}
-                  onClick={() => handleDayClick(day)}
-                >
-                  {format(day, 'd')}
-                </button>
-              )
-            })}
-          </div>
-
-          <div className="cash-cal-footer">
-            <span className="cash-cal-hint">
-              {!startDate
-                ? t('admin.cash.selectStartDate', 'Selecciona la fecha inicial')
-                : !endDate
-                ? t('admin.cash.selectEndDate', 'Selecciona la fecha final')
-                : t('admin.cash.rangeSelected', 'Rango seleccionado')}
-            </span>
-            {(startDate || endDate) && (
-              <button
-                type="button"
-                className="cash-cal-clean-link"
-                onClick={() => {
-                  onChange({ start: '', end: '' })
-                  setIsOpen(false)
-                }}
-              >
-                Limpiar
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
 
 export default function CashCollectionPage({ branchOnly = false }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { tema, moneda, tasaUSD } = useLanding()
   const user = useAuthStore((state) => state.usuario)
   const isBranchManager = branchOnly || user?.rol === 'encargado' || user?.rol === 'branch_manager' || user?.rol === 'encargado_sucursal'
@@ -194,11 +32,11 @@ export default function CashCollectionPage({ branchOnly = false }) {
   const [comprobanteDigital, setComprobanteDigital] = useState(null)
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
-  const [dateRange, setDateRange] = useState({ start: '', end: '' })
-  const [selectedMonth, setSelectedMonth] = useState('todas') // 'todas' | '01'..'12'
-  const [selectedYear, setSelectedYear] = useState('todas') // 'todas' | '2026'..
+  const [dateRange] = useState({ start: '', end: '' })
+  const [selectedMonth] = useState('todas') // 'todas' | '01'..'12'
+  const [selectedYear] = useState('todas') // 'todas' | '2026'..
   const [selectedBranch, setSelectedBranch] = useState('todas') // 'todas' | nombre sucursal
-  const [sortBy, setSortBy] = useState('codigo') // 'reciente' | 'antigua' | 'monto_desc' | 'monto_asc' | 'codigo'
+  const [sortBy] = useState('codigo') // 'reciente' | 'antigua' | 'monto_desc' | 'monto_asc' | 'codigo'
 
   // Lista única de sucursales disponibles
   const listaSucursales = useMemo(() => {
@@ -490,7 +328,6 @@ export default function CashCollectionPage({ branchOnly = false }) {
     if (!modalReserva) return
 
     const ref = modalReserva.codigo || modalReserva.id
-    const total = modalReserva.totalCOP || modalReserva.total || 0
 
     setProcesandoPago(true)
     try {
@@ -753,7 +590,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
         window.print();
       }, 250);
     };
-  <\/script>
+  </script>
 </body>
 </html>`)
     win.document.close()
@@ -1263,7 +1100,7 @@ export default function CashCollectionPage({ branchOnly = false }) {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                           <span className="text-muted" style={{ fontSize: 13 }}>{t('admin.cash.modal.date', 'Fecha')}:</span>
-                          <span style={{ fontWeight: 600, fontSize: 13 }}>{format(new Date(modalReserva.fechaPagoConfirmado || Date.now()), 'dd/MM/yyyy - HH:mm')}</span>
+                          <span style={{ fontWeight: 600, fontSize: 13 }}>{format(new Date(modalReserva.fechaPagoConfirmado || new Date().getTime()), 'dd/MM/yyyy - HH:mm')}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                           <span className="text-muted" style={{ fontSize: 13 }}>{t('admin.cash.modal.customer', 'Cliente')}:</span>
