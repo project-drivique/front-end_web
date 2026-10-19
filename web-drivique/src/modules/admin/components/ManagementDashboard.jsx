@@ -161,7 +161,6 @@ export default function ManagementDashboard({ branchOnly = false }) {
   const usuario = useAuthStore((state) => state.usuario)
   const navigate = useNavigate()
 
-  const todayStr = new Date().toISOString().slice(0, 10)
   const [summary, setSummary] = useState(() => adminDashboardService.getSummary(usuario) || {})
   const [weeklyData, setWeeklyData] = useState(() => adminDashboardService.getWeeklyActivity(usuario) || [])
   const [activeTab, setActiveTab] = useState('entregas') // 'entregas' | 'devoluciones'
@@ -192,10 +191,6 @@ export default function ManagementDashboard({ branchOnly = false }) {
   }, [usuario])
 
   const isBranchManager = branchOnly || usuario?.rol === 'encargado' || usuario?.rol === 'branch_manager' || usuario?.rol === 'encargado_sucursal'
-
-  if (isBranchManager) {
-    return <BranchDashboard branchOnly={branchOnly} />
-  }
 
   const cashRoute = isBranchManager ? '/encargado/cobro-sucursal' : '/admin/cobro-sucursal'
   const reservationsRoute = isBranchManager ? '/encargado/reservations' : '/admin/reservations'
@@ -271,6 +266,10 @@ export default function ManagementDashboard({ branchOnly = false }) {
     emptyBoxBorder: isDark ? '#334155' : '#cbd5e1',
     zoomModalBg: isDark ? '#0f1b2d' : '#ffffff',
     zoomCloseBtnBg: isDark ? '#1e293b' : '#f1f5f9',
+  }
+
+  if (isBranchManager) {
+    return <BranchDashboard branchOnly={branchOnly} />
   }
 
   return (

@@ -38,11 +38,9 @@ export default function DeliveryManagementPage() {
   const [reservations, setReservations] = useState([])
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState('pendientes')
-  const [modalAsignar, setModalAsignar] = useState(null)
   const [modalConductor, setModalConductor] = useState(false)
   const [editingConductor, setEditingConductor] = useState(null)
   const [modalVerificar, setModalVerificar] = useState(null)
-  const [conductorSeleccionado, setConductorSeleccionado] = useState('')
   const [pinIngresado, setPinIngresado] = useState('')
 
   const [conductores, setConductores] = useState(() => deliveryService.list())
@@ -184,18 +182,6 @@ export default function DeliveryManagementPage() {
     )
   }, [conductores, search])
 
-  const handleAsignar = async (e) => {
-    e.preventDefault()
-    if (!conductorSeleccionado) return showAlert({ icon: 'warning', title: t('admin.delivery.modal.selectDriverWarning', 'Selecciona un conductor') })
-    try {
-      const conductorObj = conductores.find(c => c.nombre === conductorSeleccionado)
-      await deliveryService.assign(modalAsignar.id, modalAsignar.puntoTipo, conductorObj.id)
-      await reservationManagementService.refresh()
-      showAlert({ icon: 'success', title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'), text: t('hc.el_cliente_y_el_conductor_reciben_el_p', 'El cliente y el conductor reciben el PIN por correo; el conductor confirma o rechaza desde su correo.') })
-      setModalAsignar(null)
-      loadReservations()
-    } catch (err) { showAlert({ icon: 'error', title: t('hc4.error', 'Error'), text: err.message }) }
-  }
 
   const handleVerificar = async (e) => {
     e.preventDefault()

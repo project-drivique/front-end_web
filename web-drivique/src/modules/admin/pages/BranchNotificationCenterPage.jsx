@@ -32,7 +32,7 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
   const navigate = useNavigate()
 
   // Consumo del Custom Hook de datos del Dashboard
-  const { data: dashboardData, loading } = useBranchDashboard(usuario)
+  const { data: dashboardData } = useBranchDashboard(usuario)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState('all') // 'all', 'unread', 'operations', 'attention'
 
@@ -40,9 +40,6 @@ export default function BranchNotificationCenterPage({ branchOnly = true }) {
   const {
     notifications,
     unreadCount,
-    filter,
-    setFilter,
-    filteredNotifications,
     markAsRead,
     markAllAsRead,
   } = useBranchNotifications(usuario, dashboardData)

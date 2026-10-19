@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { FaShieldAlt, FaSearch, FaFileExcel, FaFilePdf, FaPrint, FaEye, FaLock, FaCheckCircle, FaTimesCircle, FaExclamationTriangle, FaBan, FaBuilding, FaCalendarAlt, FaDesktop, FaCopy, FaTimes, FaRedo, FaGlobe, FaUser, FaFilter, FaLayerGroup, FaCheck, FaSlidersH } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useAuthStore } from '../../../store/authStore'
-import { useBrand } from '../../../contexts/BrandContext'
 import { accessAuditService, hasMatchingBranch } from '../../../services/accessAuditService'
 import { branchManagementService } from '../../../services/branchManagementService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
@@ -14,9 +13,8 @@ import './AuditLogManagementPage.css'
 
 export default function AuditLogManagementPage({ branchOnly = false }) {
   const { t } = useTranslation()
-  const { tema, moneda, tasaUSD } = useLanding()
+  const { tema, tasaUSD } = useLanding()
   const user = useAuthStore((state) => state.usuario)
-  const { brand } = useBrand()
   const esModoOscuro = tema === 'oscuro'
 
   const esEncargado =

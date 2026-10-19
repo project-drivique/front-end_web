@@ -392,8 +392,8 @@ export const incidentManagementService = {
     try {
       await incidentService.remove(id)
     } catch (error) {
-      if (error?.status === 403) throw new Error('clientReportCannotBeDeleted')
-      if (error?.status === 409) throw new Error('onlyReceivedOwnReportsCanBeDeleted')
+      if (error?.status === 403) throw new Error('clientReportCannotBeDeleted', { cause: error })
+      if (error?.status === 409) throw new Error('onlyReceivedOwnReportsCanBeDeleted', { cause: error })
     }
     cache = cache.filter((r) => r.id !== id)
     guardarStorage(cache)

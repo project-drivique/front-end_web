@@ -35,9 +35,7 @@ export default function NotificationsPage({ defaultTab }) {
 
   const {
     notificaciones,
-    conteoNoLeidas,
     cargando,
-    error,
     cargarNotificaciones,
     marcarLeida,
     marcarTodasLeidas,
@@ -311,7 +309,7 @@ export default function NotificationsPage({ defaultTab }) {
             ) : (
               /* Lista de Notificaciones */
               <div className="notificaciones-lista">
-                {notificacionesFiltradas.map((n) => {
+                {notificacionesFiltradas.map((n, idxNotificacion) => {
                   const chipVencimiento = calcularChipVencimiento(n.expiracionMs)
                   const titulo = (n.tituloKey ? t(n.tituloKey, n.tituloFallback || n.titulo || n.title || '') : (n.titulo || n.tituloFallback || n.title || '')).trim()
                   const mensaje = (n.mensajeKey ? t(n.mensajeKey, n.mensajeFallback || n.mensaje || n.message || '') : (n.mensaje || n.mensajeFallback || n.message || '')).trim()
@@ -319,7 +317,7 @@ export default function NotificationsPage({ defaultTab }) {
 
                   return (
                     <div
-                      key={n.id || Math.random()}
+                      key={n.id || `notificacion-${idxNotificacion}`}
                       className={`notificacion-card-item ${!n.leida ? 'no-leida' : ''}`}
                       onClick={() => handleCardClick(n)}
                       style={{ cursor: 'pointer' }}

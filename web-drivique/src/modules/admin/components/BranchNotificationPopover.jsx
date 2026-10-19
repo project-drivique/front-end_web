@@ -31,10 +31,8 @@ export default function BranchNotificationPopover({
   onClose,
   notifications = [],
   unreadCount = 0,
-  onMarkRead,
   onMarkAllRead,
   onSelectNotification,
-  branchName = 'Sucursal',
   centerRoute = '/encargado/notifications',
 }) {
   const { t } = useTranslation()

@@ -33,7 +33,6 @@ export default function VehicleDetailsModal({
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const token = useAuthStore((s) => s.token)
   const usuario = useAuthStore((s) => s.usuario)
   const { tema, moneda } = useLanding()
   const esModoOscuro = tema === 'oscuro'

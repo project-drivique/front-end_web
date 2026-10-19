@@ -176,7 +176,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
     const maxH = !esMismoDia ? (reserva?.horaInicio || null) : null
 
     return generarHoras(reserva?.sucursalDevolucion, minH, maxH, reserva?.fechaFin)
-  }, [reserva?.sucursalDevolucion, reserva?.fechaInicio, reserva?.fechaFin, reserva?.horaInicio])
+  }, [reserva])
 
   // Pre-seleccionar o sincronizar horaInicio si está vacía o ya no es válida (por ejemplo, hora en el pasado)
   useEffect(() => {

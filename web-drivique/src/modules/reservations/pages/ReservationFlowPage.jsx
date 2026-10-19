@@ -5,7 +5,6 @@ import logo from '@/assets/logo.png'
 import { useBrand } from '@/contexts/BrandContext'
 import { formatCurrency } from '@/utils/currencyUtils'
 import { useLanding } from '../../landing/LandingContext'
-import { SUCURSALES } from '../../catalog/constants'
 import { useNavigate } from 'react-router-dom'
 import MenuConfiguracion from '@/components/MenuConfiguracion'
 
@@ -19,26 +18,6 @@ import EditReservationModal from '../components/EditReservationModal'
 import PersonalData from '../components/PersonalData'
 import VehicleDetailsModal from '../../catalog/components/detail/VehicleDetailsModal'
 import '../../catalog/pages/CatalogPage.css'
-
-const formatearFechaHoraReserva = (fecha) => {
-  if (!fecha) return '—'
-  try {
-    const d = new Date(fecha)
-    if (isNaN(d.getTime())) return String(fecha)
-    const pad = (n) => String(n).padStart(2, '0')
-    const dia = pad(d.getDate())
-    const mes = pad(d.getMonth() + 1)
-    const anio = d.getFullYear()
-    const horas = pad(d.getHours())
-    const minutos = pad(d.getMinutes())
-    const segundos = pad(d.getSeconds())
-    return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`
-  } catch {
-    return String(fecha || '—')
-  }
-}
-
-const IcoArrow = () => <FaArrowRight size={14} />
 
 export default function ReservationFlowPage() {
   const { brand } = useBrand()
@@ -77,12 +56,10 @@ export default function ReservationFlowPage() {
     modalDetallesOpen, setModalDetallesOpen,
     resumenMovilAbierto, resumenMovilRef,
     errorPaso1,
-    datosForm, setDatosForm, errores,
-    exito, reservaCreada, contratoFirmado, datosPago,
+    datosForm, setDatosForm, errores, reservaCreada,
     redirigiendoPago, errorPago,
-    hoverWompi, setHoverWompi,
     docsVerificados,
-    irSiguiente, irAtras, handleReservar, handleContratoFirmado,
+    irSiguiente, irAtras, handleReservar,
     handlePagarConWompi,
     totalReserva, cotizacion, appliedPromotion, aplicarPromocion, quitarPromocion,
     usuario,
@@ -107,9 +84,6 @@ export default function ReservationFlowPage() {
 
   // ─── Variables para datos de sucursal de pago en efectivo ─────────────────
   const sucursalPago = reservaCreada?.reservaDetalles?.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || vehiculo?.sucursal || ''
-  const branchObj = SUCURSALES.find(s => s.nombre === sucursalPago)
-  const ciudadPago = branchObj?.ciudad || vehiculo?.ciudad || ''
-  const direccionPago = branchObj?.direccion || ''
 
   // ─── Flujo principal ──────────────────────────────────────────────────────
   return (

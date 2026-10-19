@@ -112,9 +112,9 @@ export default function ReservationManagementPage() {
       (k.clienteNombre && cliNom && k.clienteNombre.toLowerCase() === cliNom.toLowerCase())
     )
 
-    let docUrl = ''
-    let fileName = ''
-    let title = ''
+    let docUrl
+    let fileName
+    let title
 
     if (docType === 'id') {
       title = t('hc3.res_doc_title_id', { defaultValue: 'Documento de Identidad - {{cliente}}', cliente: cliNom })
@@ -254,7 +254,7 @@ export default function ReservationManagementPage() {
       const fInicioRaw = r.fechaInicio || ''
       const fFinRaw = r.fechaFin || ''
       const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
-      const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
+      const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(new Date().getTime() + 86400000 * 3).toISOString().slice(0, 10)
 
       const duracionText = r.reservaDetalles?.duracionDias ? t('admin.reservationsManagement.durationDays', '{{count}} días', { count: r.reservaDetalles.duracionDias }) : t('admin.reservationsManagement.durationDays', '{{count}} días', { count: 4 })
       const cobertura = r.reservaDetalles?.cobertura?.nombre || r.cobertura || t('hc2.proteccion_estandar_cdw', 'Protección Estándar CDW')
@@ -262,7 +262,7 @@ export default function ReservationManagementPage() {
 
       const esCobroPresencialPendiente =
         esPagoEfectivo &&
-        !Boolean(r.metodoPagoConfirmado) &&
+        !r.metodoPagoConfirmado &&
         r.pagoEstado !== 'aprobado'
 
       const isPagoConfirmado =
@@ -399,11 +399,6 @@ export default function ReservationManagementPage() {
     notas: '',
   })
 
-  const openCrearModal = () => {
-    const firstVehicle = vehiculosDisponibles[0]
-    setFormCrear((current) => ({ ...current, vehiculoNombre: firstVehicle?.nombre || '', vehiculoPlaca: firstVehicle?.placa || '', sucursal: esEncargado ? sucursalEncargado : (firstVehicle?.sucursal || sucursales[0]?.nombre || '') }))
-    setModalCrear(true)
-  }
 
   const submitCrearManual = async (e) => {
     e.preventDefault()
@@ -427,14 +422,6 @@ export default function ReservationManagementPage() {
   // --- Manejo de Editar Reserva ---
   const [formEditar, setFormEditar] = useState({})
 
-  const openEditarModal = (res) => {
-    setFormEditar({
-      id: res.id,
-      fechaInicio: `${res.fechaInicio}T${res.horaInicio || '08:00'}`,
-      fechaFin: `${res.fechaFin}T${res.horaFin || '18:00'}`,
-    })
-    setModalEditar(res)
-  }
 
   const submitEditarReserva = async (e) => {
     e.preventDefault()
@@ -678,15 +665,11 @@ export default function ReservationManagementPage() {
                           else if (r.sucursalDevolucion === 'terminal') lugarDevolucionText = t('admin.reservationsManagement.dropoffTerminal', 'Devolución en Terminal')
                         }
 
-                        const esCobroPresencialPendiente =
-                          esPagoEfectivo &&
-                          !Boolean(r.metodoPagoConfirmado) &&
-                          r.pagoEstado !== 'aprobado'
 
                         const fInicioRaw = r.fechaInicio || ''
                         const fFinRaw = r.fechaFin || ''
                         const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
-                        const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
+                        const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(new Date().getTime() + 86400000 * 3).toISOString().slice(0, 10)
 
                         const horaRetiroVal = r.horaInicio ? r.horaInicio : (fInicioRaw.includes('T') ? fInicioRaw.split('T')[1].slice(0, 5) : '9:00 a. m.')
                         const horaDevolucionVal = r.horaFin ? r.horaFin : (fFinRaw.includes('T') ? fFinRaw.split('T')[1].slice(0, 5) : '8:30 a. m.')
@@ -765,14 +748,6 @@ export default function ReservationManagementPage() {
                     <tbody>
                       {paginatedReservations.map((r, idx) => {
                         const cod = r.codigo || r.referencia || `RES-${r.id}`
-                        let cliNom = r.clienteNombre || t('hc2.cliente_registrado', 'Cliente Registrado')
-                        if (cliNom === 'Cliente Registrado' || cliNom === 'Cliente Drivique') {
-                          const rawCod = String(cod).replace('CTR-', '');
-                          const hash = rawCod.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                          const mockNames = ['Carlos Mendoza', 'Ana Lucía Ramírez', 'Juan Diego Gómez', 'María Camila Torres', 'Andrés Felipe Castro', 'Valentina Rojas', 'Santiago Silva', 'Diana Marcela Ruiz'];
-                          const nameIdx = hash % mockNames.length;
-                          cliNom = mockNames[nameIdx];
-                        }
                         // Coberturas, kilometraje y servicios: nombre y subtotal calculados por el servidor (r.detalle)
                         const det = r.detalle || {}
                         const cobNombre = det.seguro?.nombre || ''
@@ -855,13 +830,6 @@ export default function ReservationManagementPage() {
                         const cuponCodigo = r.cuponCodigo || r.reservaDetalles?.cuponAplicado ? t('admin.reservationsManagement.appliedCoupon', 'Aplicó ({{code}})', { code: r.cuponCodigo || 'CUPON' }) : t('admin.reservationsManagement.noCoupons', 'Sin cupones')
                         const totalCOP = Number(r.totalCOP || r.total || r.precioTotal || 348000)
 
-                        const fInicioRaw = r.fechaInicio || ''
-                        const fFinRaw = r.fechaFin || ''
-                        const fechaRetiroVal = fInicioRaw.split('T')[0] || new Date().toISOString().slice(0, 10)
-                        const fechaDevolucionVal = fFinRaw.split('T')[0] || new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
-                        const hoy = new Date().toISOString().slice(0, 10)
-                        const isPickupAllowed = fechaRetiroVal <= hoy
-                        const isReturnAllowed = fechaDevolucionVal <= hoy
 
                         const rawMetodo = String(
                           r.reservaDetalles?.metodoPago ||
@@ -875,7 +843,7 @@ export default function ReservationManagementPage() {
 
                         const esCobroPresencialPendiente =
                           esPagoEfectivo &&
-                          !Boolean(r.metodoPagoConfirmado) &&
+                          !r.metodoPagoConfirmado &&
                           r.pagoEstado !== 'aprobado'
 
                         const isPagoConfirmado =

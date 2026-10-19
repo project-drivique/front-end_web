@@ -16,7 +16,7 @@ import './IncidentManagementPage.css'
 import './DocumentVerificationPage.css'
 
 export default function IncidentManagementPage() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { tema } = useLanding()
   const { brand } = useBrand()
   const esModoOscuro = tema === 'oscuro'
@@ -103,7 +103,7 @@ export default function IncidentManagementPage() {
   // Evidencias del nuevo reporte (archivos reales que se suben al servidor)
   const inputEvidenciasRef = useRef(null)
   const [archivosCrear, setArchivosCrear] = useState([])
-  const [guardando, setGuardando] = useState(false)
+  const [, setGuardando] = useState(false)
 
   const getVehiculoImagen = (r) => {
     if (!r) return ''
@@ -795,8 +795,8 @@ export default function IncidentManagementPage() {
                         
                         <td style={{ color: 'var(--city-text, #334155)', fontWeight: 500 }}>{t(`admin.incidents.types.${r.tipoIncidenciaId || 'averia_mecanica'}`, r.tipoIncidenciaNombre || t('hc2.averia_mecanica', 'Avería Mecánica'))}</td>
                         <td style={{ color: 'var(--city-muted, #64748b)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{translateDescription(r.descripcion)}</td>
-                        <td style={{ color: 'var(--city-text, #0f172a)' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleDateString()}</td>
-                        <td style={{ color: 'var(--city-text, #0f172a)' }}>{new Date(r.fechaIso || r.fechaRegistro || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                        <td style={{ color: 'var(--city-text, #0f172a)' }}>{new Date(r.fechaIso || r.fechaRegistro || new Date().getTime()).toLocaleDateString()}</td>
+                        <td style={{ color: 'var(--city-text, #0f172a)' }}>{new Date(r.fechaIso || r.fechaRegistro || new Date().getTime()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
                         
                         <td>
                           {r.evidenciaFoto1 ? (
