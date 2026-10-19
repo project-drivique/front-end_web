@@ -49,6 +49,8 @@ function mapVehicle(vehicle) {
       : (Array.isArray(vehicle.imagenes)
         ? vehicle.imagenes
         : (mainImage ? [mainImage] : [])),
+    calificacion: Number(vehicle.calificacion ?? vehicle.averageRating ?? 0),
+    totalResenas: Number(vehicle.totalResenas ?? vehicle.reviewCount ?? 0),
     destacado: vehicle.destacado ?? vehicle.isFeatured ?? false,
     activo: vehicle.activo ?? vehicle.isActive ?? true,
     disponible: vehicle.disponible ?? vehicle.allowsReservation ?? false,
