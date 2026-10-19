@@ -1267,7 +1267,7 @@ export default function VehicleManagementPage() {
                         
                         {/* IMAGEN */}
                         <div style={{ gridColumn: '1 / -1', marginBottom: '8px' }}>
-                          {[0, 1, 2].map((idx) => (
+                          {[0, 1, 2, 3, 4, 5, 6, 7].map((idx) => (
                             <div key={idx} style={{ marginBottom: 12 }}>
                               <label style={{ display: 'block', fontSize: '11px', color: 'var(--texto-second, #64748b)', marginBottom: '6px', fontWeight: 600 }}>
                                 {idx === 0
@@ -1289,8 +1289,8 @@ export default function VehicleManagementPage() {
                             </div>
                           ))}
                           {(form.imagenes || []).some(Boolean) && (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-                              {(form.imagenes || []).slice(0, 3).map((url, idx) => url ? (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+                              {(form.imagenes || []).slice(0, 8).map((url, idx) => url ? (
                                 <img key={idx} src={url} alt={'Vista previa ' + (idx + 1)} style={{ width: '100%', height: 90, objectFit: 'cover', borderRadius: 10 }} />
                               ) : null)}
                             </div>
