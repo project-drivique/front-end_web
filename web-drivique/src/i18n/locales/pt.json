@@ -5663,6 +5663,9 @@
     "assign_driver": "Atribuir condutor",
     "home_not_saved_title": "Não foi possível guardar o domicílio",
     "home_not_saved": "A reserva foi criada, mas a morada de entrega não foi guardada. Contacte a agência.",
-    "url_de_la_imagen_n": "URL da imagem {{n}} (opcional)"
+    "url_de_la_imagen_n": "URL da imagem {{n}} (opcional)",
+    "docs_en_revision_texto": "A sua reserva ficou guardada. A filial está a rever os seus documentos: poderá pagar quando forem aprovados e avisaremos por notificação.",
+    "docs_en_revision_titulo": "Documentos em revisão",
+    "docs_en_revision_alerta": "A filial ainda está a rever os seus documentos. Poderá pagar quando forem aprovados."
   }
 }
