@@ -792,6 +792,15 @@ export function useReservationFlow() {
   }, [reservaCreada?.id, reservaCreada?.estado, reservaCreada?.status])
 
   const handlePagarConWompi = async () => {
+    // Primero la sucursal valida los documentos y despues se puede pagar
+    if (reservaCreada && (['PENDING_DOCUMENT_REVIEW', 'PENDIENTE_VALIDACION'].includes(reservaCreada.estado) || reservaCreada.status === 'PENDING_DOCUMENT_REVIEW')) {
+      showAlert({
+        icon: 'info',
+        title: t('hc6.docs_en_revision_titulo', 'Documentos en revisión'),
+        text: t('hc6.docs_en_revision_alerta', 'La sucursal aún está revisando tus documentos. Podrás pagar cuando sean aprobados.')
+      })
+      return
+    }
     const infoPago = datosPago || (reservaCreada ? {
       referencia: reservaCreada.codigo || reservaCreada.id || reservaCreada.referencia,
       amountInCents: aCentavos(reservaCreada.total || 0)

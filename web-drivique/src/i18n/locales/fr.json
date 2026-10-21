@@ -5663,6 +5663,9 @@
     "assign_driver": "Assigner un conducteur",
     "home_not_saved_title": "Impossible d’enregistrer la livraison à domicile",
     "home_not_saved": "La réservation a été créée, mais l’adresse de livraison n’a pas été enregistrée. Contactez l’agence.",
-    "url_de_la_imagen_n": "URL de l’image {{n}} (facultatif)"
+    "url_de_la_imagen_n": "URL de l’image {{n}} (facultatif)",
+    "docs_en_revision_texto": "Votre réservation est enregistrée. L’agence examine vos documents : vous pourrez payer une fois qu’ils seront approuvés et nous vous préviendrons par notification.",
+    "docs_en_revision_titulo": "Documents en cours de vérification",
+    "docs_en_revision_alerta": "L’agence examine encore vos documents. Vous pourrez payer une fois qu’ils seront approuvés."
   }
 }
