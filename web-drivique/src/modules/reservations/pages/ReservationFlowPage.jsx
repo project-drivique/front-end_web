@@ -642,14 +642,16 @@ export default function ReservationFlowPage() {
                   padding: '0 8px',
                   fontWeight: 500
                 }}>
-                  {reservaCreada.estado === 'PENDING_SCHEDULE'
+                  {(['PENDING_DOCUMENT_REVIEW', 'PENDIENTE_VALIDACION'].includes(reservaCreada?.estado) || reservaCreada?.status === 'PENDING_DOCUMENT_REVIEW')
+                    ? t('hc6.docs_en_revision_texto', 'Tu reserva quedó guardada. La sucursal está revisando tus documentos: podrás pagar cuando los aprueben y te avisaremos por notificación.')
+                    : reservaCreada.estado === 'PENDING_SCHEDULE'
                     ? t('hc2.tu_reserva_quedo_guardada_en_espera_de', 'Tu reserva quedó guardada en espera de la apertura de la sucursal. Te notificaremos al iniciar la jornada. Redirigiendo de una a Mis Reservas...')
                     : t('hc2.tu_reserva_quedo_guardada_como_pendien', 'Tu reserva quedó guardada como pendiente. Para confirmarla, completa el pago digital seguro con Wompi (Pruebas) y firma tu contrato para asegurar tu vehículo.')}
                 </p>
 
                 {/* Botones de Accion */}
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {reservaCreada.estado !== 'PENDING_SCHEDULE' ? (
+                  {reservaCreada.estado !== 'PENDING_SCHEDULE' && !(['PENDING_DOCUMENT_REVIEW', 'PENDIENTE_VALIDACION'].includes(reservaCreada?.estado) || reservaCreada?.status === 'PENDING_DOCUMENT_REVIEW') ? (
                     <>
                       <button
                         type="button"
