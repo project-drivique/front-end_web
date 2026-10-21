@@ -5663,6 +5663,9 @@
     "assign_driver": "Atribuir motorista",
     "home_not_saved_title": "Não foi possível salvar o domicílio",
     "home_not_saved": "A reserva foi criada, mas o endereço de entrega não foi salvo. Entre em contato com a filial.",
-    "url_de_la_imagen_n": "URL da imagem {{n}} (opcional)"
+    "url_de_la_imagen_n": "URL da imagem {{n}} (opcional)",
+    "docs_en_revision_texto": "Sua reserva foi salva. A filial está revisando seus documentos: você poderá pagar quando forem aprovados e avisaremos por notificação.",
+    "docs_en_revision_titulo": "Documentos em revisão",
+    "docs_en_revision_alerta": "A filial ainda está revisando seus documentos. Você poderá pagar quando forem aprovados."
   }
 }
