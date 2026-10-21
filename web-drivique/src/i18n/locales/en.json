@@ -5659,6 +5659,9 @@
     "assign_driver": "Assign driver",
     "home_not_saved_title": "The home delivery could not be saved",
     "home_not_saved": "The reservation was created, but the delivery address was not saved. Please contact the branch.",
-    "url_de_la_imagen_n": "Image {{n}} URL (optional)"
+    "url_de_la_imagen_n": "Image {{n}} URL (optional)",
+    "docs_en_revision_texto": "Your booking is saved. The branch is reviewing your documents: you will be able to pay once they are approved and we will notify you.",
+    "docs_en_revision_titulo": "Documents under review",
+    "docs_en_revision_alerta": "The branch is still reviewing your documents. You will be able to pay once they are approved."
   }
 }
