@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
-import { showAlert } from '@/utils/swalConfig'
+import { showAlert, getErrorMessage } from '@/utils/swalConfig'
 import { reservationsService } from '@/services/reservationsService'
 import { catalogService } from '@/services/catalogService'
 import { userService } from '@/services/userService'
@@ -629,14 +629,38 @@ export function useReservationFlow() {
           const codigoIdentidad = String(datosForm.tipoDoc || 'CC').trim().toUpperCase()
           const tipoCedula = lista.find((t) => String(t.code || '').toUpperCase() === codigoIdentidad)
           const tipoLicencia = lista.find((t) => String(t.code || '').toUpperCase() === 'DRIVER_LICENSE')
-          if (datosForm.cedulaPdf instanceof File && tipoCedula?.id && vehiculo.sucursalId) {
-            await userService.uploadTypedDocument({ documentTypeId: tipoCedula.id, documentNumber: datosForm.numDoc, branchId: vehiculo.sucursalId, frontFile: datosForm.cedulaPdf })
+
+          const targetBranchId =
+            vehiculo?.branchId ||
+            vehiculo?.sucursalId ||
+            vehiculo?.currentBranchId ||
+            sedeVehiculo?.id ||
+            currentBranch?.id ||
+            (reserva?.sucursalRetiro ? sedesCatalog.find((s) => s.name === reserva.sucursalRetiro || s.nombre === reserva.sucursalRetiro)?.id : null) ||
+            sedesCatalog[0]?.id
+
+          const docNumber = datosForm.numDoc || datosForm.documento || datosForm.cedula || usuario?.cedula || ''
+
+          if (datosForm.cedulaPdf instanceof File && tipoCedula?.id && targetBranchId) {
+            await userService.uploadTypedDocument({
+              documentTypeId: tipoCedula.id,
+              documentNumber: docNumber,
+              branchId: targetBranchId,
+              frontFile: datosForm.cedulaPdf,
+            })
           }
-          if (datosForm.licenciaPdf instanceof File && tipoLicencia?.id && vehiculo.sucursalId) {
-            await userService.uploadTypedDocument({ documentTypeId: tipoLicencia.id, documentNumber: datosForm.numDoc, branchId: vehiculo.sucursalId, frontFile: datosForm.licenciaPdf })
+          if (datosForm.licenciaPdf instanceof File && tipoLicencia?.id && targetBranchId) {
+            await userService.uploadTypedDocument({
+              documentTypeId: tipoLicencia.id,
+              documentNumber: docNumber,
+              branchId: targetBranchId,
+              frontFile: datosForm.licenciaPdf,
+            })
           }
         } catch (docErr) {
           console.warn('Document upload warning:', docErr)
+          const specificMsg = getErrorMessage(docErr, t('hc.error_subir_documentos_gen', 'Error al cargar los documentos de identidad o licencia.'))
+          throw new Error(`${t('hc.error_subir_documentos', 'Error al cargar documentos')}: ${specificMsg}`)
         }
       }
       requiereValidacionDocs = true
@@ -742,7 +766,7 @@ export function useReservationFlow() {
       sessionStorage.removeItem(storageKey)
     } catch (error) {
       console.error('Error creating reservation hold:', error)
-      const errorMsg = error?.response?.data?.detail || error?.response?.data?.message || error?.message || t('hc2.no_se_pudo_crear_la_reserva_en_el_serv', 'No se pudo crear la reserva en el servidor. Por favor intenta de nuevo.')
+      const errorMsg = getErrorMessage(error, t('hc2.no_se_pudo_crear_la_reserva_en_el_serv', 'No se pudo crear la reserva en el servidor. Por favor intenta de nuevo.'))
       showAlert({
         icon: 'error',
         title: t('hc.error_al_registrar_reserva', 'Error al registrar reserva'),

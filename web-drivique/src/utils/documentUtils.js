@@ -1,4 +1,5 @@
 import i18n from '@/i18n'
+import { configuredApiUrl } from '@/config/apiConfig'
 
 const nombre = (clave, defecto) => i18n.t(`docNames.${clave}`, defecto)
 
@@ -37,4 +38,38 @@ export function getSiglaDoc(tipo) {
   if (t === 'DRIVER_LICENSE' || t === 'DRIVER LICENSE' || t === 'LICENCIA') return 'LIC'
   const encontrado = TIPOS_DOCUMENTO.find(item => item.value === t || item.sigla === t)
   return encontrado?.sigla || t
+}
+
+/**
+ * Resuelve de forma segura y robusta la URL pública o del backend para un documento o PDF
+ * evitando caídas al index.html en Single Page Applications.
+ */
+export function resolveDocumentUrl(url) {
+  if (!url || typeof url !== 'string') return ''
+  if (url.includes('dummy.pdf')) return ''
+  if (url.startsWith('blob:') || url.startsWith('data:')) {
+    return url
+  }
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url
+  }
+
+  let cleanUrl = url.trim()
+  if (!cleanUrl.startsWith('/')) {
+    cleanUrl = '/' + cleanUrl
+  }
+
+  // Si viene como /uploads/...
+  if (cleanUrl.startsWith('/uploads/')) {
+    const apiBase = configuredApiUrl ? configuredApiUrl.replace(/\/v1\/?$/, '') : '/api'
+    return `${apiBase}${cleanUrl}`
+  }
+
+  // Si ya viene como /api/uploads/...
+  if (cleanUrl.startsWith('/api/uploads/')) {
+    const hostBase = configuredApiUrl ? configuredApiUrl.replace(/\/api(\/v1)?\/?$/, '') : ''
+    return `${hostBase}${cleanUrl}`
+  }
+
+  return cleanUrl
 }

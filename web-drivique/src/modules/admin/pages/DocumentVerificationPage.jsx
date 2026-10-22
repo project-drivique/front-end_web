@@ -6,7 +6,8 @@ import { useAuthStore } from '../../../store/authStore'
 import { documentVerificationService } from '../../../services/documentVerificationService'
 import { reservationManagementService } from '../../../services/reservationManagementService'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
-import { showAlert } from '../../../utils/swalConfig'
+import { showAlert, getErrorMessage } from '../../../utils/swalConfig'
+import { resolveDocumentUrl } from '../../../utils/documentUtils'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
@@ -246,13 +247,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   }
 
   const getSafeDocUrl = (url) => {
-    if (!url || typeof url !== 'string') return ''
-    if (url.includes('dummy.pdf')) return ''
-    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:')) {
-      return url
-    }
-    if (url.startsWith('/uploads/')) return url
-    return ''
+    return resolveDocumentUrl(url)
   }
 
   const renderDocPreview = (url, titleLabel) => {
@@ -318,7 +313,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
       }
       await recargar()
     } catch (error) {
-      setErrorMessage(error?.response?.data?.detail || t('hc2.no_fue_posible_aprobar_el_documento', 'No fue posible aprobar el documento.'))
+      setErrorMessage(getErrorMessage(error, t('hc2.no_fue_posible_aprobar_el_documento', 'No fue posible aprobar el documento.')))
       return
     }
     setModalItem(null)
@@ -346,7 +341,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
       }
       await recargar()
     } catch (error) {
-      setErrorMessage(error?.response?.data?.detail || t('hc2.no_fue_posible_rechazar_el_documento', 'No fue posible rechazar el documento.'))
+      setErrorMessage(getErrorMessage(error, t('hc2.no_fue_posible_rechazar_el_documento', 'No fue posible rechazar el documento.')))
       return
     }
     setModalItem(null)
@@ -1481,7 +1476,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                 <div className="doc-zoom-actions">
                   {zoomPdf.url && (
                     <a
-                      href={zoomPdf.url}
+                      href={getSafeDocUrl(zoomPdf.url)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="doc-zoom-btn-action"
