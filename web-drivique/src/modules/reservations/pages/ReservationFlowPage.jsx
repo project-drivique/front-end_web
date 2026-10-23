@@ -62,6 +62,7 @@ export default function ReservationFlowPage() {
     irSiguiente, irAtras, handleReservar,
     handlePagarConWompi,
     totalReserva, cotizacion, appliedPromotion, aplicarPromocion, quitarPromocion,
+    procesandoReserva,
     usuario,
   } = flow
 
@@ -202,6 +203,7 @@ export default function ReservationFlowPage() {
                   cotizacion={cotizacion}
                   onApplyPromotion={aplicarPromocion}
                   onRemovePromotion={quitarPromocion}
+                  procesando={procesandoReserva}
                   c={c}
                 />
               )}
