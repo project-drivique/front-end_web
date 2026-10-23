@@ -55,9 +55,12 @@ export function useHistorialReservas() {
             sucursal: vehiculoCatalog?.sucursal || r.sucursal || r.vehiculo?.sucursal || '',
           } : null
 
+          const rawCreatedAt = r.createdAt || r.created_at || r.fechaCreacion || null
+
           return {
             ...r,
             id: r.id,
+            createdAt: rawCreatedAt,
             codigo: refCode,
             referencia: refCode,
             total: totalVal,
@@ -77,8 +80,8 @@ export function useHistorialReservas() {
       )
       setReservas(conVehiculo
         .sort((a, b) => {
-          const timeA = a.fechaInicio ? new Date(a.fechaInicio).getTime() : 0
-          const timeB = b.fechaInicio ? new Date(b.fechaInicio).getTime() : 0
+          const timeA = a.createdAt ? new Date(a.createdAt).getTime() : (a.fechaInicio ? new Date(a.fechaInicio).getTime() : 0)
+          const timeB = b.createdAt ? new Date(b.createdAt).getTime() : (b.fechaInicio ? new Date(b.fechaInicio).getTime() : 0)
           return timeB - timeA
         }))
     } catch (err) {

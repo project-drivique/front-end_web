@@ -61,6 +61,77 @@ const fechaBonita = (fecha, idioma) => {
   }
 }
 
+const formatFechaHora = (fecha, idioma) => {
+  if (!fecha) return ''
+  try {
+    const d = new Date(fecha)
+    if (isNaN(d.getTime())) return String(fecha)
+    return new Intl.DateTimeFormat(idioma || 'es', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }).format(d).replace(/\./g, '')
+  } catch {
+    return String(fecha)
+  }
+}
+
+const getFechaCreacionDate = (r) => {
+  const raw = r.createdAt || r.created_at || r.fechaCreacion
+  if (raw) {
+    const d = new Date(raw)
+    if (!isNaN(d.getTime())) return d
+  }
+  if (r.fechaInicio) {
+    const d = new Date(r.fechaInicio)
+    if (!isNaN(d.getTime())) return d
+  }
+  return new Date()
+}
+
+const obtenerTituloSeccionFecha = (fechaIsoStr, locale = 'es-CO') => {
+  if (!fechaIsoStr || fechaIsoStr === 'desconocida') return 'Otras reservas'
+  const clean = String(fechaIsoStr).split('T')[0]
+  const [y, m, d] = clean.split('-').map(Number)
+  if (!y || !m || !d) return 'Otras reservas'
+
+  const ahora = new Date()
+  const yearHoy = ahora.getFullYear()
+  const mesHoy = String(ahora.getMonth() + 1).padStart(2, '0')
+  const diaHoy = String(ahora.getDate()).padStart(2, '0')
+  const hoyStr = `${yearHoy}-${mesHoy}-${diaHoy}`
+
+  const ayerDate = new Date(ahora)
+  ayerDate.setDate(ayerDate.getDate() - 1)
+  const ayerStr = `${ayerDate.getFullYear()}-${String(ayerDate.getMonth() + 1).padStart(2, '0')}-${String(ayerDate.getDate()).padStart(2, '0')}`
+
+  if (clean === hoyStr) {
+    return 'Reservas de hoy'
+  }
+  if (clean === ayerStr) {
+    return 'Ayer'
+  }
+
+  const fechaItem = new Date(y, m - 1, d)
+  const hoyMid = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate())
+  const diffDias = Math.round((hoyMid.getTime() - fechaItem.getTime()) / (1000 * 60 * 60 * 24))
+
+  const fechaFormateada = fechaItem.toLocaleDateString(locale, {
+    day: 'numeric',
+    month: 'long',
+    year: ahora.getFullYear() === y ? undefined : 'numeric',
+  })
+
+  if (diffDias > 1 && diffDias <= 7) {
+    return `Hace ${diffDias} días · ${fechaFormateada}`
+  }
+
+  return fechaFormateada.charAt(0).toUpperCase() + fechaFormateada.slice(1)
+}
+
 const ETIQUETAS_ESTRELLAS = (t) => ({
   1: `😞 ${t('reservas.ratingLabels.1', { defaultValue: 'Mala experiencia' })}`,
   2: `😐 ${t('reservas.ratingLabels.2', { defaultValue: 'Regular' })}`,
@@ -986,6 +1057,18 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
               </div>
             </div>
 
+            {reserva.createdAt && (
+              <div className="modal-reserva-dato-celda">
+                <div className="modal-dato-icon">
+                  <FaClock />
+                </div>
+                <div className="modal-dato-texto">
+                  <span className="modal-dato-label">{t('reservas.createdDate', { defaultValue: 'Fecha de solicitud' })}</span>
+                  <strong className="modal-dato-val">{formatFechaHora(reserva.createdAt, i18n.resolvedLanguage)}</strong>
+                </div>
+              </div>
+            )}
+
             {/* Fila 5: Total / Estado */}
             <div className="modal-reserva-dato-celda">
               <div className="modal-dato-icon brand-tint">
@@ -1548,34 +1631,71 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
     return 0
   }, [reserva, reservaAlmacenada])
 
-  return <article className="reserva-card"><div className="reserva-imagen-wrap">
-    {reserva.vehiculo?.imagenes?.[0] ? <img src={reserva.vehiculo.imagenes[0]} alt={reserva.vehiculo.nombre} /> : <div className="imagen-vacia"><FaCar /></div>}
-    <span className={`estado-badge ${estado.clase}`}>{estado.texto}</span></div><div className="reserva-info">
-    <div className="reserva-head"><div><span className="reserva-id">{t('reservas.reservationNumber', { id: reserva.id })}</span><h2>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</h2></div><strong className="reserva-total">{formatCurrency(totalTarjeta, moneda)}</strong></div>
-    <div className="reserva-meta"><div><FaCalendarAlt /><span><small>{t('reservas.pickup')}</small>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</span></div><span className="linea-fechas" />
-      <div><FaRegCalendarCheck /><span><small>{t('reservas.return')}</small>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</span></div><div className="meta-sede"><FaMapMarkerAlt /><span><small>{t('reservas.branch')}</small>{sede}</span></div></div>
-    <div className="reserva-actions">
-      {puedeReportar && (
-        <button className="btn-reporte" onClick={() => onReportar(reserva)}>
-          <FaFlag size={12} />
-          <span>{t('reservas.makeReport', { defaultValue: 'Soporte / Reportar' })}</span>
-        </button>
-      )}
-      {esFinalizada && resenaPendiente(reserva) && (
-        <button className="btn-calificar" onClick={() => onValorar(reserva)}>
-          <FaStar color="#f59e0b" size={13} />
-          <span>{t('reservas.rateAndReview', { defaultValue: 'Calificar y reseñar' })}</span>
-        </button>
-      )}
-      <button className="btn-detalle" onClick={() => onVerDetalle(reserva)}>
-        {t('reservas.viewDetail', { defaultValue: 'Ver detalle' })}
-      </button>
-    </div>
-  </div></article>
+  return (
+    <article className="reserva-card">
+      <div className="reserva-imagen-wrap">
+        {reserva.vehiculo?.imagenes?.[0] ? (
+          <img src={reserva.vehiculo.imagenes[0]} alt={reserva.vehiculo.nombre} />
+        ) : (
+          <div className="imagen-vacia"><FaCar /></div>
+        )}
+        <span className={`estado-badge ${estado.clase}`}>{estado.texto}</span>
+      </div>
+      <div className="reserva-info">
+        <div className="reserva-head">
+          <div>
+            <div className="reserva-head-meta">
+              <span className="reserva-id">{t('reservas.reservationNumber', { id: reserva.id })}</span>
+              {reserva.createdAt && (
+                <span className="reserva-creada-badge" title="Fecha en que se realizó la reserva">
+                  <FaClock size={11} />
+                  <span>Realizada el: <strong>{formatFechaHora(reserva.createdAt, i18n.resolvedLanguage)}</strong></span>
+                </span>
+              )}
+            </div>
+            <h2>{reserva.vehiculo?.nombre || t('reservas.vehicleUnavailable')}</h2>
+          </div>
+          <strong className="reserva-total">{formatCurrency(totalTarjeta, moneda)}</strong>
+        </div>
+        <div className="reserva-meta">
+          <div>
+            <FaCalendarAlt />
+            <span><small>{t('reservas.pickup')}</small>{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</span>
+          </div>
+          <span className="linea-fechas" />
+          <div>
+            <FaRegCalendarCheck />
+            <span><small>{t('reservas.return')}</small>{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</span>
+          </div>
+          <div className="meta-sede">
+            <FaMapMarkerAlt />
+            <span><small>{t('reservas.branch')}</small>{sede}</span>
+          </div>
+        </div>
+        <div className="reserva-actions">
+          {puedeReportar && (
+            <button className="btn-reporte" onClick={() => onReportar(reserva)}>
+              <FaFlag size={12} />
+              <span>{t('reservas.makeReport', { defaultValue: 'Soporte / Reportar' })}</span>
+            </button>
+          )}
+          {esFinalizada && resenaPendiente(reserva) && (
+            <button className="btn-calificar" onClick={() => onValorar(reserva)}>
+              <FaStar color="#f59e0b" size={13} />
+              <span>{t('reservas.rateAndReview', { defaultValue: 'Calificar y reseñar' })}</span>
+            </button>
+          )}
+          <button className="btn-detalle" onClick={() => onVerDetalle(reserva)}>
+            {t('reservas.viewDetail', { defaultValue: 'Ver detalle' })}
+          </button>
+        </div>
+      </div>
+    </article>
+  )
 }
 
 export default function ReservationsPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { moneda, tema } = useLanding(), navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
@@ -1641,10 +1761,32 @@ export default function ReservationsPage() {
     }
   }
 
-  const filtradas = useMemo(() => reservas.filter(r =>
-    (mes === 'todos' || r.fechaInicio?.slice(5, 7) === mes) &&
-    (estadoFiltro === 'todos' || r.estado === estadoFiltro)
-  ), [reservas, mes, estadoFiltro])
+  const filtradas = useMemo(() => reservas.filter(r => {
+    const d = getFechaCreacionDate(r)
+    const mesCreacion = String(d.getMonth() + 1).padStart(2, '0')
+    const mesInicio = r.fechaInicio ? r.fechaInicio.slice(5, 7) : null
+    const coincideMes = mes === 'todos' || mesCreacion === mes || mesInicio === mes
+    const coincideEstado = estadoFiltro === 'todos' || r.estado === estadoFiltro
+    return coincideMes && coincideEstado
+  }), [reservas, mes, estadoFiltro])
+
+  const seccionesReservas = useMemo(() => {
+    const mapa = new Map()
+    for (const r of filtradas) {
+      const rawDate = r.createdAt || r.created_at || r.fechaReserva || r.fechaCreacion || r.fechaInicio || ''
+      const fechaKey = String(rawDate).split('T')[0] || 'desconocida'
+      const lista = mapa.get(fechaKey) || []
+      lista.push(r)
+      mapa.set(fechaKey, lista)
+    }
+    const fechasOrdenadas = Array.from(mapa.keys()).sort((a, b) => b.localeCompare(a))
+    return fechasOrdenadas.map((fechaKey) => ({
+      fechaKey,
+      titulo: obtenerTituloSeccionFecha(fechaKey === 'desconocida' ? null : fechaKey, i18n?.resolvedLanguage || 'es-CO'),
+      reservas: mapa.get(fechaKey) || [],
+    }))
+  }, [filtradas, i18n?.resolvedLanguage])
+
   const reportar = reserva => navigate(`/soporte?reserva=${encodeURIComponent(reserva.id)}&vehiculo=${encodeURIComponent(reserva.vehiculo?.nombre || '')}&placa=${encodeURIComponent(reserva.vehiculo?.placa || '')}`, { state: { reservaId: reserva.id, vehiculo: reserva.vehiculo?.nombre, placa: reserva.vehiculo?.placa } })
   const c = coloresTema(tema === 'oscuro')
   return <div className="catalogo-page reservas-page"><CatalogTopHeader c={c} mostrarPerfil modoRegistrado /><main className="reservas-main">
@@ -1658,7 +1800,34 @@ export default function ReservationsPage() {
     {!cargando && !error && <p className="resultados-label">{t('reservas.resultsFound', { count: filtradas.length })}</p>}
     {cargando && <div className="estado-pagina">{t('reservas.loading')}</div>}{!cargando && error && <div className="estado-pagina error">{error}</div>}
   {!cargando && !error && filtradas.length === 0 && <div className="estado-pagina vacio"><div><FaCalendarAlt /></div><h2>{reservas.length ? t('reservas.noFilteredResults') : t('reservas.noReservations')}</h2><p>{reservas.length ? t('reservas.changeFilters') : t('reservas.noReservationsSubtitle')}</p>{reservas.length ? <button className="btn-primario" onClick={() => { setMes('todos'); setEstadoFiltro('todos') }}>{t('reservas.clearFilters')}</button> : <Link className="btn-primario" to="/home">{t('reservas.exploreVehicles')}</Link>}</div>}
-    <section className="reservas-lista">{filtradas.map(r => <TarjetaReserva key={r.id} reserva={r} moneda={moneda} onValorar={setValorando} onReportar={reportar} onVerDetalle={handleVerDetalle} />)}</section>
+    {!cargando && !error && filtradas.length > 0 && (
+      <div className="reservas-secciones">
+        {seccionesReservas.map(sec => (
+          <div key={sec.fechaKey} className="seccion-reservas-bloque">
+            <div className="seccion-header">
+              <span className="seccion-punto" />
+              <h2 className="seccion-titulo">{sec.titulo}</h2>
+              <span className="seccion-contador">
+                {sec.reservas.length} {sec.reservas.length === 1 ? t('reservas.singleReservation', { defaultValue: 'reserva' }) : t('reservas.multipleReservations', { defaultValue: 'reservas' })}
+              </span>
+              <span className="seccion-linea" />
+            </div>
+            <div className="reservas-lista">
+              {sec.reservas.map(r => (
+                <TarjetaReserva
+                  key={r.id}
+                  reserva={r}
+                  moneda={moneda}
+                  onValorar={setValorando}
+                  onReportar={reportar}
+                  onVerDetalle={handleVerDetalle}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
   </main>{detalle && <ModalDetalle reserva={detalle} moneda={moneda} autoDesbloquear={autoDesbloquear} onClose={handleCerrarDetalle} onValorar={setValorando} onReportar={reportar} />}{valorando && <ModalValoracion reserva={valorando} onClose={() => setValorando(null)} onSave={async (id, val) => {
     const res = await guardarValoracion(id, val)
     if (detalle && (detalle.id === id || detalle.referencia === id || detalle.codigo === id)) {
