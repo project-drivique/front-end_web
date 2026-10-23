@@ -197,6 +197,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   }, [verifications, search, activeTab])
 
   const handleOpenReview = (item) => {
+    if (item.estado === 'aprobado') return
     setModalItem(item)
     setActiveSection('identidad')
     setIdentidadPage(1)
@@ -705,22 +706,37 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                             <td style={{ textAlign: 'center' }}>
                               <button
                                 type="button"
-                                onClick={() => handleOpenReview(item)}
+                                disabled={item.estado === 'aprobado'}
+                                onClick={() => {
+                                  if (item.estado !== 'aprobado') {
+                                    handleOpenReview(item)
+                                  }
+                                }}
                                 style={{
                                   padding: '7px 22px',
                                   borderRadius: '9999px',
-                                  background: 'var(--brand-primary)',
+                                  background: item.estado === 'aprobado' ? '#94a3b8' : 'var(--brand-primary)',
                                   color: 'var(--city-card, #ffffff)',
                                   border: 'none',
                                   fontWeight: 800,
                                   fontSize: '12.5px',
-                                  cursor: 'pointer',
-                                  boxShadow: '0 2px 5px rgba(var(--brand-primary-rgb), 0.25)',
+                                  cursor: item.estado === 'aprobado' ? 'not-allowed' : 'pointer',
+                                  opacity: item.estado === 'aprobado' ? 0.6 : 1,
+                                  boxShadow: item.estado === 'aprobado' ? 'none' : '0 2px 5px rgba(var(--brand-primary-rgb), 0.25)',
                                   transition: 'all 0.2s',
                                   whiteSpace: 'nowrap',
                                 }}
-                                onMouseOver={(e) => { e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)' }}
-                                onMouseOut={(e) => { e.currentTarget.style.background = 'var(--brand-primary)' }}
+                                onMouseOver={(e) => {
+                                  if (item.estado !== 'aprobado') {
+                                    e.currentTarget.style.background = 'var(--brand-primary, #1d4ed8)'
+                                  }
+                                }}
+                                onMouseOut={(e) => {
+                                  if (item.estado !== 'aprobado') {
+                                    e.currentTarget.style.background = 'var(--brand-primary)'
+                                  }
+                                }}
+                                title={item.estado === 'aprobado' ? t('admin.documents.alreadyApproved', 'Documentos ya aprobados') : t('admin.documents.table.validateBtn', 'Validar')}
                               >
                                 {t('admin.documents.table.validateBtn', 'Validar')}
                               </button>
@@ -816,23 +832,30 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                         <div className="doc-mobile-card-actions">
                           <button
                             type="button"
-                            onClick={() => handleOpenReview(item)}
+                            disabled={item.estado === 'aprobado'}
+                            onClick={() => {
+                              if (item.estado !== 'aprobado') {
+                                handleOpenReview(item)
+                              }
+                            }}
                             style={{
                               width: '100%',
                               padding: '9px 18px',
                               borderRadius: '12px',
-                              background: 'var(--brand-primary)',
+                              background: item.estado === 'aprobado' ? '#94a3b8' : 'var(--brand-primary)',
                               color: 'var(--city-card, #ffffff)',
                               border: 'none',
                               fontWeight: 800,
                               fontSize: '13px',
-                              cursor: 'pointer',
-                              boxShadow: '0 2px 5px rgba(var(--brand-primary-rgb), 0.25)',
+                              cursor: item.estado === 'aprobado' ? 'not-allowed' : 'pointer',
+                              opacity: item.estado === 'aprobado' ? 0.6 : 1,
+                              boxShadow: item.estado === 'aprobado' ? 'none' : '0 2px 5px rgba(var(--brand-primary-rgb), 0.25)',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               gap: 8,
                             }}
+                            title={item.estado === 'aprobado' ? t('admin.documents.alreadyApproved', 'Documentos ya aprobados') : t('admin.documents.table.validateBtn', 'Validar')}
                           >
                             {t('admin.documents.table.validateBtn', 'Validar')}
                           </button>
@@ -914,42 +937,26 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                     <div className="doc-left-preview-box">
                       <div className="doc-sheet-card">
                         {renderDocPreview(
-                          identidadPage === 1
-                            ? (modalItem.fotoCedulaFrente || modalItem.pdfCedulaUrl)
-                            : (modalItem.fotoCedulaReverso || modalItem.pdfCedulaUrl),
-                          t('hc3.doc_page_id', { defaultValue: 'Cédula - Página {{pagina}}', pagina: identidadPage })
+                          modalItem.pdfCedulaUrl || modalItem.fotoCedulaFrente,
+                          t('hc3.doc_page_id', { defaultValue: 'Documento de Identidad' })
                         )}
                       </div>
                       <div className="doc-page-switch-buttons">
-                        <button
-                          type="button"
-                          className={`doc-page-btn ${identidadPage === 1 ? 'is-active' : ''}`}
-                          onClick={() => setIdentidadPage(1)}
-                        >
-                          Frente
-                        </button>
-                        <button
-                          type="button"
-                          className={`doc-page-btn ${identidadPage === 2 ? 'is-active' : ''}`}
-                          onClick={() => setIdentidadPage(2)}
-                        >
-                          Reverso
-                        </button>
                         {(modalItem.pdfCedulaUrl || modalItem.fotoCedulaFrente) && (
                           <a
                             href={getSafeDocUrl(modalItem.pdfCedulaUrl || modalItem.fotoCedulaFrente)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="doc-page-btn"
-                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--brand-text)' }}
+                            className="doc-page-btn is-active"
+                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                             title={t('hc.abrir_pdf_en_pestana_nueva', 'Abrir PDF en pestaña nueva')}
                           >
-                            <FaEye /> Abrir PDF
+                            <FaEye /> {t('hc.abrir_pdf', 'Abrir PDF')}
                           </a>
                         )}
                       </div>
                       <p className="doc-page-info-text">
-                        PDF · {modalItem.documentoIdentidadPdf || `Cedula-${modalItem.documentoIdentidad}.pdf`} · página {identidadPage} de 2
+                        PDF · {modalItem.documentoIdentidadPdf || `Cedula-${modalItem.documentoIdentidad}.pdf`}
                       </p>
                     </div>
                   )}
@@ -958,42 +965,26 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                     <div className="doc-left-preview-box">
                       <div className="doc-sheet-card">
                         {renderDocPreview(
-                          licenciaPage === 1
-                            ? (modalItem.fotoLicenciaFrente || modalItem.pdfLicenciaUrl)
-                            : (modalItem.fotoLicenciaReverso || modalItem.pdfLicenciaUrl),
-                          t('hc3.doc_page_license', { defaultValue: 'Licencia - Página {{pagina}}', pagina: licenciaPage })
+                          modalItem.pdfLicenciaUrl || modalItem.fotoLicenciaFrente,
+                          t('hc3.doc_page_license', { defaultValue: 'Licencia de Conducción' })
                         )}
                       </div>
                       <div className="doc-page-switch-buttons">
-                        <button
-                          type="button"
-                          className={`doc-page-btn ${licenciaPage === 1 ? 'is-active' : ''}`}
-                          onClick={() => setLicenciaPage(1)}
-                        >
-                          Frente
-                        </button>
-                        <button
-                          type="button"
-                          className={`doc-page-btn ${licenciaPage === 2 ? 'is-active' : ''}`}
-                          onClick={() => setLicenciaPage(2)}
-                        >
-                          Reverso
-                        </button>
                         {(modalItem.pdfLicenciaUrl || modalItem.fotoLicenciaFrente) && (
                           <a
                             href={getSafeDocUrl(modalItem.pdfLicenciaUrl || modalItem.fotoLicenciaFrente)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="doc-page-btn"
-                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--brand-text)' }}
+                            className="doc-page-btn is-active"
+                            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                             title={t('hc.abrir_pdf_en_pestana_nueva', 'Abrir PDF en pestaña nueva')}
                           >
-                            <FaEye /> Abrir PDF
+                            <FaEye /> {t('hc.abrir_pdf', 'Abrir PDF')}
                           </a>
                         )}
                       </div>
                       <p className="doc-page-info-text">
-                        PDF · {modalItem.licenciaConduccionPdf || `Licencia-${modalItem.documentoIdentidad}.pdf`} · página {licenciaPage} de 2
+                        PDF · {modalItem.licenciaConduccionPdf || `Licencia-${modalItem.documentoIdentidad}.pdf`}
                       </p>
                     </div>
                   )}
@@ -1048,7 +1039,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                             onChange={() => handleToggleCheck('id_frente_reverso')}
                           />
                           <span className={`doc-check-text ${modalChecklist.id_frente_reverso ? 'is-checked' : ''}`}>
-                            Tiene frente y reverso.
+                            El archivo contiene el documento completo.
                           </span>
                         </label>
 
@@ -1144,7 +1135,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                             onChange={() => handleToggleCheck('id_coinciden_lados')}
                           />
                           <span className={`doc-check-text ${modalChecklist.id_coinciden_lados ? 'is-checked' : ''}`}>
-                            Frente y reverso son del mismo documento.
+                            Las páginas y datos corresponden al mismo documento y titular.
                           </span>
                         </label>
                       </div>
@@ -1166,7 +1157,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                             onChange={() => handleToggleCheck('lic_frente_reverso')}
                           />
                           <span className={`doc-check-text ${modalChecklist.lic_frente_reverso ? 'is-checked' : ''}`}>
-                            Tiene frente y reverso.
+                            El archivo contiene la licencia completa.
                           </span>
                         </label>
 
