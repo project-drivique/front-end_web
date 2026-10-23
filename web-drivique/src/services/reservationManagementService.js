@@ -101,6 +101,7 @@ function mapear(item) {
         conductor: p.driverName || '',
         conductorTelefono: p.driverPhone || '',
         estado: p.deliveryStatus,
+        deliveryPin: p.deliveryPin || '',
       })),
     // Desglose del valor calculado por el servidor
     detalle: {
