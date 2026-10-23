@@ -12,6 +12,7 @@ import { contractService } from '../../../services/contractService'
 import { inspectionService } from '../../../services/inspectionService'
 import { api } from '../../../services/httpClient'
 import { showAlert } from '../../../utils/swalConfig'
+import { resolveDocumentUrl } from '../../../utils/documentUtils'
 import { documentVerificationService } from '../../../services/documentVerificationService'
 import FirmaContrato from '../../contracts/components/ContractSignature'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
@@ -126,16 +127,18 @@ export default function ReservationManagementPage() {
       docUrl = matchingKyc?.fotoLicenciaFrente || matchingKyc?.pdfLicenciaUrl || r.licenciaConduccionUrl || ''
     }
 
-    const esUrlValida = Boolean(docUrl && (
-      docUrl.startsWith('data:') ||
-      docUrl.startsWith('blob:') ||
-      docUrl.startsWith('/uploads/') ||
-      docUrl.startsWith('http://') ||
-      docUrl.startsWith('https://')
+    const resolvedUrl = resolveDocumentUrl(docUrl)
+    const esUrlValida = Boolean(resolvedUrl && (
+      resolvedUrl.startsWith('data:') ||
+      resolvedUrl.startsWith('blob:') ||
+      resolvedUrl.startsWith('/uploads/') ||
+      resolvedUrl.startsWith('/api/uploads/') ||
+      resolvedUrl.startsWith('http://') ||
+      resolvedUrl.startsWith('https://')
     ))
 
     setZoomPdf({
-      url: esUrlValida ? docUrl : '',
+      url: esUrlValida ? resolvedUrl : '',
       fileName,
       title,
       docType,
@@ -1750,7 +1753,7 @@ export default function ReservationManagementPage() {
                     }}
                   />
                 </div>
-              ) : zoomPdf.url && (zoomPdf.url.startsWith('http') || zoomPdf.url.startsWith('/uploads') || zoomPdf.url.startsWith('blob:') || zoomPdf.url.startsWith('data:application/pdf')) && zoomPdf.url.toLowerCase().includes('.pdf') ? (
+              ) : zoomPdf.url && (zoomPdf.url.startsWith('http') || zoomPdf.url.startsWith('/uploads') || zoomPdf.url.startsWith('/api/uploads') || zoomPdf.url.startsWith('blob:') || zoomPdf.url.startsWith('data:application/pdf')) && zoomPdf.url.toLowerCase().includes('.pdf') ? (
                 <div style={{ flex: 1, minHeight: 460 }}>
                   <object
                     data={`${zoomPdf.url}#toolbar=1`}
