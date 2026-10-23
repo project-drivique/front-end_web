@@ -64,3 +64,34 @@ export const showAlert = (options) => {
     )
   })
 }
+
+export function getErrorMessage(error, defaultMsg = 'Ocurrió un error inesperado.') {
+  if (!error) return defaultMsg
+  if (typeof error === 'string') return error
+
+  const resData = error.response?.data
+  if (resData) {
+    if (Array.isArray(resData.errors) && resData.errors.length > 0) {
+      const fieldErrors = resData.errors
+        .map((e) => e.message || (e.field ? `${e.field}: ${e.code || 'inválido'}` : e.code))
+        .filter(Boolean)
+        .join('. ')
+      if (fieldErrors) return fieldErrors
+    }
+    if (resData.detail && typeof resData.detail === 'string') {
+      return resData.detail
+    }
+    if (resData.message && typeof resData.message === 'string') {
+      return resData.message
+    }
+    if (resData.error && typeof resData.error === 'string') {
+      return resData.error
+    }
+  }
+
+  if (error.message && typeof error.message === 'string') {
+    return error.message
+  }
+
+  return defaultMsg
+}
