@@ -277,6 +277,8 @@ export function useReservationFlow() {
   const [hoverEfectivo, setHoverEfectivo] = useState(false)
   const [fechaLimitePago, setFechaLimitePago] = useState(null)
   const [docsVerificados, setDocsVerificados] = useState(false)
+  const [procesandoReserva, setProcesandoReserva] = useState(false)
+  const isSubmittingRef = useRef(false)
 
   const idUsuarioDocs = usuario?.id || usuario?.correo || null
 
@@ -460,6 +462,11 @@ export function useReservationFlow() {
   }
 
   const handleReservar = async () => {
+    if (isSubmittingRef.current || procesandoReserva) {
+      console.warn('handleReservar already in progress, ignoring duplicate call.')
+      return
+    }
+
     if (!usuario) {
       showAlert({
         icon: 'info',
@@ -498,7 +505,11 @@ export function useReservationFlow() {
       return
     }
 
-    // ─── 2. Validación de Documentación KYC Rechazada / Observaciones ────────
+    isSubmittingRef.current = true
+    setProcesandoReserva(true)
+
+    try {
+      // ─── 2. Validación de Documentación KYC Rechazada / Observaciones ────────
     try {
       const documentos = await userService.getDocuments()
       const listaDocumentos = Array.isArray(documentos) ? documentos : (documentos?.documents || [])
@@ -616,8 +627,22 @@ export function useReservationFlow() {
         nacionalidad: datosForm.nacionalidad || usuario.nacionalidad,
         tipoDocumento: datosForm.tipoDoc || usuario.tipoDocumento,
       }
-      await userService.actualizarPerfil(datosPerfil)
-      actualizarUsuario(datosPerfil)
+      try {
+        await userService.actualizarPerfil(datosPerfil)
+        actualizarUsuario(datosPerfil)
+      } catch (errPerfil) {
+        console.warn('Advertencia al sincronizar perfil en reserva:', errPerfil)
+        const errorDetail = String(errPerfil?.response?.data?.detail || errPerfil?.response?.data?.message || errPerfil?.message || '').toLowerCase()
+        const status = errPerfil?.response?.status
+        if (status === 409 && (errorDetail.includes('document') || errorDetail.includes('cedula') || errorDetail.includes('cédula') || errorDetail.includes('duplicate') || errorDetail.includes('unique'))) {
+          showAlert({
+            icon: 'error',
+            title: t('hc.documento_ya_registrado', 'Documento ya registrado'),
+            text: t('hc.el_numero_de_documento_ya_esta_asociado', 'El número de documento ingresado ya se encuentra registrado con otra cuenta de usuario. Por favor verifica tus datos.')
+          })
+          return
+        }
+      }
     }
 
     let requiereValidacionDocs = false
@@ -634,7 +659,7 @@ export function useReservationFlow() {
             vehiculo?.branchId ||
             vehiculo?.sucursalId ||
             vehiculo?.currentBranchId ||
-            sedeVehiculo?.id ||
+            branchObj?.id ||
             currentBranch?.id ||
             (reserva?.sucursalRetiro ? sedesCatalog.find((s) => s.name === reserva.sucursalRetiro || s.nombre === reserva.sucursalRetiro)?.id : null) ||
             sedesCatalog[0]?.id
@@ -660,7 +685,7 @@ export function useReservationFlow() {
         } catch (docErr) {
           console.warn('Document upload warning:', docErr)
           const specificMsg = getErrorMessage(docErr, t('hc.error_subir_documentos_gen', 'Error al cargar los documentos de identidad o licencia.'))
-          throw new Error(`${t('hc.error_subir_documentos', 'Error al cargar documentos')}: ${specificMsg}`)
+          throw new Error(`${t('hc.error_subir_documentos', 'Error al cargar documentos')}: ${specificMsg}`, { cause: docErr })
         }
       }
       requiereValidacionDocs = true
@@ -672,8 +697,7 @@ export function useReservationFlow() {
     const clienteTelFinal = datosForm.celular || datosForm.telefono || usuario?.telefono || ''
     const clienteDocFinal = datosForm.numDoc || datosForm.documento || datosForm.cedula || usuario?.cedula || ''
 
-    try {
-      let dRetiro = new Date(`${reserva.fechaInicio}T${reserva.horaInicio || '10:00'}:00`)
+    let dRetiro = new Date(`${reserva.fechaInicio}T${reserva.horaInicio || '10:00'}:00`)
       let dDevolucion = new Date(`${reserva.fechaFin}T${reserva.horaFin || '10:00'}:00`)
       const ahora = new Date().getTime()
       if (dRetiro.getTime() < ahora) {
@@ -767,11 +791,35 @@ export function useReservationFlow() {
     } catch (error) {
       console.error('Error creating reservation hold:', error)
       const errorMsg = getErrorMessage(error, t('hc2.no_se_pudo_crear_la_reserva_en_el_serv', 'No se pudo crear la reserva en el servidor. Por favor intenta de nuevo.'))
-      showAlert({
-        icon: 'error',
-        title: t('hc.error_al_registrar_reserva', 'Error al registrar reserva'),
-        text: errorMsg
-      })
+      const errorMsgLower = String(errorMsg || '').toLowerCase()
+
+      if (
+        error?.response?.status === 409 &&
+        (errorMsgLower.includes('debido a otra reserva') ||
+          errorMsgLower.includes('no se encuentra disponible en las fechas') ||
+          errorMsgLower.includes('overlapping') ||
+          errorMsgLower.includes('overlap'))
+      ) {
+        showAlert({
+          icon: 'warning',
+          title: t('hc.vehiculo_no_disponible', 'Vehículo no disponible'),
+          text: t('hc.vehiculo_apartado_desc', 'Otro cliente acaba de apartar este vehículo para estas fechas mientras completabas el formulario. Si no completa su pago en 15 minutos, volverá a estar libre. También puedes explorar otros vehículos disponibles en el catálogo.'),
+          confirmButtonText: t('hc.ver_otros_vehiculos', 'Ver otros vehículos'),
+          showCancelButton: true,
+          cancelButtonText: t('common.close', 'Cerrar'),
+        }).then((result) => {
+          if (result.isConfirmed) navigate('/catalogo')
+        })
+      } else {
+        showAlert({
+          icon: 'error',
+          title: t('hc.error_al_registrar_reserva', 'Error al registrar reserva'),
+          text: errorMsg
+        })
+      }
+    } finally {
+      isSubmittingRef.current = false
+      setProcesandoReserva(false)
     }
   }
 
@@ -962,6 +1010,7 @@ export function useReservationFlow() {
     totalReserva, totalReservaBase, descuentoPromocion, diasTotal, TOTAL_PASOS,
     appliedPromotion, aplicarPromocion, quitarPromocion,
     cotizacion,
+    procesandoReserva,
     usuario,
   }
 }
