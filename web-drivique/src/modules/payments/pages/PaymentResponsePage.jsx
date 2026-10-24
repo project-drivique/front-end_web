@@ -37,7 +37,7 @@ export default function RespuestaPagoPage() {
 
           if (status === 'APPROVED') {
             if (holdId) {
-              reservationsService.confirmarPago(holdId)
+              reservationsService.confirmarPago(holdId, transactionId)
                 .then((confirmedRes) => {
                   const target = confirmedRes?.id || confirmedRes?.code || holdId;
                   navigate(`/contrato/${encodeURIComponent(target)}`, { replace: true, state: { reserva: confirmedRes } });
