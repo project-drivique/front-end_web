@@ -29,7 +29,9 @@ export default function EquipmentSection({ caracteristicas = [], equipamiento = 
   const border = c?.subCardBorder || c?.cardBorder || 'var(--borde, #e2e8f0)'
   const titleColor = c?.titleColor || 'var(--brand-secondary, #0f172a)'
   const subBg = c?.subCardBg || 'var(--bg-item, #ffffff)'
-  const textPrimary = c?.textPrimary || 'var(--texto-primary, #0f172a)'
+  const hasTech = Boolean(showTech && equipamiento.length > 0)
+  const hasGeneral = Boolean(showGeneral && caracteristicas.length > 0)
+  if (!hasTech && !hasGeneral) return null
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

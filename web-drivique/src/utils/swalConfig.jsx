@@ -79,9 +79,15 @@ export function getErrorMessage(error, defaultMsg = 'Ocurrió un error inesperad
       if (fieldErrors) return fieldErrors
     }
     if (resData.detail && typeof resData.detail === 'string') {
+      if (resData.detail.toLowerCase().includes('conflicto con el estado actual')) {
+        return 'La operación no se pudo completar porque entra en conflicto con el estado actual o el recurso ya fue utilizado.'
+      }
       return resData.detail
     }
     if (resData.message && typeof resData.message === 'string') {
+      if (resData.message.toLowerCase().includes('conflicto con el estado actual')) {
+        return 'La operación no se pudo completar porque entra en conflicto con el estado actual o el recurso ya fue utilizado.'
+      }
       return resData.message
     }
     if (resData.error && typeof resData.error === 'string') {
