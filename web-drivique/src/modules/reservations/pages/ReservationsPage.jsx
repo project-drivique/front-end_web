@@ -580,11 +580,12 @@ function Contrato({ reserva }) {
   )
 }
 
-function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onValorar, onReportar }) {
+function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onValorar, onReportar, onCancelar }) {
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
   const { brand } = useBrand() || {}
   const usuario = useAuthStore(state => state.usuario)
+  const [cancelando, setCancelando] = useState(false)
 
   const contrato = useContratoReal(reserva.id)
   const reservaOriginal = contrato?.contratoOriginal?.reserva
@@ -628,6 +629,47 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
     Boolean(reserva.fechaPagoConfirmado)
 
   const esFinalizadaModal = ['finalizada', 'completada', 'finalizado', 'completado', 'completed'].includes(estadoNormModal) || backendStatus === 'COMPLETED'
+
+  const puedeCancelarModal = (
+    !esFinalizadaModal &&
+    estadoNormModal !== 'cancelada' &&
+    estadoNormModal !== 'cancelled' &&
+    backendStatus !== 'CANCELLED' &&
+    backendStatus !== 'CANCELLED_TIMEOUT' &&
+    backendStatus !== 'CANCELLED_BY_USER'
+  )
+
+  const handleCancelarReserva = async () => {
+    const result = await showAlert({
+      icon: 'warning',
+      title: t('reservas.cancelTitle', { defaultValue: '¿Cancelar reserva?' }),
+      text: t('reservas.cancelConfirmText', { defaultValue: '¿Estás seguro de que deseas cancelar esta reserva? Esta acción liberará el vehículo.' }),
+      showCancelButton: true,
+      confirmButtonText: t('reservas.yesCancel', { defaultValue: 'Sí, cancelar reserva' }),
+      cancelButtonText: t('common.no', { defaultValue: 'No, mantener' }),
+      confirmButtonColor: '#dc2626'
+    })
+    if (result?.isConfirmed) {
+      setCancelando(true)
+      try {
+        await onCancelar(reserva.id)
+        await showAlert({
+          icon: 'success',
+          title: t('reservas.cancelledTitle', { defaultValue: 'Reserva cancelada' }),
+          text: t('reservas.cancelledDesc', { defaultValue: 'La reserva ha sido cancelada exitosamente.' })
+        })
+        onClose()
+      } catch (err) {
+        await showAlert({
+          icon: 'error',
+          title: t('common.error', { defaultValue: 'Error' }),
+          text: err?.message || 'No se pudo cancelar la reserva.'
+        })
+      } finally {
+        setCancelando(false)
+      }
+    }
+  }
 
   // Regla estricta: Si no se ha firmado el contrato, la reserva NO debe salir confirmada
   const requiereFirmaModal = (backendStatus === 'PENDING_SIGNATURE' || esPagoConfirmadoModal) && !tieneContratoFirmado && !esFinalizadaModal
@@ -1551,6 +1593,36 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
           </div>
         )}
 
+        {puedeCancelarModal && onCancelar && (
+          <div style={{ marginTop: '16px' }}>
+            <button
+              type="button"
+              className="btn-secundario"
+              onClick={handleCancelarReserva}
+              disabled={cancelando}
+              style={{
+                width: '100%',
+                padding: '12px 18px',
+                background: '#fef2f2',
+                color: '#dc2626',
+                borderColor: '#fca5a5',
+                fontWeight: 800,
+                borderRadius: '14px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                fontSize: '13px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <FaTimes color="#dc2626" size={15} />
+              <span>{cancelando ? t('reservas.cancelling', { defaultValue: 'Cancelando reserva...' }) : t('reservas.cancelReservation', { defaultValue: 'Cancelar reserva' })}</span>
+            </button>
+          </div>
+        )}
+
       </section>
     </div>
   )
@@ -1699,7 +1771,7 @@ export default function ReservationsPage() {
   const { moneda, tema } = useLanding(), navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
-  const { reservas, cargando, error, guardarValoracion, guardarResenaSucursal } = useHistorialReservas()
+  const { reservas, cargando, error, cancelarReserva, guardarValoracion, guardarResenaSucursal } = useHistorialReservas()
   const [mes, setMes] = useState('todos'), [estadoFiltro, setEstadoFiltro] = useState('todos'), [valorando, setValorando] = useState(null), [detalle, setDetalle] = useState(null)
 
   const detalleIdUrl = searchParams.get('detalle') || location.state?.detalleId
@@ -1828,7 +1900,7 @@ export default function ReservationsPage() {
         ))}
       </div>
     )}
-  </main>{detalle && <ModalDetalle reserva={detalle} moneda={moneda} autoDesbloquear={autoDesbloquear} onClose={handleCerrarDetalle} onValorar={setValorando} onReportar={reportar} />}{valorando && <ModalValoracion reserva={valorando} onClose={() => setValorando(null)} onSave={async (id, val) => {
+  </main>{detalle && <ModalDetalle reserva={detalle} moneda={moneda} autoDesbloquear={autoDesbloquear} onClose={handleCerrarDetalle} onValorar={setValorando} onReportar={reportar} onCancelar={cancelarReserva} />}{valorando && <ModalValoracion reserva={valorando} onClose={() => setValorando(null)} onSave={async (id, val) => {
     const res = await guardarValoracion(id, val)
     if (detalle && (detalle.id === id || detalle.referencia === id || detalle.codigo === id)) {
       setDetalle(prev => prev ? { ...prev, valoracion: res } : null)
