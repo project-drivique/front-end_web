@@ -1,5 +1,6 @@
 import i18n from '@/i18n'
 import { configuredApiUrl } from '@/config/apiConfig'
+import { useAuthStore } from '@/store/authStore'
 
 const nombre = (clave, defecto) => i18n.t(`docNames.${clave}`, defecto)
 
@@ -50,6 +51,25 @@ export function resolveDocumentUrl(url) {
   if (url.startsWith('blob:') || url.startsWith('data:')) {
     return url
   }
+
+  const apiBase = configuredApiUrl ? configuredApiUrl.replace(/\/v1\/?$/, '') : '/api'
+  const token = useAuthStore.getState()?.token || ''
+  const tokenParam = token ? `&token=${encodeURIComponent(token)}` : ''
+
+  // Manejo especial para documentos confidenciales KYC cifrados con AES-256
+  if (url.includes('/kyc/')) {
+    let kycPath = url.trim()
+    const match = kycPath.match(/\/uploads\/kyc\/[^\s?#]+/)
+    if (match) {
+      kycPath = match[0]
+    } else if (kycPath.startsWith('/api/uploads/')) {
+      kycPath = kycPath.replace('/api/uploads/', '/uploads/')
+    } else if (!kycPath.startsWith('/')) {
+      kycPath = '/' + kycPath
+    }
+    return `${apiBase}/v1/kyc/documents/file?path=${encodeURIComponent(kycPath)}${tokenParam}`
+  }
+
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url
   }
@@ -61,7 +81,6 @@ export function resolveDocumentUrl(url) {
 
   // Si viene como /uploads/...
   if (cleanUrl.startsWith('/uploads/')) {
-    const apiBase = configuredApiUrl ? configuredApiUrl.replace(/\/v1\/?$/, '') : '/api'
     return `${apiBase}${cleanUrl}`
   }
 

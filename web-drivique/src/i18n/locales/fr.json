@@ -5667,5 +5667,24 @@
     "docs_en_revision_texto": "Votre réservation est enregistrée. L’agence examine vos documents : vous pourrez payer une fois qu’ils seront approuvés et nous vous préviendrons par notification.",
     "docs_en_revision_titulo": "Documents en cours de vérification",
     "docs_en_revision_alerta": "L’agence examine encore vos documents. Vous pourrez payer une fois qu’ils seront approuvés."
+  },
+  "captcha": {
+    "title": "Vérification de Sécurité",
+    "antiBotBadge": "Anti-bot",
+    "verifiedBadge": "Vérifié ✓",
+    "promptDesc": "Entrez les 5 caractères de l'image pour confirmer que vous êtes une personne.",
+    "verifiedDesc": "Vérification terminée. Vous pouvez maintenant confirmer votre réservation.",
+    "successLabel": "Humain vérifié avec succès",
+    "verifyHuman": "Confirmer que je suis un humain",
+    "verifying": "Vérification de sécurité...",
+    "clickToVerify": "Cliquez sur la case pour vérifier la sécurité",
+    "privacy": "Sécurité",
+    "reset": "Changer",
+    "placeholder": "Entrez le code",
+    "validateBtn": "Vérifier",
+    "refreshTooltip": "Générer un nouveau code",
+    "emptyCode": "Veuillez entrer le code de sécurité.",
+    "invalidCode": "Code incorrect. Nous en avons généré un nouveau.",
+    "mustVerify": "Vous devez effectuer la vérification de sécurité avant de confirmer la réservation."
   }
 }
