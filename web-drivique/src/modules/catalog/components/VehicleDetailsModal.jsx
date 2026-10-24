@@ -193,9 +193,10 @@ export default function VehicleDetailsModal({
           className="vehicle-details-modal-body"
           style={{ background: c.cardBg }}
         >
-          <div className="vdm-layout-grid">
-            {/* Columna Principal: Galería + Ficha de Características + Descripción + Equipamiento */}
-            <div className="vdm-col-main">
+          {/* 3 Columns Grid - Balanced Heights */}
+          <div className="vehiculo-detail-grid">
+            {/* Col 1: Galería + Sucursal */}
+            <div className="vehiculo-col-left">
               <div className="vdm-block-gallery">
                 <ImageGallery
                   imagenes={vehiculo.imagenes || []}
@@ -205,8 +206,29 @@ export default function VehicleDetailsModal({
                 />
               </div>
 
-              <div className="vdm-block-specs">
-                <VehicleCharacteristics vehiculo={vehiculo} c={c} />
+              <div className="vdm-block-branch">
+                <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
+              </div>
+            </div>
+
+            {/* Col 2: Seguros + Requisitos + Pico y Placa (+ Descripción / Equipamiento si existen) */}
+            <div className="vehiculo-col-center">
+              <div className="vdm-block-insurance">
+                <PricingSection
+                  tarifas={vehiculo.tarifas}
+                  seguros={vehiculo.seguros}
+                  showTarifas={false}
+                  showSeguros={true}
+                  c={c}
+                />
+              </div>
+
+              <div className="vdm-block-requirements">
+                <RentalRequirements c={c} />
+              </div>
+
+              <div className="vdm-block-picoplaca">
+                <PicoYPlacaCard c={c} />
               </div>
 
               {vehiculo.descripcion && (
@@ -226,8 +248,24 @@ export default function VehicleDetailsModal({
               </div>
             </div>
 
-            {/* Columna Comercial y Operativa: Precio/Reserva + Seguros + Requisitos + Sucursal + Pico y Placa */}
-            <div className="vdm-col-side">
+            {/* Col 3: Características + Tarifas + Reservar */}
+            <div className="vehiculo-col-right">
+              <div className="vdm-block-specs">
+                <VehicleCharacteristics vehiculo={vehiculo} c={c} />
+              </div>
+
+              {vehiculo.tarifas && (
+                <div className="vdm-block-rates">
+                  <PricingSection
+                    tarifas={vehiculo.tarifas}
+                    seguros={vehiculo.seguros}
+                    showTarifas={true}
+                    showSeguros={false}
+                    c={c}
+                  />
+                </div>
+              )}
+
               {/* Tarjeta de Reserva y Precios */}
               <div
                 className="vehiculo-reserve-card vdm-block-reserve"
@@ -340,45 +378,6 @@ export default function VehicleDetailsModal({
                   <span>{t('catalogo.reserveNow', 'Reservar ahora')}</span>
                 </button>
               </div>
-
-              {/* Seguros y Cobertura */}
-              <div className="vdm-block-insurance">
-                <PricingSection
-                  tarifas={vehiculo.tarifas}
-                  seguros={vehiculo.seguros}
-                  showTarifas={false}
-                  showSeguros={true}
-                  c={c}
-                />
-              </div>
-
-              {/* Requisitos para rentar */}
-              <div className="vdm-block-requirements">
-                <RentalRequirements c={c} />
-              </div>
-
-              {/* Sucursal de entrega y devolución */}
-              <div className="vdm-block-branch">
-                <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
-              </div>
-
-              {/* Pico y Placa */}
-              <div className="vdm-block-picoplaca">
-                <PicoYPlacaCard c={c} />
-              </div>
-
-              {/* Tarifas extendidas por kilometraje (si están configuradas) */}
-              {vehiculo.tarifas && (
-                <div className="vdm-block-rates">
-                  <PricingSection
-                    tarifas={vehiculo.tarifas}
-                    seguros={vehiculo.seguros}
-                    showTarifas={true}
-                    showSeguros={false}
-                    c={c}
-                  />
-                </div>
-              )}
             </div>
           </div>
 
