@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaSearch, FaMapMarkerAlt, FaUserTie, FaCalendarAlt, FaCar, FaCheckCircle, FaKey, FaRoute, FaExclamationCircle, FaFileExcel, FaFilePdf, FaPrint, FaBuilding, FaPlus, FaEdit, FaTrashAlt, FaIdCard, FaPhone, FaEnvelope } from 'react-icons/fa'
+import { FaSearch, FaMapMarkerAlt, FaUserTie, FaCalendarAlt, FaCar, FaCheckCircle, FaTimesCircle, FaKey, FaRoute, FaExclamationCircle, FaFileExcel, FaFilePdf, FaPrint, FaBuilding, FaPlus, FaEdit, FaTrashAlt, FaIdCard, FaPhone, FaEnvelope } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
@@ -52,7 +52,7 @@ export default function DeliveryManagementPage() {
   const loadReservations = () => {
     const all = reservationManagementService.list(user)
     const filas = []
-    all.filter((r) => r.estado !== 'cancelada').forEach((r) => {
+    all.forEach((r) => {
       const puntoRecogida = (r.domicilioPuntos || []).find((p) => p.tipo === 'PICKUP')
       const puntoDevolucion = (r.domicilioPuntos || []).find((p) => p.tipo === 'RETURN')
 
@@ -173,14 +173,29 @@ export default function DeliveryManagementPage() {
     }
   }
 
-  const totalPendientes = useMemo(() => reservations.filter(r => r.estadoDomicilio === 'PENDIENTE').length, [reservations])
-  const totalAsignados = useMemo(() => reservations.filter(r => r.estadoDomicilio === 'ASIGNADO').length, [reservations])
-  const totalCompletados = useMemo(() => reservations.filter(r => r.estadoDomicilio === 'COMPLETADO').length, [reservations])
+  const totalPendientes = useMemo(
+    () => reservations.filter((r) => r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'PENDIENTE').length,
+    [reservations]
+  )
+  const totalAsignados = useMemo(
+    () => reservations.filter((r) => r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO').length,
+    [reservations]
+  )
+  const totalCompletados = useMemo(
+    () => reservations.filter((r) => r.estadoDomicilio === 'COMPLETADO' || r.estado === 'finalizada').length,
+    [reservations]
+  )
 
   const filtrados = useMemo(() => reservations.filter(r => {
-    if (activeTab === 'pendientes' && r.estadoDomicilio !== 'PENDIENTE') return false
-    if (activeTab === 'asignados' && r.estadoDomicilio !== 'ASIGNADO') return false
-    if (activeTab === 'completados' && r.estadoDomicilio !== 'COMPLETADO') return false
+    if (activeTab === 'pendientes') {
+      return r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'PENDIENTE'
+    }
+    if (activeTab === 'asignados') {
+      return r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO'
+    }
+    if (activeTab === 'completados') {
+      return r.estadoDomicilio === 'COMPLETADO' || r.estado === 'finalizada'
+    }
     if (search && activeTab !== 'conductores') {
       const lower = search.toLowerCase()
       return r.codigo?.toLowerCase().includes(lower) || r.domicilioCodigo?.toLowerCase().includes(lower) || r.vehiculoNombre?.toLowerCase().includes(lower) || r.vehiculoPlaca?.toLowerCase().includes(lower) || r.clienteNombre?.toLowerCase().includes(lower) || r.domicilioConductor?.toLowerCase().includes(lower)
@@ -214,9 +229,16 @@ export default function DeliveryManagementPage() {
     }
   }
 
-  const getBadge = (estado) => {
-    const norm = String(estado || 'PENDIENTE').toUpperCase()
-    if (norm === 'COMPLETADO') {
+  const getBadge = (estado, reservaEstado) => {
+    if (reservaEstado === 'cancelada' || estado === 'CANCELADO') {
+      return (
+        <span className="doc-status-badge rechazada" style={{ background: '#fef2f2', color: '#b91c1c', borderColor: '#fecaca' }}>
+          <FaTimesCircle style={{ fontSize: 11 }} />
+          {t('admin.delivery.status.cancelada', 'Cancelada')}
+        </span>
+      )
+    }
+    if (reservaEstado === 'finalizada' || estado === 'COMPLETADO') {
       return (
         <span className="doc-status-badge aprobado">
           <FaCheckCircle style={{ fontSize: 11 }} />
@@ -224,7 +246,7 @@ export default function DeliveryManagementPage() {
         </span>
       )
     }
-    if (norm === 'ASIGNADO') {
+    if (estado === 'ASIGNADO') {
       return (
         <span className="doc-status-badge pendiente" style={{ background: 'var(--brand-soft)', color: 'var(--brand-text)', borderColor: 'var(--brand-border)' }}>
           <FaUserTie style={{ fontSize: 11 }} />
@@ -692,42 +714,62 @@ export default function DeliveryManagementPage() {
                                 {r.horaDevolucion}
                               </td>
                               <td style={{ fontWeight: 400 }}>
-                                <select
-                                  disabled={assigningPointId === (r.rowId || r.id)}
-                                  value={r.domicilioConductor || ''}
-                                  onChange={(e) => handleDirectSelectConductor(r, e.target.value)}
-                                  style={{
-                                    padding: '6px 10px',
-                                    borderRadius: 8,
-                                    border: '1.5px solid var(--city-border, #cbd5e1)',
-                                    background: 'var(--city-bg, #f8fafc)',
-                                    color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)',
-                                    fontSize: 12.5,
-                                    fontWeight: 400,
-                                    outline: 'none',
-                                    cursor: assigningPointId === (r.rowId || r.id) ? 'wait' : 'pointer',
-                                    opacity: assigningPointId === (r.rowId || r.id) ? 0.6 : 1,
-                                    maxWidth: 200
-                                  }}
-                                >
-                                  <option value="">
-                                    {assigningPointId === (r.rowId || r.id)
-                                      ? '⏳ Asignando...'
-                                      : t('admin.delivery.modal.selectDriverPlaceholder', '-- Seleccionar Conductor --')}
-                                  </option>
-                                  {conductores.map(c => (
-                                    <option key={c.id} value={c.nombre}>
-                                      {c.nombre}
+                                {r.estado === 'cancelada' ? (
+                                  <span style={{ fontSize: 12, color: '#ef4444', fontStyle: 'italic', fontWeight: 500 }}>
+                                    {r.estadoCodigo === 'CANCELLED_BY_TIMEOUT' ? 'Cancelada automáticamente' : 'Reserva cancelada'}
+                                  </span>
+                                ) : r.estado === 'finalizada' ? (
+                                  <span style={{ fontSize: 12, color: '#16a34a', fontStyle: 'italic', fontWeight: 500 }}>
+                                    {r.domicilioConductor ? `${r.domicilioConductor} (Finalizado)` : 'Servicio finalizado'}
+                                  </span>
+                                ) : (
+                                  <select
+                                    disabled={assigningPointId === (r.rowId || r.id) || r.estadoDomicilio === 'COMPLETADO'}
+                                    value={r.domicilioConductor || ''}
+                                    onChange={(e) => handleDirectSelectConductor(r, e.target.value)}
+                                    style={{
+                                      padding: '6px 10px',
+                                      borderRadius: 8,
+                                      border: '1.5px solid var(--city-border, #cbd5e1)',
+                                      background: 'var(--city-bg, #f8fafc)',
+                                      color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)',
+                                      fontSize: 12.5,
+                                      fontWeight: 400,
+                                      outline: 'none',
+                                      cursor: assigningPointId === (r.rowId || r.id) ? 'wait' : 'pointer',
+                                      opacity: assigningPointId === (r.rowId || r.id) ? 0.6 : 1,
+                                      maxWidth: 200
+                                    }}
+                                  >
+                                    <option value="">
+                                      {assigningPointId === (r.rowId || r.id)
+                                        ? '⏳ Asignando...'
+                                        : t('admin.delivery.modal.selectDriverPlaceholder', '-- Seleccionar Conductor --')}
                                     </option>
-                                  ))}
-                                </select>
+                                    {conductores.map(c => (
+                                      <option key={c.id} value={c.nombre}>
+                                        {c.nombre}
+                                      </option>
+                                    ))}
+                                  </select>
+                                )}
                               </td>
                               <td style={{ textAlign: 'center', fontWeight: 400 }}>
-                                {getBadge(r.estadoDomicilio)}
+                                {getBadge(r.estadoDomicilio, r.estado)}
                               </td>
                               <td style={{ textAlign: 'center', fontWeight: 400 }}>
-                                <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                                  {r.estadoDomicilio === 'ASIGNADO' && (
+                                <div style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center' }}>
+                                  {r.estado === 'cancelada' && (
+                                    <span style={{ fontSize: 12, color: '#dc2626', fontWeight: 600, background: '#fef2f2', padding: '3px 8px', borderRadius: 6, border: '1px solid #fecaca' }}>
+                                      Cancelada
+                                    </span>
+                                  )}
+                                  {r.estado === 'finalizada' && (
+                                    <span style={{ fontSize: 12, color: '#15803d', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                      <FaCheckCircle /> Finalizada
+                                    </span>
+                                  )}
+                                  {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO' && (
                                     <button
                                       type="button"
                                       onClick={() => setModalVerificar(r)}
@@ -752,13 +794,13 @@ export default function DeliveryManagementPage() {
                                       {t('admin.delivery.verifyBtn', 'Verificar PIN')}
                                     </button>
                                   )}
-                                  {r.estadoDomicilio === 'COMPLETADO' && (
+                                  {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'COMPLETADO' && (
                                     <span style={{ fontSize: 12, color: '#15803d', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                                       <FaCheckCircle />
                                       {t('admin.delivery.completedLabel', 'Entregado')}
                                     </span>
                                   )}
-                                  {r.estadoDomicilio === 'PENDIENTE' && (
+                                  {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'PENDIENTE' && (
                                     <span style={{ fontSize: 12, color: '#d97706', fontWeight: 400 }}>
                                       {t('admin.delivery.status.pendiente', 'Pendiente')}
                                     </span>
@@ -780,7 +822,7 @@ export default function DeliveryManagementPage() {
                               <span style={{ fontWeight: 400, color: 'var(--brand-primary, #2563eb)', fontSize: 13 }}>ID {i + 1}</span>
                               <span style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)', fontSize: 14 }}>{r.codigo}</span>
                             </div>
-                            {getBadge(r.estadoDomicilio)}
+                            {getBadge(r.estadoDomicilio, r.estado)}
                           </div>
 
                           <div className="doc-mobile-card-body">
@@ -834,41 +876,61 @@ export default function DeliveryManagementPage() {
 
                             <div className="doc-mobile-data-item doc-mobile-data-item--full">
                               <span className="doc-mobile-data-label">{t('admin.delivery.table.driver', 'Conductor Asignado')}</span>
-                              <select
-                                disabled={assigningPointId === (r.rowId || r.id)}
-                                value={r.domicilioConductor || ''}
-                                onChange={(e) => handleDirectSelectConductor(r, e.target.value)}
-                                style={{
-                                  width: '100%',
-                                  padding: '8px 10px',
-                                  borderRadius: 8,
-                                  border: '1.5px solid var(--city-border, #cbd5e1)',
-                                  background: 'var(--city-bg, #f8fafc)',
-                                  color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)',
-                                  fontSize: 13,
-                                  fontWeight: 400,
-                                  outline: 'none',
-                                  marginTop: 4,
-                                  cursor: assigningPointId === (r.rowId || r.id) ? 'wait' : 'pointer',
-                                  opacity: assigningPointId === (r.rowId || r.id) ? 0.6 : 1
-                                }}
-                              >
-                                <option value="">
-                                  {assigningPointId === (r.rowId || r.id)
-                                    ? '⏳ Asignando...'
-                                    : t('admin.delivery.modal.selectDriverPlaceholder', '-- Seleccionar Conductor --')}
-                                </option>
-                                {conductores.map(c => (
-                                  <option key={c.id} value={c.nombre}>
-                                    {c.nombre}
+                              {r.estado === 'cancelada' ? (
+                                <div style={{ fontSize: 13, color: '#ef4444', fontStyle: 'italic', fontWeight: 500, marginTop: 4 }}>
+                                  {r.estadoCodigo === 'CANCELLED_BY_TIMEOUT' ? 'Cancelada automáticamente (Tiempo expirado)' : 'Reserva cancelada'}
+                                </div>
+                              ) : r.estado === 'finalizada' ? (
+                                <div style={{ fontSize: 13, color: '#16a34a', fontStyle: 'italic', fontWeight: 500, marginTop: 4 }}>
+                                  {r.domicilioConductor ? `${r.domicilioConductor} (Finalizado)` : 'Servicio finalizado'}
+                                </div>
+                              ) : (
+                                <select
+                                  disabled={assigningPointId === (r.rowId || r.id) || r.estadoDomicilio === 'COMPLETADO'}
+                                  value={r.domicilioConductor || ''}
+                                  onChange={(e) => handleDirectSelectConductor(r, e.target.value)}
+                                  style={{
+                                    width: '100%',
+                                    padding: '8px 10px',
+                                    borderRadius: 8,
+                                    border: '1.5px solid var(--city-border, #cbd5e1)',
+                                    background: 'var(--city-bg, #f8fafc)',
+                                    color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)',
+                                    fontSize: 13,
+                                    fontWeight: 400,
+                                    outline: 'none',
+                                    marginTop: 4,
+                                    cursor: assigningPointId === (r.rowId || r.id) ? 'wait' : 'pointer',
+                                    opacity: assigningPointId === (r.rowId || r.id) ? 0.6 : 1
+                                  }}
+                                >
+                                  <option value="">
+                                    {assigningPointId === (r.rowId || r.id)
+                                      ? '⏳ Asignando...'
+                                      : t('admin.delivery.modal.selectDriverPlaceholder', '-- Seleccionar Conductor --')}
                                   </option>
-                                ))}
-                              </select>
+                                  {conductores.map(c => (
+                                    <option key={c.id} value={c.nombre}>
+                                      {c.nombre}
+                                    </option>
+                                  ))}
+                                </select>
+                              )}
                             </div>
                           </div>
 
                           <div className="doc-mobile-card-actions">
-                            {r.estadoDomicilio === 'ASIGNADO' && (
+                            {r.estado === 'cancelada' && (
+                              <span style={{ fontSize: 13, color: '#dc2626', fontWeight: 600, background: '#fef2f2', padding: '6px 12px', borderRadius: 8, border: '1px solid #fecaca', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%' }}>
+                                <FaTimesCircle /> Reserva Cancelada
+                              </span>
+                            )}
+                            {r.estado === 'finalizada' && (
+                              <span style={{ fontSize: 13, color: '#15803d', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%' }}>
+                                <FaCheckCircle /> Servicio Finalizado
+                              </span>
+                            )}
+                            {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO' && (
                               <button
                                 type="button"
                                 onClick={() => setModalVerificar(r)}
@@ -892,7 +954,7 @@ export default function DeliveryManagementPage() {
                                 {t('admin.delivery.verifyBtn', 'Verificar PIN')}
                               </button>
                             )}
-                            {r.estadoDomicilio === 'COMPLETADO' && (
+                            {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'COMPLETADO' && (
                               <span style={{ fontSize: 13, color: '#15803d', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
                                 <FaCheckCircle />
                                 {t('admin.delivery.completedLabel', 'Servicio Entregado')}
