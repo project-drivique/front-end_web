@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaSearch, FaMapMarkerAlt, FaUserTie, FaCalendarAlt, FaCar, FaCheckCircle, FaTimesCircle, FaKey, FaRoute, FaExclamationCircle, FaFileExcel, FaFilePdf, FaPrint, FaBuilding, FaPlus, FaEdit, FaTrashAlt, FaIdCard, FaPhone, FaEnvelope } from 'react-icons/fa'
+import { FaSearch, FaMapMarkerAlt, FaUserTie, FaCalendarAlt, FaCar, FaCheckCircle, FaTimesCircle, FaKey, FaRoute, FaExclamationCircle, FaFileExcel, FaFilePdf, FaPrint, FaBuilding, FaPlus, FaEdit, FaTrashAlt, FaIdCard, FaPhone, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
@@ -42,6 +42,7 @@ export default function DeliveryManagementPage() {
   const [modalVerificar, setModalVerificar] = useState(null)
   const [pinIngresado, setPinIngresado] = useState('')
   const [assigningPointId, setAssigningPointId] = useState(null)
+  const [revealedPins, setRevealedPins] = useState({})
 
   const [conductores, setConductores] = useState(() => deliveryService.list())
 
@@ -90,8 +91,28 @@ export default function DeliveryManagementPage() {
   const cargarConductores = () => deliveryService.refresh().then(setConductores).catch(() => setConductores([]))
 
   useEffect(() => {
-    reservationManagementService.refresh().then(loadReservations).catch(() => setReservations([]))
+    let mounted = true
+    const refreshData = () => {
+      reservationManagementService.refresh().then(() => {
+        if (mounted) loadReservations()
+      }).catch(() => {})
+    }
+
+    refreshData()
     cargarConductores()
+
+    // Auto-polling cada 12 segundos para actualizar en tiempo real si el conductor confirma o reporta desde el correo
+    const intervalId = setInterval(refreshData, 12000)
+
+    // Sincronizar inmediatamente cuando la ventana vuelve a primer plano
+    const onFocus = () => refreshData()
+    window.addEventListener('focus', onFocus)
+
+    return () => {
+      mounted = false
+      clearInterval(intervalId)
+      window.removeEventListener('focus', onFocus)
+    }
   }, [user])
 
   const handleCrearConductor = async (e) => {
@@ -173,6 +194,8 @@ export default function DeliveryManagementPage() {
     }
   }
 
+  const hoy = useMemo(() => new Date().toISOString().slice(0, 10), [])
+
   const totalPendientes = useMemo(
     () => reservations.filter((r) => r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'PENDIENTE').length,
     [reservations]
@@ -180,6 +203,14 @@ export default function DeliveryManagementPage() {
   const totalAsignados = useMemo(
     () => reservations.filter((r) => r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO').length,
     [reservations]
+  )
+  const totalEnCaminoHoy = useMemo(
+    () => reservations.filter((r) => r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO' && r.fechaEvento <= hoy).length,
+    [reservations, hoy]
+  )
+  const totalProgramados = useMemo(
+    () => reservations.filter((r) => r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO' && r.fechaEvento > hoy).length,
+    [reservations, hoy]
   )
   const totalCompletados = useMemo(
     () => reservations.filter((r) => r.estadoDomicilio === 'COMPLETADO' || r.estado === 'finalizada').length,
@@ -229,7 +260,7 @@ export default function DeliveryManagementPage() {
     }
   }
 
-  const getBadge = (estado, reservaEstado) => {
+  const getBadge = (estado, reservaEstado, fechaEvento) => {
     if (reservaEstado === 'cancelada' || estado === 'CANCELADO') {
       return (
         <span className="doc-status-badge rechazada" style={{ background: '#fef2f2', color: '#b91c1c', borderColor: '#fecaca' }}>
@@ -247,9 +278,18 @@ export default function DeliveryManagementPage() {
       )
     }
     if (estado === 'ASIGNADO') {
+      const esFuturo = fechaEvento && fechaEvento > hoy
+      if (esFuturo) {
+        return (
+          <span className="doc-status-badge" style={{ background: '#f8fafc', color: '#475569', borderColor: '#cbd5e1' }}>
+            <FaCalendarAlt style={{ fontSize: 11, color: '#2563eb' }} />
+            {t('admin.delivery.status.programado', 'Programado')}
+          </span>
+        )
+      }
       return (
         <span className="doc-status-badge pendiente" style={{ background: 'var(--brand-soft)', color: 'var(--brand-text)', borderColor: 'var(--brand-border)' }}>
-          <FaUserTie style={{ fontSize: 11 }} />
+          <FaRoute style={{ fontSize: 11 }} />
           {t('admin.delivery.status.asignado', 'En Camino')}
         </span>
       )
@@ -396,7 +436,7 @@ export default function DeliveryManagementPage() {
           <div className="cash-kpi-bar">
             {[
               { icon: FaExclamationCircle, color: '#f59e0b', label: t('admin.delivery.kpi.pending', 'Pendientes de Asignar'), value: totalPendientes, desc: t('admin.delivery.kpi.pendingDesc', 'Sin conductor asignado') },
-              { icon: FaRoute, color: 'var(--brand-text)', label: t('admin.delivery.kpi.assigned', 'En Camino'), value: totalAsignados, desc: t('admin.delivery.kpi.assignedDesc', 'Con conductor asignado') },
+              { icon: FaRoute, color: 'var(--brand-text)', label: t('admin.delivery.kpi.assigned', 'En Camino / Programados'), value: totalAsignados, desc: `${totalEnCaminoHoy} en camino hoy · ${totalProgramados} programados` },
               { icon: FaCheckCircle, color: '#10b981', label: t('admin.delivery.kpi.completed', 'Entregados'), value: totalCompletados, desc: t('admin.delivery.kpi.completedDesc', 'Servicios finalizados') },
               { icon: FaUserTie, color: '#8b5cf6', label: t('admin.delivery.kpi.drivers', 'Conductores Registrados'), value: conductores.length, desc: t('admin.delivery.kpi.driversDesc', 'Personal disponible en sucursal') },
             ].map(({ icon: Icon, color, label, value, desc }) => (
@@ -435,7 +475,7 @@ export default function DeliveryManagementPage() {
                 onClick={() => setActiveTab('asignados')}
                 className={`fleet-tab-btn ${activeTab === 'asignados' ? 'is-active' : ''}`}
               >
-                {t('admin.delivery.tabs.assigned', 'En Camino')} ({totalAsignados})
+                {t('admin.delivery.tabs.assigned', 'Conductores Asignados')} ({totalAsignados})
               </button>
               <button
                 type="button"
@@ -675,20 +715,68 @@ export default function DeliveryManagementPage() {
                               <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)', width: '35px' }}>{i + 1}</td>
                               <td style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)' }}>{r.codigo}</td>
                               <td style={{ textAlign: 'center' }}>
-                                <span style={{
-                                  fontFamily: "'Courier New', Courier, monospace",
-                                  fontWeight: 800,
-                                  fontSize: 14,
-                                  letterSpacing: '2.5px',
-                                  color: 'var(--brand-primary, #1e3a8a)',
-                                  background: 'var(--brand-soft-light, #eff6ff)',
-                                  padding: '4px 10px',
-                                  borderRadius: 8,
-                                  border: '1.5px dashed var(--brand-border-light, #cbd5e1)',
-                                  display: 'inline-block',
-                                }}>
-                                  {r.domicilioCodigo}
-                                </span>
+                                {(() => {
+                                  const esFuturo = r.fechaEvento && r.fechaEvento > hoy
+                                  if (esFuturo) {
+                                    return (
+                                      <span
+                                        title={`PIN protegido por seguridad hasta el día de la entrega (${r.fechaEvento})`}
+                                        style={{
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: 6,
+                                          fontFamily: "'Courier New', Courier, monospace",
+                                          fontWeight: 700,
+                                          fontSize: 12.5,
+                                          color: '#64748b',
+                                          background: '#f8fafc',
+                                          padding: '4px 10px',
+                                          borderRadius: 8,
+                                          border: '1px solid #e2e8f0',
+                                        }}
+                                      >
+                                        <FaLock style={{ fontSize: 10, color: '#94a3b8' }} />
+                                        ••••••
+                                      </span>
+                                    )
+                                  }
+                                  const isRevealed = Boolean(revealedPins[r.rowId || r.id])
+                                  return (
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                      <span style={{
+                                        fontFamily: "'Courier New', Courier, monospace",
+                                        fontWeight: 800,
+                                        fontSize: 14,
+                                        letterSpacing: '2.5px',
+                                        color: 'var(--brand-primary, #1e3a8a)',
+                                        background: 'var(--brand-soft-light, #eff6ff)',
+                                        padding: '4px 10px',
+                                        borderRadius: 8,
+                                        border: '1.5px dashed var(--brand-border-light, #cbd5e1)',
+                                        display: 'inline-block',
+                                      }}>
+                                        {isRevealed ? r.domicilioCodigo : '••••••'}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setRevealedPins(prev => ({ ...prev, [r.rowId || r.id]: !prev[r.rowId || r.id] }))}
+                                        title={isRevealed ? 'Ocultar PIN' : 'Revelar PIN de entrega'}
+                                        style={{
+                                          border: 'none',
+                                          background: 'transparent',
+                                          cursor: 'pointer',
+                                          color: 'var(--brand-primary, #2563eb)',
+                                          padding: '4px',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          fontSize: 13,
+                                        }}
+                                      >
+                                        {isRevealed ? <FaEyeSlash /> : <FaEye />}
+                                      </button>
+                                    </div>
+                                  )
+                                })()}
                               </td>
                               <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>{r.clienteNombre}</td>
                               <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>{r.vehiculoNombre || r.vehiculo?.nombre || '-'}</td>
@@ -755,7 +843,7 @@ export default function DeliveryManagementPage() {
                                 )}
                               </td>
                               <td style={{ textAlign: 'center', fontWeight: 400 }}>
-                                {getBadge(r.estadoDomicilio, r.estado)}
+                                {getBadge(r.estadoDomicilio, r.estado, r.fechaEvento)}
                               </td>
                               <td style={{ textAlign: 'center', fontWeight: 400 }}>
                                 <div style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center' }}>
@@ -770,29 +858,61 @@ export default function DeliveryManagementPage() {
                                     </span>
                                   )}
                                   {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO' && (
-                                    <button
-                                      type="button"
-                                      onClick={() => setModalVerificar(r)}
-                                      style={{
-                                        padding: '6px 16px',
-                                        borderRadius: '9999px',
-                                        background: '#16a34a',
-                                        color: 'var(--city-card, #ffffff)',
-                                        border: 'none',
-                                        fontWeight: 700,
-                                        fontSize: '12px',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 5px rgba(22, 163, 74, 0.25)',
-                                        transition: 'all 0.2s',
-                                        whiteSpace: 'nowrap',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: 6,
-                                      }}
-                                    >
-                                      <FaKey style={{ fontSize: 11 }} />
-                                      {t('admin.delivery.verifyBtn', 'Verificar PIN')}
-                                    </button>
+                                    (() => {
+                                      const esFuturo = r.fechaEvento && r.fechaEvento > hoy
+                                      if (esFuturo) {
+                                        return (
+                                          <button
+                                            type="button"
+                                            disabled
+                                            title={`Disponible el día de la entrega (${r.fechaEvento})`}
+                                            style={{
+                                              padding: '6px 14px',
+                                              borderRadius: '9999px',
+                                              background: '#f1f5f9',
+                                              color: '#64748b',
+                                              border: '1px solid #cbd5e1',
+                                              fontWeight: 600,
+                                              fontSize: '11.5px',
+                                              cursor: 'not-allowed',
+                                              whiteSpace: 'nowrap',
+                                              display: 'inline-flex',
+                                              alignItems: 'center',
+                                              gap: 6,
+                                              opacity: 0.85,
+                                            }}
+                                          >
+                                            <FaLock style={{ fontSize: 10, color: '#94a3b8' }} />
+                                            <span>Habilita el {r.fechaEvento}</span>
+                                          </button>
+                                        )
+                                      }
+                                      return (
+                                        <button
+                                          type="button"
+                                          onClick={() => setModalVerificar(r)}
+                                          style={{
+                                            padding: '6px 16px',
+                                            borderRadius: '9999px',
+                                            background: '#16a34a',
+                                            color: 'var(--city-card, #ffffff)',
+                                            border: 'none',
+                                            fontWeight: 700,
+                                            fontSize: '12px',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 2px 5px rgba(22, 163, 74, 0.25)',
+                                            transition: 'all 0.2s',
+                                            whiteSpace: 'nowrap',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: 6,
+                                          }}
+                                        >
+                                          <FaKey style={{ fontSize: 11 }} />
+                                          {t('admin.delivery.verifyBtn', 'Verificar PIN')}
+                                        </button>
+                                      )
+                                    })()
                                   )}
                                   {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'COMPLETADO' && (
                                     <span style={{ fontSize: 12, color: '#15803d', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
@@ -822,7 +942,7 @@ export default function DeliveryManagementPage() {
                               <span style={{ fontWeight: 400, color: 'var(--brand-primary, #2563eb)', fontSize: 13 }}>ID {i + 1}</span>
                               <span style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)', fontSize: 14 }}>{r.codigo}</span>
                             </div>
-                            {getBadge(r.estadoDomicilio, r.estado)}
+                            {getBadge(r.estadoDomicilio, r.estado, r.fechaEvento)}
                           </div>
 
                           <div className="doc-mobile-card-body">
@@ -834,19 +954,66 @@ export default function DeliveryManagementPage() {
                             <div className="doc-mobile-data-item doc-mobile-data-item--full">
                               <span className="doc-mobile-data-label">{t('admin.delivery.table.deliveryCode', 'Código Domicilio (PIN)')}</span>
                               <span className="doc-mobile-data-value">
-                                <span style={{
-                                  fontFamily: "'Courier New', Courier, monospace",
-                                  fontWeight: 800,
-                                  fontSize: 14,
-                                  letterSpacing: '2.5px',
-                                  color: 'var(--brand-primary, #1e3a8a)',
-                                  background: 'var(--brand-soft-light, #eff6ff)',
-                                  padding: '3px 10px',
-                                  borderRadius: 8,
-                                  border: '1.5px dashed var(--brand-border-light, #cbd5e1)',
-                                }}>
-                                  {r.domicilioCodigo}
-                                </span>
+                                {(() => {
+                                  const esFuturo = r.fechaEvento && r.fechaEvento > hoy
+                                  if (esFuturo) {
+                                    return (
+                                      <span
+                                        title={`PIN protegido hasta el día de la entrega (${r.fechaEvento})`}
+                                        style={{
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: 6,
+                                          fontFamily: "'Courier New', Courier, monospace",
+                                          fontWeight: 700,
+                                          fontSize: 13,
+                                          color: '#64748b',
+                                          background: '#f8fafc',
+                                          padding: '4px 10px',
+                                          borderRadius: 8,
+                                          border: '1px solid #e2e8f0',
+                                        }}
+                                      >
+                                        <FaLock style={{ fontSize: 11, color: '#94a3b8' }} />
+                                        •••••• (Protegido hasta {r.fechaEvento})
+                                      </span>
+                                    )
+                                  }
+                                  const isRevealed = Boolean(revealedPins[r.rowId || r.id])
+                                  return (
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                      <span style={{
+                                        fontFamily: "'Courier New', Courier, monospace",
+                                        fontWeight: 800,
+                                        fontSize: 14,
+                                        letterSpacing: '2.5px',
+                                        color: 'var(--brand-primary, #1e3a8a)',
+                                        background: 'var(--brand-soft-light, #eff6ff)',
+                                        padding: '3px 10px',
+                                        borderRadius: 8,
+                                        border: '1.5px dashed var(--brand-border-light, #cbd5e1)',
+                                      }}>
+                                        {isRevealed ? r.domicilioCodigo : '••••••'}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setRevealedPins(prev => ({ ...prev, [r.rowId || r.id]: !prev[r.rowId || r.id] }))}
+                                        style={{
+                                          border: 'none',
+                                          background: 'transparent',
+                                          cursor: 'pointer',
+                                          color: 'var(--brand-primary, #2563eb)',
+                                          padding: '4px',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          fontSize: 15,
+                                        }}
+                                      >
+                                        {isRevealed ? <FaEyeSlash /> : <FaEye />}
+                                      </button>
+                                    </div>
+                                  )
+                                })()}
                               </span>
                             </div>
 
@@ -931,28 +1098,61 @@ export default function DeliveryManagementPage() {
                               </span>
                             )}
                             {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO' && (
-                              <button
-                                type="button"
-                                onClick={() => setModalVerificar(r)}
-                                style={{
-                                  width: '100%',
-                                  padding: '9px 18px',
-                                  borderRadius: '12px',
-                                  background: '#16a34a',
-                                  color: 'var(--city-card, #ffffff)',
-                                  border: 'none',
-                                  fontWeight: 700,
-                                  fontSize: '13px',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  gap: 8,
-                                }}
-                              >
-                                <FaKey style={{ fontSize: 12 }} />
-                                {t('admin.delivery.verifyBtn', 'Verificar PIN')}
-                              </button>
+                              (() => {
+                                const esFuturo = r.fechaEvento && r.fechaEvento > hoy
+                                if (esFuturo) {
+                                  return (
+                                    <button
+                                      type="button"
+                                      disabled
+                                      title={`Disponible el día de la entrega (${r.fechaEvento})`}
+                                      style={{
+                                        width: '100%',
+                                        padding: '9px 18px',
+                                        borderRadius: '12px',
+                                        background: '#f1f5f9',
+                                        color: '#64748b',
+                                        border: '1px solid #cbd5e1',
+                                        fontWeight: 600,
+                                        fontSize: '12px',
+                                        cursor: 'not-allowed',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 8,
+                                        opacity: 0.85,
+                                      }}
+                                    >
+                                      <FaLock style={{ fontSize: 11, color: '#94a3b8' }} />
+                                      <span>Verificación bloqueada hasta el {r.fechaEvento}</span>
+                                    </button>
+                                  )
+                                }
+                                return (
+                                  <button
+                                    type="button"
+                                    onClick={() => setModalVerificar(r)}
+                                    style={{
+                                      width: '100%',
+                                      padding: '9px 18px',
+                                      borderRadius: '12px',
+                                      background: '#16a34a',
+                                      color: 'var(--city-card, #ffffff)',
+                                      border: 'none',
+                                      fontWeight: 700,
+                                      fontSize: '13px',
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      gap: 8,
+                                    }}
+                                  >
+                                    <FaKey style={{ fontSize: 12 }} />
+                                    {t('admin.delivery.verifyBtn', 'Verificar PIN')}
+                                  </button>
+                                )
+                              })()
                             )}
                             {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'COMPLETADO' && (
                               <span style={{ fontSize: 13, color: '#15803d', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
