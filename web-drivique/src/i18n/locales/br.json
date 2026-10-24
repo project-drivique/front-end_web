@@ -5667,5 +5667,20 @@
     "docs_en_revision_texto": "Sua reserva foi salva. A filial está revisando seus documentos: você poderá pagar quando forem aprovados e avisaremos por notificação.",
     "docs_en_revision_titulo": "Documentos em revisão",
     "docs_en_revision_alerta": "A filial ainda está revisando seus documentos. Você poderá pagar quando forem aprovados."
+  },
+  "captcha": {
+    "title": "Verificação de Segurança",
+    "antiBotBadge": "Anti-bot",
+    "verifiedBadge": "Verificado ✓",
+    "promptDesc": "Digite os 5 caracteres da imagem para confirmar que você é uma pessoa.",
+    "verifiedDesc": "Verificação concluída. Você já pode confirmar sua reserva.",
+    "successLabel": "Humano verificado com sucesso",
+    "reset": "Alterar",
+    "placeholder": "Digite o código",
+    "validateBtn": "Verificar",
+    "refreshTooltip": "Gerar novo código",
+    "emptyCode": "Por favor digite o código de segurança.",
+    "invalidCode": "Código incorreto. Geramos um novo.",
+    "mustVerify": "Você deve concluir a verificação de segurança antes de confirmar a reserva."
   }
 }
