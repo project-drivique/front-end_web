@@ -3948,7 +3948,13 @@
     "noCouponsForVehicle": "No hay cupones disponibles para este vehículo en este momento.",
     "emptyTitle": "No hay cupones activos disponibles para este vehículo en este momento",
     "allVehicles": "Todos los vehículos",
-    "couponRejected": "El cupón no se pudo aplicar a esta reserva."
+    "couponRejected": "El cupón no se pudo aplicar a esta reserva.",
+    "couponCannotBeApplied": "No se pudo aplicar el cupón",
+    "couponRejectedDefault": "Este cupón no se pudo aplicar a tu reserva. Es posible que ya lo hayas utilizado o no cumpla los requisitos de la reserva.",
+    "alreadyUsed": "Ya has utilizado este cupón en una reserva anterior.",
+    "notActive": "El cupón no se encuentra activo o ha expirado.",
+    "limitReached": "Este cupón ha alcanzado el límite máximo de usos disponibles.",
+    "conditionsNotMet": "La reserva no cumple las condiciones mínimas requeridas para este cupón."
   },
   "placeholder": {
     "title": "Aún falta implementar esta pantalla",
@@ -5663,5 +5669,24 @@
     "docs_en_revision_texto": "Tu reserva quedó guardada. La sucursal está revisando tus documentos: podrás pagar cuando los aprueben y te avisaremos por notificación.",
     "docs_en_revision_titulo": "Documentos en revisión",
     "docs_en_revision_alerta": "La sucursal aún está revisando tus documentos. Podrás pagar cuando sean aprobados."
+  },
+  "captcha": {
+    "title": "Verificación de Seguridad",
+    "antiBotBadge": "Anti-bot",
+    "verifiedBadge": "Verificado ✓",
+    "promptDesc": "Ingresa los 5 caracteres de la imagen para confirmar que eres una persona.",
+    "verifiedDesc": "Verificación completada. Ya puedes confirmar tu reserva.",
+    "successLabel": "Humano verificado con éxito",
+    "verifyHuman": "Confirmar que soy una persona",
+    "verifying": "Verificando seguridad...",
+    "clickToVerify": "Haz clic en la casilla para verificar seguridad",
+    "privacy": "Seguridad",
+    "reset": "Cambiar",
+    "placeholder": "Ingresa el código",
+    "validateBtn": "Verificar",
+    "refreshTooltip": "Generar nuevo código",
+    "emptyCode": "Por favor ingresa el código de seguridad.",
+    "invalidCode": "Código incorrecto. Generamos uno nuevo.",
+    "mustVerify": "Debes completar la verificación de seguridad antes de confirmar la reserva."
   }
 }
