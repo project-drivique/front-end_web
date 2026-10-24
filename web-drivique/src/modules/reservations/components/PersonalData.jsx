@@ -7,6 +7,7 @@ import { formatCurrency } from '@/utils/currencyUtils';
 import { getNombreTipoDoc, getSiglaDoc } from '@/utils/documentUtils';
 import { FaUser, FaIdCard, FaCheckCircle, FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
 import paisesMock from '@/config/datos/nationalities.json';
+import SecurityCaptcha from './SecurityCaptcha';
 
 const getPrefijoPais = (nacionalidad) => {
   if (!nacionalidad) return '';
@@ -169,6 +170,7 @@ export default function DatosPersonales({
   errores,
   docsVerificados,
   cotizacion,
+  procesando = false,
   c
 }) {
   const navigate = useNavigate();
@@ -184,6 +186,25 @@ export default function DatosPersonales({
   const [licenciaError, setLicenciaError] = useState('');
   const [cedulaCargando, setCedulaCargando] = useState(false);
   const [licenciaCargando, setLicenciaCargando] = useState(false);
+
+  // Estado y referencia para la verificación CAPTCHA anti-bot
+  const [captchaVerificado, setCaptchaVerificado] = useState(false);
+  const [errorCaptcha, setErrorCaptcha] = useState(false);
+  const captchaRef = useRef(null);
+
+  const handleConfirmarConCaptcha = () => {
+    if (!captchaVerificado) {
+      setErrorCaptcha(true);
+      if (captchaRef.current) {
+        captchaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+    setErrorCaptcha(false);
+    if (onReservar) {
+      onReservar();
+    }
+  };
 
   const handleTermsScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -753,6 +774,19 @@ export default function DatosPersonales({
         </p>
       </div>
 
+      {/* ── Verificación de Seguridad Anti-Bot (CAPTCHA) ── */}
+      <div ref={captchaRef} style={{ marginBottom: 20 }}>
+        <SecurityCaptcha
+          isVerified={captchaVerificado}
+          onVerified={(verified) => {
+            setCaptchaVerificado(verified);
+            if (verified) setErrorCaptcha(false);
+          }}
+          hasError={errorCaptcha}
+          c={c}
+        />
+      </div>
+
       {/* ── Tarjeta Total a Pagar y Acciones ── */}
       <div style={{
         background: 'var(--brand-gradient)',
@@ -810,7 +844,8 @@ export default function DatosPersonales({
         }}>
           <button
             type="button"
-            onClick={onReservar}
+            onClick={procesando ? undefined : handleConfirmarConCaptcha}
+            disabled={procesando}
             style={{
               width: '100%',
               height: 44,
@@ -820,7 +855,8 @@ export default function DatosPersonales({
               borderRadius: 12,
               fontWeight: 800,
               fontSize: 14,
-              cursor: 'pointer',
+              cursor: procesando ? 'not-allowed' : 'pointer',
+              opacity: procesando ? 0.75 : 1,
               boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)',
               transition: 'all 0.2s',
               display: 'flex',
@@ -829,10 +865,20 @@ export default function DatosPersonales({
               padding: '0 16px',
               boxSizing: 'border-box'
             }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+            onMouseEnter={e => { if (!procesando) e.currentTarget.style.transform = 'translateY(-1px)' }}
+            onMouseLeave={e => { if (!procesando) e.currentTarget.style.transform = 'translateY(0)' }}
           >
-            {t('vehiculo.confirmReserve', 'Confirmar reserva')}
+            {procesando ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <svg className="animate-spin" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                <span>{t('vehiculo.processingReserve', 'Confirmando reserva...')}</span>
+              </span>
+            ) : (
+              t('vehiculo.confirmReserve', 'Confirmar reserva')
+            )}
           </button>
 
           <button
