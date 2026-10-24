@@ -292,9 +292,12 @@ export function useReservationFlow() {
       .then((respuesta) => {
         if (!activo) return
         const documentos = Array.isArray(respuesta) ? respuesta : (respuesta?.documents || [])
-        const aprobados = documentos.filter((doc) => String(doc.statusCode || '').toUpperCase() === 'APPROVED')
-        const tieneIdentidad = aprobados.some((doc) => String(doc.documentType?.code || '').toUpperCase() !== 'DRIVER_LICENSE')
-        const tieneLicencia = aprobados.some((doc) => String(doc.documentType?.code || '').toUpperCase() === 'DRIVER_LICENSE')
+        const validos = documentos.filter((doc) => {
+          const st = String(doc.statusCode || '').toUpperCase()
+          return st === 'APPROVED' || st === 'PENDING'
+        })
+        const tieneIdentidad = validos.some((doc) => String(doc.documentType?.code || '').toUpperCase() !== 'DRIVER_LICENSE')
+        const tieneLicencia = validos.some((doc) => String(doc.documentType?.code || '').toUpperCase() === 'DRIVER_LICENSE')
         setDocsVerificados(tieneIdentidad && tieneLicencia)
       })
       .catch(() => activo && setDocsVerificados(false))
