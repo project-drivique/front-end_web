@@ -203,7 +203,7 @@ export default function VehicleDetailsModal({
           >
             {/* 3 Equal Width Columns Grid */}
             <div className="vehiculo-detail-grid">
-              {/* Col 1: Galería + Sucursal + Pico y Placa */}
+              {/* Col 1: Galería + Sucursal */}
               <div className="vehiculo-col-left">
                 <div className="vdm-block-gallery">
                   <ImageGallery
@@ -217,13 +217,9 @@ export default function VehicleDetailsModal({
                 <div className="vdm-block-branch">
                   <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
                 </div>
-
-                <div className="vdm-block-picoplaca">
-                  <PicoYPlacaCard c={c} />
-                </div>
               </div>
 
-              {/* Col 2: Descripción + Seguros + Equipamiento + Requisitos */}
+              {/* Col 2: Descripción + Seguros + Equipamiento + Requisitos + Pico y Placa */}
               <div className="vehiculo-col-center">
                 <div className="vdm-block-description">
                   <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
@@ -251,6 +247,10 @@ export default function VehicleDetailsModal({
 
                 <div className="vdm-block-requirements">
                   <RentalRequirements c={c} />
+                </div>
+
+                <div className="vdm-block-picoplaca">
+                  <PicoYPlacaCard c={c} />
                 </div>
               </div>
 

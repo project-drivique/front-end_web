@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FaSearch, FaMapMarkerAlt, FaUserTie, FaCalendarAlt, FaCar, FaCheckCircle, FaKey, FaRoute, FaExclamationCircle, FaFileExcel, FaFilePdf, FaPrint, FaBuilding, FaPlus, FaEdit, FaTrashAlt } from 'react-icons/fa'
+import { FaSearch, FaMapMarkerAlt, FaUserTie, FaCalendarAlt, FaCar, FaCheckCircle, FaTimesCircle, FaKey, FaRoute, FaExclamationCircle, FaFileExcel, FaFilePdf, FaPrint, FaBuilding, FaPlus, FaEdit, FaTrashAlt, FaIdCard, FaPhone, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
@@ -22,7 +22,6 @@ const INITIAL_CONDUCTOR = {
   categoriaLic: 'B1',
   vencimientoLic: '',
   telefono: '',
-  vehiculo: '',
   estado: 'disponible'
 }
 
@@ -42,6 +41,8 @@ export default function DeliveryManagementPage() {
   const [editingConductor, setEditingConductor] = useState(null)
   const [modalVerificar, setModalVerificar] = useState(null)
   const [pinIngresado, setPinIngresado] = useState('')
+  const [assigningPointId, setAssigningPointId] = useState(null)
+  const [revealedPins, setRevealedPins] = useState({})
 
   const [conductores, setConductores] = useState(() => deliveryService.list())
 
@@ -52,7 +53,10 @@ export default function DeliveryManagementPage() {
   const loadReservations = () => {
     const all = reservationManagementService.list(user)
     const filas = []
-    all.filter((r) => r.estado !== 'cancelada').forEach((r) => {
+    all.forEach((r) => {
+      const puntoRecogida = (r.domicilioPuntos || []).find((p) => p.tipo === 'PICKUP')
+      const puntoDevolucion = (r.domicilioPuntos || []).find((p) => p.tipo === 'RETURN')
+
       ;(r.domicilioPuntos || []).forEach((p) => {
         const esEntrega = p.tipo === 'PICKUP'
         filas.push({
@@ -64,7 +68,17 @@ export default function DeliveryManagementPage() {
             : t('admin.delivery.serviceTypes.return', 'Devolucion a Domicilio'),
           direccionInfo: p.direccion || 'No registrada',
           fechaEvento: esEntrega ? r.fechaInicio : r.fechaFin,
-          domicilioCodigo: `DOM-${String(p.id).slice(0, 6).toUpperCase()}`,
+          // Campos separados para Recogida
+          direccionRecogida: puntoRecogida ? (puntoRecogida.direccion || 'No registrada') : 'No aplica',
+          fechaRecogida: puntoRecogida ? (r.fechaInicio || '—') : 'No aplica',
+          horaRecogida: puntoRecogida ? (r.horaInicio || '—') : 'No aplica',
+          // Campos separados para Devolución
+          direccionDevolucion: puntoDevolucion ? (puntoDevolucion.direccion || 'No registrada') : 'No aplica',
+          fechaDevolucion: puntoDevolucion ? (r.fechaFin || '—') : 'No aplica',
+          horaDevolucion: puntoDevolucion ? (r.horaFin || '—') : 'No aplica',
+
+          domicilioCodigo: p.deliveryPin || '—',
+          domicilioPin: p.deliveryPin || '—',
           domicilioConductor: p.conductor,
           domicilioConductorId: p.conductorId,
           estadoDomicilio: ESTADO_DOMICILIO[p.estado] || 'PENDIENTE',
@@ -77,8 +91,28 @@ export default function DeliveryManagementPage() {
   const cargarConductores = () => deliveryService.refresh().then(setConductores).catch(() => setConductores([]))
 
   useEffect(() => {
-    reservationManagementService.refresh().then(loadReservations).catch(() => setReservations([]))
+    let mounted = true
+    const refreshData = () => {
+      reservationManagementService.refresh().then(() => {
+        if (mounted) loadReservations()
+      }).catch(() => {})
+    }
+
+    refreshData()
     cargarConductores()
+
+    // Auto-polling cada 12 segundos para actualizar en tiempo real si el conductor confirma o reporta desde el correo
+    const intervalId = setInterval(refreshData, 12000)
+
+    // Sincronizar inmediatamente cuando la ventana vuelve a primer plano
+    const onFocus = () => refreshData()
+    window.addEventListener('focus', onFocus)
+
+    return () => {
+      mounted = false
+      clearInterval(intervalId)
+      window.removeEventListener('focus', onFocus)
+    }
   }, [user])
 
   const handleCrearConductor = async (e) => {
@@ -113,7 +147,6 @@ export default function DeliveryManagementPage() {
       categoriaLic: cond.categoriaLic || 'B1',
       vencimientoLic: cond.vencimientoLic || '',
       telefono: cond.telefono || '',
-      vehiculo: cond.vehiculo || '',
       estado: cond.estado || 'disponible'
     })
     setModalConductor(true)
@@ -140,29 +173,60 @@ export default function DeliveryManagementPage() {
 
   const handleDirectSelectConductor = async (reserva, nombreConductor) => {
     if (!nombreConductor) return
+    const rowKey = reserva.rowId || reserva.id
+    if (assigningPointId === rowKey) return
+    setAssigningPointId(rowKey)
     try {
       const conductorObj = conductores.find(c => c.nombre === nombreConductor)
+      if (!conductorObj) return
       await deliveryService.assign(reserva.id, reserva.puntoTipo, conductorObj.id)
       await reservationManagementService.refresh()
       showAlert({
         icon: 'success',
         title: t('admin.delivery.modal.assignSuccess', 'Conductor asignado'),
-        text: t('hc3.driver_assigned_msg', { defaultValue: 'Conductor: {{conductor}}. El cliente y el conductor reciben el PIN por correo; el conductor confirma o rechaza desde su correo.', conductor: nombreConductor })
+        text: t('hc3.driver_assigned_msg', { defaultValue: 'Conductor: {{conductor}}. El cliente y el conductor reciben el código de confirmación por correo; el conductor confirma o rechaza desde su correo.', conductor: nombreConductor })
       })
       loadReservations()
     } catch (err) {
       showAlert({ icon: 'error', title: t('hc4.error', 'Error'), text: err.message })
+    } finally {
+      setAssigningPointId(null)
     }
   }
 
-  const totalPendientes = useMemo(() => reservations.filter(r => r.estadoDomicilio === 'PENDIENTE').length, [reservations])
-  const totalAsignados = useMemo(() => reservations.filter(r => r.estadoDomicilio === 'ASIGNADO').length, [reservations])
-  const totalCompletados = useMemo(() => reservations.filter(r => r.estadoDomicilio === 'COMPLETADO').length, [reservations])
+  const hoy = useMemo(() => new Date().toISOString().slice(0, 10), [])
+
+  const totalPendientes = useMemo(
+    () => reservations.filter((r) => r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'PENDIENTE').length,
+    [reservations]
+  )
+  const totalAsignados = useMemo(
+    () => reservations.filter((r) => r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO').length,
+    [reservations]
+  )
+  const totalEnCaminoHoy = useMemo(
+    () => reservations.filter((r) => r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO' && r.fechaEvento <= hoy).length,
+    [reservations, hoy]
+  )
+  const totalProgramados = useMemo(
+    () => reservations.filter((r) => r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO' && r.fechaEvento > hoy).length,
+    [reservations, hoy]
+  )
+  const totalCompletados = useMemo(
+    () => reservations.filter((r) => r.estadoDomicilio === 'COMPLETADO' || r.estado === 'finalizada').length,
+    [reservations]
+  )
 
   const filtrados = useMemo(() => reservations.filter(r => {
-    if (activeTab === 'pendientes' && r.estadoDomicilio !== 'PENDIENTE') return false
-    if (activeTab === 'asignados' && r.estadoDomicilio !== 'ASIGNADO') return false
-    if (activeTab === 'completados' && r.estadoDomicilio !== 'COMPLETADO') return false
+    if (activeTab === 'pendientes') {
+      return r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'PENDIENTE'
+    }
+    if (activeTab === 'asignados') {
+      return r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO'
+    }
+    if (activeTab === 'completados') {
+      return r.estadoDomicilio === 'COMPLETADO' || r.estado === 'finalizada'
+    }
     if (search && activeTab !== 'conductores') {
       const lower = search.toLowerCase()
       return r.codigo?.toLowerCase().includes(lower) || r.domicilioCodigo?.toLowerCase().includes(lower) || r.vehiculoNombre?.toLowerCase().includes(lower) || r.vehiculoPlaca?.toLowerCase().includes(lower) || r.clienteNombre?.toLowerCase().includes(lower) || r.domicilioConductor?.toLowerCase().includes(lower)
@@ -196,9 +260,16 @@ export default function DeliveryManagementPage() {
     }
   }
 
-  const getBadge = (estado) => {
-    const norm = String(estado || 'PENDIENTE').toUpperCase()
-    if (norm === 'COMPLETADO') {
+  const getBadge = (estado, reservaEstado, fechaEvento) => {
+    if (reservaEstado === 'cancelada' || estado === 'CANCELADO') {
+      return (
+        <span className="doc-status-badge rechazada" style={{ background: '#fef2f2', color: '#b91c1c', borderColor: '#fecaca' }}>
+          <FaTimesCircle style={{ fontSize: 11 }} />
+          {t('admin.delivery.status.cancelada', 'Cancelada')}
+        </span>
+      )
+    }
+    if (reservaEstado === 'finalizada' || estado === 'COMPLETADO') {
       return (
         <span className="doc-status-badge aprobado">
           <FaCheckCircle style={{ fontSize: 11 }} />
@@ -206,10 +277,19 @@ export default function DeliveryManagementPage() {
         </span>
       )
     }
-    if (norm === 'ASIGNADO') {
+    if (estado === 'ASIGNADO') {
+      const esFuturo = fechaEvento && fechaEvento > hoy
+      if (esFuturo) {
+        return (
+          <span className="doc-status-badge" style={{ background: '#f8fafc', color: '#475569', borderColor: '#cbd5e1' }}>
+            <FaCalendarAlt style={{ fontSize: 11, color: '#2563eb' }} />
+            {t('admin.delivery.status.programado', 'Programado')}
+          </span>
+        )
+      }
       return (
         <span className="doc-status-badge pendiente" style={{ background: 'var(--brand-soft)', color: 'var(--brand-text)', borderColor: 'var(--brand-border)' }}>
-          <FaUserTie style={{ fontSize: 11 }} />
+          <FaRoute style={{ fontSize: 11 }} />
           {t('admin.delivery.status.asignado', 'En Camino')}
         </span>
       )
@@ -251,36 +331,77 @@ export default function DeliveryManagementPage() {
 
   const exportData = useMemo(() => {
     if (activeTab === 'conductores') {
-      return conductoresFiltrados.map((c, i) => [
-        i + 1,
-        c.nombre,
-        c.email || '-',
-        c.tipoDoc || 'CC',
-        c.numDoc || '-',
-        c.licencia || '-',
-        c.categoriaLic || '-',
-        c.vencimientoLic || '-',
-        c.telefono || '-',
-        c.vehiculo || t('hc2.sin_asignar', 'Sin asignar'),
-        c.estado || 'disponible'
-      ])
+      return {
+        title: 'Conductores Registrados en Sucursal — Drivique',
+        headers: [
+          'ID',
+          'NOMBRE CONDUCTOR',
+          'CORREO ELECTRÓNICO',
+          'TIPO DOC',
+          'NÚMERO DOC',
+          'NÚMERO LICENCIA',
+          'CATEGORÍA LICENCIA',
+          'VENCIMIENTO LICENCIA',
+          'TELÉFONO',
+          'VEHÍCULO ASIGNADO',
+          'ESTADO',
+        ],
+        rows: conductoresFiltrados.map((c, i) => [
+          i + 1,
+          c.nombre,
+          c.email || '-',
+          c.tipoDoc || 'CC',
+          c.numDoc || '-',
+          c.licencia || '-',
+          c.categoriaLic || '-',
+          c.vencimientoLic || '-',
+          c.telefono || '-',
+          c.vehiculo || t('hc2.sin_asignar', 'Sin asignar'),
+          c.estado || 'disponible',
+        ]),
+        filename: `conductores-sucursal-${new Date().toISOString().slice(0, 10)}`,
+      }
     }
-    return filtrados.map((r, i) => [
-      i + 1,
-      r.codigo,
-      r.domicilioCodigo,
-      r.clienteNombre,
-      r.vehiculoNombre || r.vehiculo?.nombre || '-',
-      r.tipoServicio,
-      r.direccionInfo,
-      r.fechaEvento ? new Date(r.fechaEvento).toLocaleDateString() : '-',
-      r.domicilioConductor || t('admin.delivery.noDriver', 'Sin asignar'),
-      r.estadoDomicilio || 'PENDIENTE'
-    ])
+    return {
+      title: 'Domicilios y Entregas de Reserva — Drivique',
+      headers: [
+        'ID',
+        'CÓDIGO RESERVA',
+        'CÓDIGO DOMICILIO (PIN)',
+        'NOMBRE CLIENTE',
+        'VEHÍCULO',
+        'TIPO SERVICIO',
+        'DIRECCIÓN RECOGIDA',
+        'FECHA RECOGIDA',
+        'HORA RECOGIDA',
+        'DIRECCIÓN DEVOLUCIÓN',
+        'FECHA DEVOLUCIÓN',
+        'HORA DEVOLUCIÓN',
+        'CONDUCTOR ASIGNADO',
+        'ESTADO',
+      ],
+      rows: filtrados.map((r, i) => [
+        i + 1,
+        r.codigo,
+        r.domicilioCodigo,
+        r.clienteNombre,
+        r.vehiculoNombre || r.vehiculo?.nombre || '-',
+        r.tipoServicio,
+        r.direccionRecogida,
+        r.fechaRecogida,
+        r.horaRecogida,
+        r.direccionDevolucion,
+        r.fechaDevolucion,
+        r.horaDevolucion,
+        r.domicilioConductor || t('admin.delivery.noDriver', 'Sin asignar'),
+        r.estadoDomicilio || 'PENDIENTE',
+      ]),
+      filename: `domicilios-reserva-${new Date().toISOString().slice(0, 10)}`,
+    }
   }, [filtrados, conductoresFiltrados, activeTab, t])
 
   return (
-    <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
+    <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`} data-theme={tema}>
       <ManagementSidebar branchOnly={esEncargado} />
       <main className="management-main doc-verification-main">
         <div className="cities-container" style={{ maxWidth: '100%' }}>
@@ -315,7 +436,7 @@ export default function DeliveryManagementPage() {
           <div className="cash-kpi-bar">
             {[
               { icon: FaExclamationCircle, color: '#f59e0b', label: t('admin.delivery.kpi.pending', 'Pendientes de Asignar'), value: totalPendientes, desc: t('admin.delivery.kpi.pendingDesc', 'Sin conductor asignado') },
-              { icon: FaRoute, color: 'var(--brand-text)', label: t('admin.delivery.kpi.assigned', 'En Camino'), value: totalAsignados, desc: t('admin.delivery.kpi.assignedDesc', 'Con conductor asignado') },
+              { icon: FaRoute, color: 'var(--brand-text)', label: t('admin.delivery.kpi.assigned', 'En Camino / Programados'), value: totalAsignados, desc: `${totalEnCaminoHoy} en camino hoy · ${totalProgramados} programados` },
               { icon: FaCheckCircle, color: '#10b981', label: t('admin.delivery.kpi.completed', 'Entregados'), value: totalCompletados, desc: t('admin.delivery.kpi.completedDesc', 'Servicios finalizados') },
               { icon: FaUserTie, color: '#8b5cf6', label: t('admin.delivery.kpi.drivers', 'Conductores Registrados'), value: conductores.length, desc: t('admin.delivery.kpi.driversDesc', 'Personal disponible en sucursal') },
             ].map(({ icon: Icon, color, label, value, desc }) => (
@@ -354,7 +475,7 @@ export default function DeliveryManagementPage() {
                 onClick={() => setActiveTab('asignados')}
                 className={`fleet-tab-btn ${activeTab === 'asignados' ? 'is-active' : ''}`}
               >
-                {t('admin.delivery.tabs.assigned', 'En Camino')} ({totalAsignados})
+                {t('admin.delivery.tabs.assigned', 'Conductores Asignados')} ({totalAsignados})
               </button>
               <button
                 type="button"
@@ -479,7 +600,6 @@ export default function DeliveryManagementPage() {
                           <th>{t('admin.delivery.drivers.licenseCat', 'CATEGORÍA LICENCIA')}</th>
                           <th>{t('admin.delivery.drivers.licenseExp', 'VENCIMIENTO LICENCIA')}</th>
                           <th>{t('admin.delivery.drivers.phone', 'TELÉFONO')}</th>
-                          <th>{t('admin.delivery.drivers.vehicle', 'VEHÍCULO ASIGNADO')}</th>
                           <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.status', 'ESTADO')}</th>
                           <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.actions', 'ACCIONES')}</th>
                         </tr>
@@ -496,7 +616,6 @@ export default function DeliveryManagementPage() {
                             <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>{c.categoriaLic || '-'}</td>
                             <td style={{ fontWeight: 400, color: 'var(--city-muted, #64748b)' }}>{c.vencimientoLic || '-'}</td>
                             <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>{c.telefono || '-'}</td>
-                            <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>{c.vehiculo || t('admin.delivery.noVehicle', 'Sin vehículo asignado')}</td>
                             <td style={{ textAlign: 'center', fontWeight: 400 }}>
                               {getConductorBadge(c.estado)}
                             </td>
@@ -575,12 +694,16 @@ export default function DeliveryManagementPage() {
                           <tr>
                             <th style={{ width: '35px' }}>{t('admin.delivery.table.id', 'ID')}</th>
                             <th>{t('admin.delivery.table.reservationCode', 'CÓDIGO RESERVA')}</th>
-                            <th>{t('admin.delivery.table.deliveryCode', 'CÓDIGO DOMICILIO (PIN)')}</th>
+                            <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.deliveryCode', 'CÓDIGO DOMICILIO (PIN)')}</th>
                             <th>{t('admin.delivery.table.clientName', 'NOMBRE CLIENTE')}</th>
                             <th>{t('admin.delivery.table.vehicleName', 'VEHÍCULO')}</th>
                             <th>{t('admin.delivery.table.serviceType', 'TIPO SERVICIO')}</th>
-                            <th>{t('admin.delivery.table.address', 'DIRECCIÓN DE ENTREGA / RECOGIDA')}</th>
-                            <th>{t('admin.delivery.table.dateTime', 'FECHA Y HORA')}</th>
+                            <th>DIRECCIÓN RECOGIDA</th>
+                            <th>FECHA RECOGIDA</th>
+                            <th>HORA RECOGIDA</th>
+                            <th>DIRECCIÓN DEVOLUCIÓN</th>
+                            <th>FECHA DEVOLUCIÓN</th>
+                            <th>HORA DEVOLUCIÓN</th>
                             <th>{t('admin.delivery.table.driver', 'CONDUCTOR ASIGNADO')}</th>
                             <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.status', 'ESTADO')}</th>
                             <th style={{ textAlign: 'center' }}>{t('admin.delivery.table.actions', 'ACCIONES')}</th>
@@ -591,91 +714,213 @@ export default function DeliveryManagementPage() {
                             <tr key={r.rowId || r.id}>
                               <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)', width: '35px' }}>{i + 1}</td>
                               <td style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)' }}>{r.codigo}</td>
-                              <td style={{ fontWeight: 500, color: 'var(--brand-primary, #2563eb)' }}>
-                                {r.domicilioCodigo}
+                              <td style={{ textAlign: 'center' }}>
+                                {(() => {
+                                  const esFuturo = r.fechaEvento && r.fechaEvento > hoy
+                                  if (esFuturo) {
+                                    return (
+                                      <span
+                                        title={`PIN protegido por seguridad hasta el día de la entrega (${r.fechaEvento})`}
+                                        style={{
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: 6,
+                                          fontFamily: "'Courier New', Courier, monospace",
+                                          fontWeight: 700,
+                                          fontSize: 12.5,
+                                          color: '#64748b',
+                                          background: '#f8fafc',
+                                          padding: '4px 10px',
+                                          borderRadius: 8,
+                                          border: '1px solid #e2e8f0',
+                                        }}
+                                      >
+                                        <FaLock style={{ fontSize: 10, color: '#94a3b8' }} />
+                                        ••••••
+                                      </span>
+                                    )
+                                  }
+                                  const isRevealed = Boolean(revealedPins[r.rowId || r.id])
+                                  return (
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                      <span style={{
+                                        fontFamily: "'Courier New', Courier, monospace",
+                                        fontWeight: 800,
+                                        fontSize: 14,
+                                        letterSpacing: '2.5px',
+                                        color: 'var(--brand-primary, #1e3a8a)',
+                                        background: 'var(--brand-soft-light, #eff6ff)',
+                                        padding: '4px 10px',
+                                        borderRadius: 8,
+                                        border: '1.5px dashed var(--brand-border-light, #cbd5e1)',
+                                        display: 'inline-block',
+                                      }}>
+                                        {isRevealed ? r.domicilioCodigo : '••••••'}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setRevealedPins(prev => ({ ...prev, [r.rowId || r.id]: !prev[r.rowId || r.id] }))}
+                                        title={isRevealed ? 'Ocultar PIN' : 'Revelar PIN de entrega'}
+                                        style={{
+                                          border: 'none',
+                                          background: 'transparent',
+                                          cursor: 'pointer',
+                                          color: 'var(--brand-primary, #2563eb)',
+                                          padding: '4px',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          fontSize: 13,
+                                        }}
+                                      >
+                                        {isRevealed ? <FaEyeSlash /> : <FaEye />}
+                                      </button>
+                                    </div>
+                                  )
+                                })()}
                               </td>
                               <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>{r.clienteNombre}</td>
                               <td style={{ fontWeight: 400, color: 'var(--city-text, #0f172a)' }}>{r.vehiculoNombre || r.vehiculo?.nombre || '-'}</td>
+                              <td style={{ fontWeight: 400, color: 'var(--city-text, #334155)' }}>
+                                {r.tipoServicio}
+                              </td>
+                              <td style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', color: r.direccionRecogida === 'No aplica' ? 'var(--city-muted, #94a3b8)' : 'var(--city-text, #334155)', fontWeight: 400 }} title={r.direccionRecogida}>
+                                {r.direccionRecogida}
+                              </td>
+                              <td style={{ color: r.fechaRecogida === 'No aplica' ? 'var(--city-muted, #94a3b8)' : 'var(--city-text, #334155)', fontWeight: 400 }}>
+                                {r.fechaRecogida}
+                              </td>
+                              <td style={{ color: r.horaRecogida === 'No aplica' ? 'var(--city-muted, #94a3b8)' : 'var(--city-text, #334155)', fontWeight: 400 }}>
+                                {r.horaRecogida}
+                              </td>
+                              <td style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', color: r.direccionDevolucion === 'No aplica' ? 'var(--city-muted, #94a3b8)' : 'var(--city-text, #334155)', fontWeight: 400 }} title={r.direccionDevolucion}>
+                                {r.direccionDevolucion}
+                              </td>
+                              <td style={{ color: r.fechaDevolucion === 'No aplica' ? 'var(--city-muted, #94a3b8)' : 'var(--city-text, #334155)', fontWeight: 400 }}>
+                                {r.fechaDevolucion}
+                              </td>
+                              <td style={{ color: r.horaDevolucion === 'No aplica' ? 'var(--city-muted, #94a3b8)' : 'var(--city-text, #334155)', fontWeight: 400 }}>
+                                {r.horaDevolucion}
+                              </td>
                               <td style={{ fontWeight: 400 }}>
-                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: 'var(--city-text, #334155)', fontWeight: 400 }}>
-                                  <FaCar style={{ color: 'var(--city-muted, #64748b)', flexShrink: 0 }} />
-                                  {r.tipoServicio}
-                                </span>
-                              </td>
-                              <td style={{ maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--city-text, #334155)', fontWeight: 400 }} title={r.direccionInfo}>
-                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                                  <FaMapMarkerAlt style={{ color: '#ef4444', fontSize: 11, flexShrink: 0 }} />
-                                  {r.direccionInfo}
-                                </span>
-                              </td>
-                              <td style={{ color: 'var(--city-muted, #64748b)', fontWeight: 400 }}>
-                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                                  <FaCalendarAlt style={{ fontSize: 11 }} />
-                                  {r.fechaEvento ? new Date(r.fechaEvento).toLocaleDateString() : '-'}
-                                </span>
-                              </td>
-                              <td style={{ fontWeight: 400 }}>
-                                <select
-                                  value={r.domicilioConductor || ''}
-                                  onChange={(e) => handleDirectSelectConductor(r, e.target.value)}
-                                  style={{
-                                    padding: '6px 10px',
-                                    borderRadius: 8,
-                                    border: '1.5px solid var(--city-border, #cbd5e1)',
-                                    background: 'var(--city-bg, #f8fafc)',
-                                    color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)',
-                                    fontSize: 12.5,
-                                    fontWeight: 400,
-                                    outline: 'none',
-                                    cursor: 'pointer',
-                                    maxWidth: 200
-                                  }}
-                                >
-                                  <option value="">{t('admin.delivery.modal.selectDriverPlaceholder', '-- Seleccionar Conductor --')}</option>
-                                  {conductores.map(c => (
-                                    <option key={c.id} value={c.nombre}>
-                                      {c.nombre} {c.vehiculo ? `(${c.vehiculo})` : ''}
+                                {r.estado === 'cancelada' ? (
+                                  <span style={{ fontSize: 12, color: '#ef4444', fontStyle: 'italic', fontWeight: 500 }}>
+                                    {r.estadoCodigo === 'CANCELLED_BY_TIMEOUT' ? 'Cancelada automáticamente' : 'Reserva cancelada'}
+                                  </span>
+                                ) : r.estado === 'finalizada' ? (
+                                  <span style={{ fontSize: 12, color: '#16a34a', fontStyle: 'italic', fontWeight: 500 }}>
+                                    {r.domicilioConductor ? `${r.domicilioConductor} (Finalizado)` : 'Servicio finalizado'}
+                                  </span>
+                                ) : (
+                                  <select
+                                    disabled={assigningPointId === (r.rowId || r.id) || r.estadoDomicilio === 'COMPLETADO'}
+                                    value={r.domicilioConductor || ''}
+                                    onChange={(e) => handleDirectSelectConductor(r, e.target.value)}
+                                    style={{
+                                      padding: '6px 10px',
+                                      borderRadius: 8,
+                                      border: '1.5px solid var(--city-border, #cbd5e1)',
+                                      background: 'var(--city-bg, #f8fafc)',
+                                      color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)',
+                                      fontSize: 12.5,
+                                      fontWeight: 400,
+                                      outline: 'none',
+                                      cursor: assigningPointId === (r.rowId || r.id) ? 'wait' : 'pointer',
+                                      opacity: assigningPointId === (r.rowId || r.id) ? 0.6 : 1,
+                                      maxWidth: 200
+                                    }}
+                                  >
+                                    <option value="">
+                                      {assigningPointId === (r.rowId || r.id)
+                                        ? '⏳ Asignando...'
+                                        : t('admin.delivery.modal.selectDriverPlaceholder', '-- Seleccionar Conductor --')}
                                     </option>
-                                  ))}
-                                </select>
+                                    {conductores.map(c => (
+                                      <option key={c.id} value={c.nombre}>
+                                        {c.nombre}
+                                      </option>
+                                    ))}
+                                  </select>
+                                )}
                               </td>
                               <td style={{ textAlign: 'center', fontWeight: 400 }}>
-                                {getBadge(r.estadoDomicilio)}
+                                {getBadge(r.estadoDomicilio, r.estado, r.fechaEvento)}
                               </td>
                               <td style={{ textAlign: 'center', fontWeight: 400 }}>
-                                <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                                  {r.estadoDomicilio === 'ASIGNADO' && (
-                                    <button
-                                      type="button"
-                                      onClick={() => setModalVerificar(r)}
-                                      style={{
-                                        padding: '6px 16px',
-                                        borderRadius: '9999px',
-                                        background: '#16a34a',
-                                        color: 'var(--city-card, #ffffff)',
-                                        border: 'none',
-                                        fontWeight: 700,
-                                        fontSize: '12px',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 5px rgba(22, 163, 74, 0.25)',
-                                        transition: 'all 0.2s',
-                                        whiteSpace: 'nowrap',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: 6,
-                                      }}
-                                    >
-                                      <FaKey style={{ fontSize: 11 }} />
-                                      {t('admin.delivery.verifyBtn', 'Verificar PIN')}
-                                    </button>
+                                <div style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center' }}>
+                                  {r.estado === 'cancelada' && (
+                                    <span style={{ fontSize: 12, color: '#dc2626', fontWeight: 600, background: '#fef2f2', padding: '3px 8px', borderRadius: 6, border: '1px solid #fecaca' }}>
+                                      Cancelada
+                                    </span>
                                   )}
-                                  {r.estadoDomicilio === 'COMPLETADO' && (
+                                  {r.estado === 'finalizada' && (
+                                    <span style={{ fontSize: 12, color: '#15803d', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                      <FaCheckCircle /> Finalizada
+                                    </span>
+                                  )}
+                                  {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO' && (
+                                    (() => {
+                                      const esFuturo = r.fechaEvento && r.fechaEvento > hoy
+                                      if (esFuturo) {
+                                        return (
+                                          <button
+                                            type="button"
+                                            disabled
+                                            title={`Disponible el día de la entrega (${r.fechaEvento})`}
+                                            style={{
+                                              padding: '6px 14px',
+                                              borderRadius: '9999px',
+                                              background: '#f1f5f9',
+                                              color: '#64748b',
+                                              border: '1px solid #cbd5e1',
+                                              fontWeight: 600,
+                                              fontSize: '11.5px',
+                                              cursor: 'not-allowed',
+                                              whiteSpace: 'nowrap',
+                                              display: 'inline-flex',
+                                              alignItems: 'center',
+                                              gap: 6,
+                                              opacity: 0.85,
+                                            }}
+                                          >
+                                            <FaLock style={{ fontSize: 10, color: '#94a3b8' }} />
+                                            <span>Habilita el {r.fechaEvento}</span>
+                                          </button>
+                                        )
+                                      }
+                                      return (
+                                        <button
+                                          type="button"
+                                          onClick={() => setModalVerificar(r)}
+                                          style={{
+                                            padding: '6px 16px',
+                                            borderRadius: '9999px',
+                                            background: '#16a34a',
+                                            color: 'var(--city-card, #ffffff)',
+                                            border: 'none',
+                                            fontWeight: 700,
+                                            fontSize: '12px',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 2px 5px rgba(22, 163, 74, 0.25)',
+                                            transition: 'all 0.2s',
+                                            whiteSpace: 'nowrap',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: 6,
+                                          }}
+                                        >
+                                          <FaKey style={{ fontSize: 11 }} />
+                                          {t('admin.delivery.verifyBtn', 'Verificar PIN')}
+                                        </button>
+                                      )
+                                    })()
+                                  )}
+                                  {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'COMPLETADO' && (
                                     <span style={{ fontSize: 12, color: '#15803d', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                                       <FaCheckCircle />
                                       {t('admin.delivery.completedLabel', 'Entregado')}
                                     </span>
                                   )}
-                                  {r.estadoDomicilio === 'PENDIENTE' && (
+                                  {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'PENDIENTE' && (
                                     <span style={{ fontSize: 12, color: '#d97706', fontWeight: 400 }}>
                                       {t('admin.delivery.status.pendiente', 'Pendiente')}
                                     </span>
@@ -697,7 +942,7 @@ export default function DeliveryManagementPage() {
                               <span style={{ fontWeight: 400, color: 'var(--brand-primary, #2563eb)', fontSize: 13 }}>ID {i + 1}</span>
                               <span style={{ fontWeight: 500, color: 'var(--city-text, #0f172a)', fontSize: 14 }}>{r.codigo}</span>
                             </div>
-                            {getBadge(r.estadoDomicilio)}
+                            {getBadge(r.estadoDomicilio, r.estado, r.fechaEvento)}
                           </div>
 
                           <div className="doc-mobile-card-body">
@@ -708,8 +953,67 @@ export default function DeliveryManagementPage() {
 
                             <div className="doc-mobile-data-item doc-mobile-data-item--full">
                               <span className="doc-mobile-data-label">{t('admin.delivery.table.deliveryCode', 'Código Domicilio (PIN)')}</span>
-                              <span className="doc-mobile-data-value" style={{ color: 'var(--brand-primary, #2563eb)', fontWeight: 500 }}>
-                                {r.domicilioCodigo}
+                              <span className="doc-mobile-data-value">
+                                {(() => {
+                                  const esFuturo = r.fechaEvento && r.fechaEvento > hoy
+                                  if (esFuturo) {
+                                    return (
+                                      <span
+                                        title={`PIN protegido hasta el día de la entrega (${r.fechaEvento})`}
+                                        style={{
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: 6,
+                                          fontFamily: "'Courier New', Courier, monospace",
+                                          fontWeight: 700,
+                                          fontSize: 13,
+                                          color: '#64748b',
+                                          background: '#f8fafc',
+                                          padding: '4px 10px',
+                                          borderRadius: 8,
+                                          border: '1px solid #e2e8f0',
+                                        }}
+                                      >
+                                        <FaLock style={{ fontSize: 11, color: '#94a3b8' }} />
+                                        •••••• (Protegido hasta {r.fechaEvento})
+                                      </span>
+                                    )
+                                  }
+                                  const isRevealed = Boolean(revealedPins[r.rowId || r.id])
+                                  return (
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                                      <span style={{
+                                        fontFamily: "'Courier New', Courier, monospace",
+                                        fontWeight: 800,
+                                        fontSize: 14,
+                                        letterSpacing: '2.5px',
+                                        color: 'var(--brand-primary, #1e3a8a)',
+                                        background: 'var(--brand-soft-light, #eff6ff)',
+                                        padding: '3px 10px',
+                                        borderRadius: 8,
+                                        border: '1.5px dashed var(--brand-border-light, #cbd5e1)',
+                                      }}>
+                                        {isRevealed ? r.domicilioCodigo : '••••••'}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setRevealedPins(prev => ({ ...prev, [r.rowId || r.id]: !prev[r.rowId || r.id] }))}
+                                        style={{
+                                          border: 'none',
+                                          background: 'transparent',
+                                          cursor: 'pointer',
+                                          color: 'var(--brand-primary, #2563eb)',
+                                          padding: '4px',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          fontSize: 15,
+                                        }}
+                                      >
+                                        {isRevealed ? <FaEyeSlash /> : <FaEye />}
+                                      </button>
+                                    </div>
+                                  )
+                                })()}
                               </span>
                             </div>
 
@@ -723,70 +1027,134 @@ export default function DeliveryManagementPage() {
                               <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{r.tipoServicio}</span>
                             </div>
 
-                            <div className="doc-mobile-data-item">
-                              <span className="doc-mobile-data-label">{t('admin.delivery.table.dateTime', 'Fecha')}</span>
-                              <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>{r.fechaEvento ? new Date(r.fechaEvento).toLocaleDateString() : '-'}</span>
+                            <div className="doc-mobile-data-item doc-mobile-data-item--full">
+                              <span className="doc-mobile-data-label">Recogida</span>
+                              <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>
+                                {r.direccionRecogida} {r.direccionRecogida !== 'No aplica' ? `(${r.fechaRecogida} - ${r.horaRecogida})` : ''}
+                              </span>
                             </div>
 
                             <div className="doc-mobile-data-item doc-mobile-data-item--full">
-                              <span className="doc-mobile-data-label">{t('admin.delivery.table.address', 'Dirección')}</span>
-                              <span className="doc-mobile-data-value" style={{ color: 'var(--brand-primary, #2563eb)', fontWeight: 400 }}>{r.direccionInfo}</span>
+                              <span className="doc-mobile-data-label">Devolución</span>
+                              <span className="doc-mobile-data-value" style={{ fontWeight: 400 }}>
+                                {r.direccionDevolucion} {r.direccionDevolucion !== 'No aplica' ? `(${r.fechaDevolucion} - ${r.horaDevolucion})` : ''}
+                              </span>
                             </div>
 
                             <div className="doc-mobile-data-item doc-mobile-data-item--full">
                               <span className="doc-mobile-data-label">{t('admin.delivery.table.driver', 'Conductor Asignado')}</span>
-                              <select
-                                value={r.domicilioConductor || ''}
-                                onChange={(e) => handleDirectSelectConductor(r, e.target.value)}
-                                style={{
-                                  width: '100%',
-                                  padding: '8px 10px',
-                                  borderRadius: 8,
-                                  border: '1.5px solid var(--city-border, #cbd5e1)',
-                                  background: 'var(--city-bg, #f8fafc)',
-                                  color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)',
-                                  fontSize: 13,
-                                  fontWeight: 400,
-                                  outline: 'none',
-                                  marginTop: 4
-                                }}
-                              >
-                                <option value="">{t('admin.delivery.modal.selectDriverPlaceholder', '-- Seleccionar Conductor --')}</option>
-                                {conductores.map(c => (
-                                  <option key={c.id} value={c.nombre}>
-                                    {c.nombre} {c.vehiculo ? `(${c.vehiculo})` : ''}
+                              {r.estado === 'cancelada' ? (
+                                <div style={{ fontSize: 13, color: '#ef4444', fontStyle: 'italic', fontWeight: 500, marginTop: 4 }}>
+                                  {r.estadoCodigo === 'CANCELLED_BY_TIMEOUT' ? 'Cancelada automáticamente (Tiempo expirado)' : 'Reserva cancelada'}
+                                </div>
+                              ) : r.estado === 'finalizada' ? (
+                                <div style={{ fontSize: 13, color: '#16a34a', fontStyle: 'italic', fontWeight: 500, marginTop: 4 }}>
+                                  {r.domicilioConductor ? `${r.domicilioConductor} (Finalizado)` : 'Servicio finalizado'}
+                                </div>
+                              ) : (
+                                <select
+                                  disabled={assigningPointId === (r.rowId || r.id) || r.estadoDomicilio === 'COMPLETADO'}
+                                  value={r.domicilioConductor || ''}
+                                  onChange={(e) => handleDirectSelectConductor(r, e.target.value)}
+                                  style={{
+                                    width: '100%',
+                                    padding: '8px 10px',
+                                    borderRadius: 8,
+                                    border: '1.5px solid var(--city-border, #cbd5e1)',
+                                    background: 'var(--city-bg, #f8fafc)',
+                                    color: r.domicilioConductor ? 'var(--city-text, #0f172a)' : 'var(--city-muted, #64748b)',
+                                    fontSize: 13,
+                                    fontWeight: 400,
+                                    outline: 'none',
+                                    marginTop: 4,
+                                    cursor: assigningPointId === (r.rowId || r.id) ? 'wait' : 'pointer',
+                                    opacity: assigningPointId === (r.rowId || r.id) ? 0.6 : 1
+                                  }}
+                                >
+                                  <option value="">
+                                    {assigningPointId === (r.rowId || r.id)
+                                      ? '⏳ Asignando...'
+                                      : t('admin.delivery.modal.selectDriverPlaceholder', '-- Seleccionar Conductor --')}
                                   </option>
-                                ))}
-                              </select>
+                                  {conductores.map(c => (
+                                    <option key={c.id} value={c.nombre}>
+                                      {c.nombre}
+                                    </option>
+                                  ))}
+                                </select>
+                              )}
                             </div>
                           </div>
 
                           <div className="doc-mobile-card-actions">
-                            {r.estadoDomicilio === 'ASIGNADO' && (
-                              <button
-                                type="button"
-                                onClick={() => setModalVerificar(r)}
-                                style={{
-                                  width: '100%',
-                                  padding: '9px 18px',
-                                  borderRadius: '12px',
-                                  background: '#16a34a',
-                                  color: 'var(--city-card, #ffffff)',
-                                  border: 'none',
-                                  fontWeight: 700,
-                                  fontSize: '13px',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  gap: 8,
-                                }}
-                              >
-                                <FaKey style={{ fontSize: 12 }} />
-                                {t('admin.delivery.verifyBtn', 'Verificar PIN')}
-                              </button>
+                            {r.estado === 'cancelada' && (
+                              <span style={{ fontSize: 13, color: '#dc2626', fontWeight: 600, background: '#fef2f2', padding: '6px 12px', borderRadius: 8, border: '1px solid #fecaca', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%' }}>
+                                <FaTimesCircle /> Reserva Cancelada
+                              </span>
                             )}
-                            {r.estadoDomicilio === 'COMPLETADO' && (
+                            {r.estado === 'finalizada' && (
+                              <span style={{ fontSize: 13, color: '#15803d', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%' }}>
+                                <FaCheckCircle /> Servicio Finalizado
+                              </span>
+                            )}
+                            {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'ASIGNADO' && (
+                              (() => {
+                                const esFuturo = r.fechaEvento && r.fechaEvento > hoy
+                                if (esFuturo) {
+                                  return (
+                                    <button
+                                      type="button"
+                                      disabled
+                                      title={`Disponible el día de la entrega (${r.fechaEvento})`}
+                                      style={{
+                                        width: '100%',
+                                        padding: '9px 18px',
+                                        borderRadius: '12px',
+                                        background: '#f1f5f9',
+                                        color: '#64748b',
+                                        border: '1px solid #cbd5e1',
+                                        fontWeight: 600,
+                                        fontSize: '12px',
+                                        cursor: 'not-allowed',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 8,
+                                        opacity: 0.85,
+                                      }}
+                                    >
+                                      <FaLock style={{ fontSize: 11, color: '#94a3b8' }} />
+                                      <span>Verificación bloqueada hasta el {r.fechaEvento}</span>
+                                    </button>
+                                  )
+                                }
+                                return (
+                                  <button
+                                    type="button"
+                                    onClick={() => setModalVerificar(r)}
+                                    style={{
+                                      width: '100%',
+                                      padding: '9px 18px',
+                                      borderRadius: '12px',
+                                      background: '#16a34a',
+                                      color: 'var(--city-card, #ffffff)',
+                                      border: 'none',
+                                      fontWeight: 700,
+                                      fontSize: '13px',
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      gap: 8,
+                                    }}
+                                  >
+                                    <FaKey style={{ fontSize: 12 }} />
+                                    {t('admin.delivery.verifyBtn', 'Verificar PIN')}
+                                  </button>
+                                )
+                              })()
+                            )}
+                            {r.estado !== 'cancelada' && r.estado !== 'finalizada' && r.estadoDomicilio === 'COMPLETADO' && (
                               <span style={{ fontSize: 13, color: '#15803d', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
                                 <FaCheckCircle />
                                 {t('admin.delivery.completedLabel', 'Servicio Entregado')}
@@ -803,195 +1171,237 @@ export default function DeliveryManagementPage() {
           </section>
         </div>
 
-        {/* MODAL CREAR / EDITAR CONDUCTOR CON TODOS LOS CAMPOS */}
+        {/* MODAL CREAR / EDITAR CONDUCTOR CON DISEÑO ELEGANTE Y ESTRUCTURADO */}
         {modalConductor && (
           <div className="cities-modal-backdrop" style={backdropStyle} onMouseDown={e => e.target === e.currentTarget && (setModalConductor(false), setEditingConductor(null))}>
-            <section className="cities-modal" style={{ maxWidth: 600, width: '100%', background: 'var(--city-card)', borderRadius: 16, overflow: 'hidden' }}>
-              <div style={modalHeadStyle}>
-                <div>
-                  <p style={{ color: 'var(--city-muted)', margin: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-                    {editingConductor ? t('admin.delivery.modal.editDriverEyebrow', 'EDICIÓN DE PERSONAL') : t('admin.delivery.modal.createDriverEyebrow', 'REGISTRO DE PERSONAL')}
-                  </p>
-                  <h2 style={{ color: 'var(--city-text)', margin: 0, fontSize: 18, fontWeight: 800 }}>
-                    {editingConductor ? t('admin.delivery.modal.editDriverTitle', 'Editar Conductor') : t('admin.delivery.modal.createDriverTitle', 'Crear Nuevo Conductor')}
-                  </h2>
+            <section className="cities-modal" style={{ maxWidth: 660, width: '100%', background: 'var(--city-card, #ffffff)', borderRadius: 20, overflow: 'hidden', boxShadow: '0 20px 45px rgba(15,23,42,0.25)', border: '1px solid var(--city-border, #e2e8f0)' }}>
+              
+              {/* ENCABEZADO MODAL ELEGANTE */}
+              <div style={{ padding: '20px 26px', borderBottom: '1px solid var(--city-border, #e2e8f0)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--city-bg, #f8fafc)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', display: 'grid', placeItems: 'center', color: '#fff', fontSize: 20, boxShadow: '0 4px 10px rgba(37,99,235,0.3)' }}>
+                    <FaUserTie />
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--brand-primary, #2563eb)', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                      {editingConductor ? 'GESTIÓN DE PERSONAL OPERATIVO' : 'REGISTRO DE PERSONAL OPERATIVO'}
+                    </span>
+                    <h2 style={{ color: 'var(--city-text, #0f172a)', margin: '2px 0 0', fontSize: 19, fontWeight: 800 }}>
+                      {editingConductor ? 'Editar Conductor' : 'Crear Nuevo Conductor'}
+                    </h2>
+                  </div>
                 </div>
-                <button type="button" onClick={() => { setModalConductor(false); setEditingConductor(null); }} style={closeBtnStyle}>&times;</button>
+                <button type="button" onClick={() => { setModalConductor(false); setEditingConductor(null); }} style={closeBtnStyle} title="Cerrar">&times;</button>
               </div>
 
-              <div style={{ padding: '20px 24px', maxHeight: '78vh', overflowY: 'auto' }}>
-                <form id="conductor-form" onSubmit={handleCrearConductor} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              {/* CUERPO DEL MODAL CON SECCIONES AGRUPADAS */}
+              <div style={{ padding: '22px 26px', maxHeight: '74vh', overflowY: 'auto' }}>
+                <form id="conductor-form" onSubmit={handleCrearConductor} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
                   
-                  {/* Nombre Completo */}
-                  <div style={{ gridColumn: '1 / -1' }}>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      {t('admin.delivery.modal.driverName', 'Nombre Completo del Conductor')} *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={nuevoConductor.nombre}
-                      onChange={e => setNuevoConductor({ ...nuevoConductor, nombre: e.target.value })}
-                      placeholder={t('hc.ej_carlos_eduardo_ramirez', 'Ej: Carlos Eduardo Ramírez')}
-                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
-                    />
+                  {/* SECCIÓN 1: DATOS PERSONALES Y CONTACTO */}
+                  <div style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid var(--city-border, #e2e8f0)', borderRadius: 14, padding: '16px 18px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, borderBottom: '1px solid var(--city-border, #e2e8f0)', paddingBottom: 8 }}>
+                      <span style={{ fontSize: 14, color: 'var(--brand-primary, #2563eb)', display: 'flex', alignItems: 'center' }}><FaIdCard /></span>
+                      <strong style={{ fontSize: 13, color: 'var(--city-text, #0f172a)', fontWeight: 700 }}>1. Identificación y Contacto</strong>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      {/* Nombre Completo */}
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <label style={{ display: 'block', fontSize: 12, color: 'var(--city-text, #334155)', fontWeight: 600, marginBottom: 5 }}>
+                          Nombre Completo del Conductor *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={nuevoConductor.nombre}
+                          onChange={e => setNuevoConductor({ ...nuevoConductor, nombre: e.target.value })}
+                          placeholder="Ej: Carlos Eduardo Ramírez"
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: 9, border: '1.5px solid var(--city-border, #cbd5e1)', background: 'var(--city-card, #ffffff)', color: 'var(--city-text, #0f172a)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                        />
+                      </div>
+
+                      {/* Correo Electrónico */}
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, color: 'var(--city-text, #334155)', fontWeight: 600, marginBottom: 5 }}>
+                          Correo Electrónico (Notificaciones PIN) *
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={nuevoConductor.email}
+                          onChange={e => setNuevoConductor({ ...nuevoConductor, email: e.target.value })}
+                          placeholder="conductor@drivique.com"
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: 9, border: '1.5px solid var(--city-border, #cbd5e1)', background: 'var(--city-card, #ffffff)', color: 'var(--city-text, #0f172a)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                        />
+                      </div>
+
+                      {/* Teléfono / WhatsApp */}
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, color: 'var(--city-text, #334155)', fontWeight: 600, marginBottom: 5 }}>
+                          Teléfono / WhatsApp *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={nuevoConductor.telefono}
+                          onChange={e => setNuevoConductor({ ...nuevoConductor, telefono: e.target.value })}
+                          placeholder="+57 310 000 0000"
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: 9, border: '1.5px solid var(--city-border, #cbd5e1)', background: 'var(--city-card, #ffffff)', color: 'var(--city-text, #0f172a)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                        />
+                      </div>
+
+                      {/* Tipo Documento */}
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, color: 'var(--city-text, #334155)', fontWeight: 600, marginBottom: 5 }}>
+                          Tipo de Documento *
+                        </label>
+                        <select
+                          value={nuevoConductor.tipoDoc}
+                          onChange={e => setNuevoConductor({ ...nuevoConductor, tipoDoc: e.target.value })}
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: 9, border: '1.5px solid var(--city-border, #cbd5e1)', background: 'var(--city-card, #ffffff)', color: 'var(--city-text, #0f172a)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                        >
+                          <option value="CC">Cédula de Ciudadanía (CC)</option>
+                          <option value="CE">Cédula de Extranjería (CE)</option>
+                          <option value="PAS">Pasaporte (PAS)</option>
+                        </select>
+                      </div>
+
+                      {/* Número Documento */}
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, color: 'var(--city-text, #334155)', fontWeight: 600, marginBottom: 5 }}>
+                          Número de Documento *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={nuevoConductor.numDoc}
+                          onChange={e => setNuevoConductor({ ...nuevoConductor, numDoc: e.target.value })}
+                          placeholder="1018432910"
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: 9, border: '1.5px solid var(--city-border, #cbd5e1)', background: 'var(--city-card, #ffffff)', color: 'var(--city-text, #0f172a)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  {/* {t('admin.delivery.modal.driverEmail', 'Correo Electrónico')} */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      Correo Electrónico *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={nuevoConductor.email}
-                      onChange={e => setNuevoConductor({ ...nuevoConductor, email: e.target.value })}
-                      placeholder="conductor@drivique.com"
-                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
-                    />
+                  {/* SECCIÓN 2: LICENCIA DE CONDUCCIÓN Y MEDIO DE DESPLAZAMIENTO */}
+                  <div style={{ background: 'var(--city-bg, #f8fafc)', border: '1px solid var(--city-border, #e2e8f0)', borderRadius: 14, padding: '16px 18px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, borderBottom: '1px solid var(--city-border, #e2e8f0)', paddingBottom: 8 }}>
+                      <span style={{ fontSize: 14, color: 'var(--brand-primary, #2563eb)', display: 'flex', alignItems: 'center' }}><FaCar /></span>
+                      <strong style={{ fontSize: 13, color: 'var(--city-text, #0f172a)', fontWeight: 700 }}>2. Habilitación de Conducción</strong>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      {/* Número de Licencia */}
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, color: 'var(--city-text, #334155)', fontWeight: 600, marginBottom: 5 }}>
+                          Número de Licencia de Conducción *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={nuevoConductor.licencia}
+                          onChange={e => setNuevoConductor({ ...nuevoConductor, licencia: e.target.value })}
+                          placeholder="C1-84920412"
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: 9, border: '1.5px solid var(--city-border, #cbd5e1)', background: 'var(--city-card, #ffffff)', color: 'var(--city-text, #0f172a)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                        />
+                      </div>
+
+                      {/* Vencimiento Licencia */}
+                      <div>
+                        <label style={{ display: 'block', fontSize: 12, color: 'var(--city-text, #334155)', fontWeight: 600, marginBottom: 5 }}>
+                          Vencimiento de Licencia *
+                        </label>
+                        <input
+                          type="date"
+                          required
+                          value={nuevoConductor.vencimientoLic}
+                          onChange={e => setNuevoConductor({ ...nuevoConductor, vencimientoLic: e.target.value })}
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: 9, border: '1.5px solid var(--city-border, #cbd5e1)', background: 'var(--city-card, #ffffff)', color: 'var(--city-text, #0f172a)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                        />
+                      </div>
+
+                      {/* Categoría de Licencia */}
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <label style={{ display: 'block', fontSize: 12, color: 'var(--city-text, #334155)', fontWeight: 600, marginBottom: 5 }}>
+                          Categoría de Licencia * <span style={{ fontWeight: 400, color: 'var(--brand-primary, #2563eb)' }}>(Automóviles y Camionetas de alquiler)</span>
+                        </label>
+                        <select
+                          value={nuevoConductor.categoriaLic}
+                          onChange={e => setNuevoConductor({ ...nuevoConductor, categoriaLic: e.target.value })}
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: 9, border: '1.5px solid var(--city-border, #cbd5e1)', background: 'var(--city-card, #ffffff)', color: 'var(--city-text, #0f172a)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                        >
+                          <option value="B1">B1 · Automóviles, Camperos y Camionetas (Particular - Estándar)</option>
+                          <option value="C1">C1 · Automóviles, Camperos y Camionetas (Público / Comercial)</option>
+                        </select>
+                      </div>
+
+                      {/* Nota operativa de flota */}
+                      <div style={{
+                        gridColumn: '1 / -1',
+                        padding: '10px 14px',
+                        borderRadius: 10,
+                        background: 'rgba(37, 99, 235, 0.06)',
+                        border: '1px solid rgba(37, 99, 235, 0.18)',
+                        fontSize: 12,
+                        color: 'var(--brand-primary, #1e40af)',
+                        lineHeight: 1.45,
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 8,
+                      }}>
+                        <FaCar style={{ flexShrink: 0, marginTop: 2, fontSize: 13, color: 'var(--brand-primary, #2563eb)' }} />
+                        <span>
+                          <strong>Operativa de Flota:</strong> El conductor se presenta en la sucursal para recibir las llaves del vehículo de la reserva y conducirlo hasta el domicilio del cliente.
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Teléfono */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      {t('admin.delivery.modal.driverPhone', 'Teléfono / WhatsApp')} *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={nuevoConductor.telefono}
-                      onChange={e => setNuevoConductor({ ...nuevoConductor, telefono: e.target.value })}
-                      placeholder="+57 310 000 0000"
-                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
-                    />
-                  </div>
-
-                  {/* {t('admin.delivery.modal.driverDocType', 'Tipo de Documento')} */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      Tipo de Documento *
-                    </label>
-                    <select
-                      value={nuevoConductor.tipoDoc}
-                      onChange={e => setNuevoConductor({ ...nuevoConductor, tipoDoc: e.target.value })}
-                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
-                    >
-                      <option value="CC">{t('hc.cedula_de_ciudadania_cc', 'Cédula de Ciudadanía (CC)')}</option>
-                      <option value="CE">{t('hc.cedula_de_extranjeria_ce', 'Cédula de Extranjería (CE)')}</option>
-                      <option value="PAS">Pasaporte (PAS)</option>
-                    </select>
-                  </div>
-
-                  {/* {t('admin.delivery.modal.driverDocNum', 'Número de Documento')} */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      Número de Documento *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={nuevoConductor.numDoc}
-                      onChange={e => setNuevoConductor({ ...nuevoConductor, numDoc: e.target.value })}
-                      placeholder="1018432910"
-                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
-                    />
-                  </div>
-
-                  {/* {t('admin.delivery.modal.driverLicense', 'Número de Licencia')} */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      Número de Licencia *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={nuevoConductor.licencia}
-                      onChange={e => setNuevoConductor({ ...nuevoConductor, licencia: e.target.value })}
-                      placeholder="C1-84920412"
-                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
-                    />
-                  </div>
-
-                  {/* {t('admin.delivery.modal.driverLicenseCat', 'Categoría de Licencia')} */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      Categoría de Licencia *
-                    </label>
-                    <select
-                      value={nuevoConductor.categoriaLic}
-                      onChange={e => setNuevoConductor({ ...nuevoConductor, categoriaLic: e.target.value })}
-                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
-                    >
-                      <option value="A2">{t('hc4.a2_motocicletas', 'A2 (Motocicletas)')}</option>
-                      <option value="B1">{t('hc.b1_automoviles_y_camionetas_particular', 'B1 (Automóviles y Camionetas particulares)')}</option>
-                      <option value="B2">{t('hc4.b2_camiones_particulares', 'B2 (Camiones particulares)')}</option>
-                      <option value="C1">{t('hc.c1_automoviles_y_camionetas_servicio_p', 'C1 (Automóviles y Camionetas servicio público)')}</option>
-                      <option value="C2">{t('hc.c2_camiones_servicio_publico', 'C2 (Camiones servicio público)')}</option>
-                    </select>
-                  </div>
-
-                  {/* Vencimiento Licencia */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      {t('admin.delivery.modal.driverLicenseExp', 'Vencimiento de Licencia')} *
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      value={nuevoConductor.vencimientoLic}
-                      onChange={e => setNuevoConductor({ ...nuevoConductor, vencimientoLic: e.target.value })}
-                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
-                    />
-                  </div>
-
-                  {/* Estado Inicial */}
-                  <div>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      {t('admin.delivery.modal.driverStatus', 'Estado del Conductor')} *
-                    </label>
-                    <select
-                      value={nuevoConductor.estado}
-                      onChange={e => setNuevoConductor({ ...nuevoConductor, estado: e.target.value })}
-                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
-                    >
-                      <option value="disponible">{t('admin.delivery.driverStatus.disponible', 'Disponible')}</option>
-                      <option value="en_servicio">{t('admin.delivery.driverStatus.enServicio', 'En Ruta')}</option>
-                      <option value="inactivo">{t('admin.delivery.driverStatus.inactivo', 'Inactivo')}</option>
-                    </select>
-                  </div>
-
-                  {/* Vehículo Asignado */}
-                  <div style={{ gridColumn: '1 / -1' }}>
-                    <label style={{ display: 'block', fontSize: 12.5, color: 'var(--city-text)', fontWeight: 600, marginBottom: 4 }}>
-                      {t('admin.delivery.modal.driverVehicle', 'Vehículo o Medio de Transporte Asignado')}
-                    </label>
-                    <input
-                      type="text"
-                      value={nuevoConductor.vehiculo}
-                      onChange={e => setNuevoConductor({ ...nuevoConductor, vehiculo: e.target.value })}
-                      placeholder={t('hc2.ej_moto_yamaha_nmax_155_placa_abc_12d_', 'Ej: Moto Yamaha NMAX 155 (Placa ABC-12D) o Renault Kangoo')}
-                      style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--city-border)', background: 'var(--city-bg)', color: 'var(--city-text)', fontSize: 13, outline: 'none' }}
-                    />
-                  </div>
+                  {/* SECCIÓN 3: DISPONIBILIDAD OPERATIVA (SIN ESTADO 'EN RUTA' AL CREAR) */}
+                  {editingConductor ? (
+                    <div>
+                      <label style={{ display: 'block', fontSize: 12, color: 'var(--city-text, #334155)', fontWeight: 600, marginBottom: 5 }}>
+                        Disponibilidad del Conductor *
+                      </label>
+                      <select
+                        value={nuevoConductor.estado}
+                        onChange={e => setNuevoConductor({ ...nuevoConductor, estado: e.target.value })}
+                        style={{ width: '100%', padding: '9px 12px', borderRadius: 9, border: '1.5px solid var(--city-border, #cbd5e1)', background: 'var(--city-card, #ffffff)', color: 'var(--city-text, #0f172a)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                      >
+                        <option value="disponible">🟢 Disponible (Activo para asignación)</option>
+                        <option value="inactivo">⚪ Inactivo (Fuera de turno / Descanso)</option>
+                      </select>
+                    </div>
+                  ) : (
+                    <div style={{ padding: '12px 14px', borderRadius: 10, background: '#f0fdf4', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ fontSize: 18, color: '#16a34a' }}>●</span>
+                      <div>
+                        <strong style={{ fontSize: 12.5, color: '#15803d', display: 'block' }}>Estado Inicial: Disponible</strong>
+                        <span style={{ fontSize: 11, color: '#166534' }}>El nuevo conductor quedará registrado como disponible en sucursal para ser asignado a órdenes de entrega.</span>
+                      </div>
+                    </div>
+                  )}
 
                 </form>
               </div>
 
-              <div style={{ padding: '14px 24px', borderTop: '1px solid var(--city-border)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              {/* PIE DEL MODAL CON BOTONES PULIDOS */}
+              <div style={{ padding: '16px 26px', borderTop: '1px solid var(--city-border, #e2e8f0)', display: 'flex', justifyContent: 'flex-end', gap: 12, background: 'var(--city-bg, #f8fafc)' }}>
                 <button
                   type="button"
                   onClick={() => { setModalConductor(false); setEditingConductor(null); }}
-                  style={{ padding: '8px 18px', borderRadius: 9999, background: 'transparent', color: 'var(--city-muted)', border: '1.5px solid var(--city-border)', cursor: 'pointer', fontWeight: 700 }}
+                  style={{ padding: '9px 20px', borderRadius: 10, background: 'transparent', color: 'var(--city-text, #475569)', border: '1.5px solid var(--city-border, #cbd5e1)', cursor: 'pointer', fontWeight: 700, fontSize: 13, transition: 'all 0.2s' }}
                 >
-                  {t('admin.delivery.modal.cancelBtn', 'Cancelar')}
+                  Cancelar
                 </button>
                 <button
                   type="submit"
                   form="conductor-form"
-                  style={{ padding: '8px 22px', borderRadius: 9999, background: 'var(--brand-primary, #2563eb)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800, boxShadow: '0 4px 12px rgba(var(--brand-primary-rgb), 0.3)' }}
+                  style={{ padding: '9px 24px', borderRadius: 10, background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 800, fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)', transition: 'all 0.2s' }}
                 >
-                  {editingConductor ? t('common.saveChanges', 'Guardar Cambios') : t('admin.delivery.modal.saveBtn', 'Crear Conductor')}
+                  <FaCheckCircle style={{ fontSize: 13 }} />
+                  {editingConductor ? 'Guardar Cambios' : 'Registrar Conductor'}
                 </button>
               </div>
             </section>
@@ -1016,9 +1426,34 @@ export default function DeliveryManagementPage() {
                   <p style={{ margin: 0, fontSize: 12, color: 'var(--city-muted)' }}>{t('admin.delivery.modal.clientLabel', 'Cliente')} <strong style={{ color: 'var(--city-text)' }}>{modalVerificar.clienteNombre}</strong></p>
                 </div>
                 <form id="verificar-form" onSubmit={handleVerificar}>
-                  <label style={{ display: 'block', textAlign: 'center', fontWeight: 700, color: 'var(--city-text)', fontSize: 13, marginBottom: 10 }}>{t('admin.delivery.modal.pinLabel', 'PIN de Verificacion')}</label>
-                  <input type="text" inputMode="numeric" maxLength={4} placeholder="••••" value={pinIngresado} onChange={e => setPinIngresado(e.target.value.replace(/\D/g, ''))} required autoFocus
-                    style={{ width: '100%', padding: 16, fontSize: 28, letterSpacing: 12, textAlign: 'center', borderRadius: 10, border: '2px solid var(--brand-primary, #2563eb)', background: 'var(--city-bg)', color: 'var(--city-text)', outline: 'none', boxSizing: 'border-box', fontWeight: 800 }} />
+                  <label style={{ display: 'block', textAlign: 'center', fontWeight: 700, color: 'var(--city-text)', fontSize: 13, marginBottom: 10 }}>
+                    Código de Confirmación (6 caracteres alfanuméricos)
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    autoCapitalize="characters"
+                    placeholder="EJ: 3K8B7X"
+                    value={pinIngresado}
+                    onChange={e => setPinIngresado(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                    required
+                    autoFocus
+                    style={{
+                      width: '100%',
+                      padding: 14,
+                      fontSize: 26,
+                      letterSpacing: 8,
+                      textAlign: 'center',
+                      borderRadius: 10,
+                      border: '2px solid var(--brand-primary, #2563eb)',
+                      background: 'var(--city-bg)',
+                      color: 'var(--city-text)',
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                      fontWeight: 800,
+                      fontFamily: "'Courier New', Courier, monospace"
+                    }}
+                  />
                 </form>
               </div>
               <div style={{ padding: '14px 24px', borderTop: '1px solid var(--city-border)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
