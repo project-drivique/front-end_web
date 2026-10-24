@@ -971,7 +971,26 @@ export function useReservationFlow() {
         // El servidor rechazó el cupón (vigencia, alcance, mínimo, audiencia o usos): se quita y se cotiza sin él
         if (activo) {
           setAppliedPromotion(null)
-          showAlert({ icon: 'warning', title: error?.response?.data?.detail || t('promotions.couponRejected', 'El cupón no se pudo aplicar a esta reserva.') })
+          const rawDetail = error?.response?.data?.detail || error?.response?.data?.message || ''
+          let friendlyDetail = rawDetail
+          if (!friendlyDetail || friendlyDetail.toLowerCase().includes('conflicto con el estado actual') || friendlyDetail.toLowerCase().includes('conflict')) {
+            friendlyDetail = t('promotions.couponRejectedDefault', 'Este cupón no se pudo aplicar a tu reserva. Es posible que ya lo hayas utilizado o no cumpla los requisitos de la reserva.')
+          } else if (friendlyDetail.includes('Promotion already used')) {
+            friendlyDetail = t('promotions.alreadyUsed', 'Ya has utilizado este cupón en una reserva anterior.')
+          } else if (friendlyDetail.includes('Promotion is not active')) {
+            friendlyDetail = t('promotions.notActive', 'El cupón no se encuentra activo o ha expirado.')
+          } else if (friendlyDetail.includes('Promotion use limit reached')) {
+            friendlyDetail = t('promotions.limitReached', 'Este cupón ha alcanzado el límite máximo de usos disponibles.')
+          } else if (friendlyDetail.includes('Promotion conditions are not met')) {
+            friendlyDetail = t('promotions.conditionsNotMet', 'La reserva no cumple las condiciones mínimas requeridas para este cupón.')
+          }
+
+          showAlert({
+            icon: 'warning',
+            title: t('promotions.couponCannotBeApplied', 'No se pudo aplicar el cupón'),
+            text: friendlyDetail,
+            confirmButtonText: t('common.accept', 'Aceptar')
+          })
         }
         return cotizarPrecio(payload)
       })
