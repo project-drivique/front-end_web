@@ -5663,5 +5663,20 @@
     "docs_en_revision_texto": "Your booking is saved. The branch is reviewing your documents: you will be able to pay once they are approved and we will notify you.",
     "docs_en_revision_titulo": "Documents under review",
     "docs_en_revision_alerta": "The branch is still reviewing your documents. You will be able to pay once they are approved."
+  },
+  "captcha": {
+    "title": "Security Verification",
+    "antiBotBadge": "Anti-bot",
+    "verifiedBadge": "Verified ✓",
+    "promptDesc": "Enter the 5 characters shown in the image to verify you are human.",
+    "verifiedDesc": "Verification complete. You can now confirm your reservation.",
+    "successLabel": "Human verified successfully",
+    "reset": "Change",
+    "placeholder": "Enter code",
+    "validateBtn": "Verify",
+    "refreshTooltip": "Generate new code",
+    "emptyCode": "Please enter the security code.",
+    "invalidCode": "Incorrect code. A new code has been generated.",
+    "mustVerify": "You must complete the security verification before confirming the reservation."
   }
 }

@@ -7,6 +7,7 @@ import { formatCurrency } from '@/utils/currencyUtils';
 import { getNombreTipoDoc, getSiglaDoc } from '@/utils/documentUtils';
 import { FaUser, FaIdCard, FaCheckCircle, FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
 import paisesMock from '@/config/datos/nationalities.json';
+import SecurityCaptcha from './SecurityCaptcha';
 
 const getPrefijoPais = (nacionalidad) => {
   if (!nacionalidad) return '';
@@ -185,6 +186,25 @@ export default function DatosPersonales({
   const [licenciaError, setLicenciaError] = useState('');
   const [cedulaCargando, setCedulaCargando] = useState(false);
   const [licenciaCargando, setLicenciaCargando] = useState(false);
+
+  // Estado y referencia para la verificación CAPTCHA anti-bot
+  const [captchaVerificado, setCaptchaVerificado] = useState(false);
+  const [errorCaptcha, setErrorCaptcha] = useState(false);
+  const captchaRef = useRef(null);
+
+  const handleConfirmarConCaptcha = () => {
+    if (!captchaVerificado) {
+      setErrorCaptcha(true);
+      if (captchaRef.current) {
+        captchaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+    setErrorCaptcha(false);
+    if (onReservar) {
+      onReservar();
+    }
+  };
 
   const handleTermsScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -754,6 +774,19 @@ export default function DatosPersonales({
         </p>
       </div>
 
+      {/* ── Verificación de Seguridad Anti-Bot (CAPTCHA) ── */}
+      <div ref={captchaRef} style={{ marginBottom: 20 }}>
+        <SecurityCaptcha
+          isVerified={captchaVerificado}
+          onVerified={(verified) => {
+            setCaptchaVerificado(verified);
+            if (verified) setErrorCaptcha(false);
+          }}
+          hasError={errorCaptcha}
+          c={c}
+        />
+      </div>
+
       {/* ── Tarjeta Total a Pagar y Acciones ── */}
       <div style={{
         background: 'var(--brand-gradient)',
@@ -811,7 +844,7 @@ export default function DatosPersonales({
         }}>
           <button
             type="button"
-            onClick={procesando ? undefined : onReservar}
+            onClick={procesando ? undefined : handleConfirmarConCaptcha}
             disabled={procesando}
             style={{
               width: '100%',
