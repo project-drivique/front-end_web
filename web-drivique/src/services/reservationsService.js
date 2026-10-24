@@ -41,9 +41,10 @@ export const reservationsService = {
     return data
   },
 
-  confirmarPago: async (holdId) => {
+  confirmarPago: async (holdId, transactionId) => {
     const api = await getApi()
-    const { data } = await api.post(`/reservations/checkout/confirm/${holdId}`)
+    const params = transactionId ? { transactionId } : {}
+    const { data } = await api.post(`/reservations/checkout/confirm/${holdId}`, null, { params })
     return data
   },
 

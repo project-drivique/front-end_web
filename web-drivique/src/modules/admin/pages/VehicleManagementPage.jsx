@@ -272,7 +272,7 @@ export default function VehicleManagementPage() {
     return [
       gf.id,
       gf.nombre,
-      gf.descripcion,
+      gf.descripcion || "—",
       ratio,
       `${count} ${t("categoriesManagement.units", "unidades")}`,
       gf.tarifaBaseSugerida ? formatCurrency(gf.tarifaBaseSugerida, moneda, tasaUSD) : "—",
@@ -797,7 +797,7 @@ export default function VehicleManagementPage() {
                               </td>
                               <td>
                                 <span style={{ fontSize: 12.5, color: "var(--city-muted, #64748b)", lineHeight: 1.45 }}>
-                                  {gf.descripcion}
+                                  {gf.descripcion || "—"}
                                 </span>
                               </td>
                               <td style={{ textAlign: "center" }}>
@@ -856,9 +856,9 @@ export default function VehicleManagementPage() {
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
                               }}
-                              title={gf.descripcion}
+                              title={gf.descripcion || "—"}
                             >
-                              {gf.descripcion}
+                              {gf.descripcion || "—"}
                             </td>
                             <td style={{ textAlign: "center" }}>
                               <span
