@@ -130,12 +130,30 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.vehicle-details-modal-body.vehiculo-detail-page-wrap {
-  min-height: auto !important;
+/* 2-Column Balanced Layout on Desktop */
+.vdm-layout-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.vehicle-details-modal-body .vehiculo-detail-parent-card {
-  margin-bottom: 24px;
+.vdm-col-main,
+.vdm-col-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.vdm-block-reviews {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Customized scrollbar for modal body */
@@ -193,11 +211,42 @@ html.dark .vehicle-details-modal-body::-webkit-scrollbar-thumb:hover {
 
   .vehicle-details-modal-container {
     max-height: 92vh;
+    border-radius: 20px;
   }
 
   .vehicle-details-modal-body {
     padding: 16px 18px 24px;
   }
+
+  .vdm-layout-grid {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 960px) {
+  .vdm-layout-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .vdm-col-main,
+  .vdm-col-side {
+    display: contents;
+  }
+
+  /* Natural conversion-oriented reading order on mobile/tablet */
+  .vdm-block-gallery { order: 1; }
+  .vdm-block-reserve { order: 2; }
+  .vdm-block-specs { order: 3; }
+  .vdm-block-branch { order: 4; }
+  .vdm-block-insurance { order: 5; }
+  .vdm-block-requirements { order: 6; }
+  .vdm-block-picoplaca { order: 7; }
+  .vdm-block-description { order: 8; }
+  .vdm-block-equipment { order: 9; }
+  .vdm-block-rates { order: 10; }
+  .vdm-block-reviews { order: 11; }
 }
 
 @media (max-width: 768px) {
@@ -246,13 +295,7 @@ html.dark .vehicle-details-modal-body::-webkit-scrollbar-thumb:hover {
   }
 
   .vehicle-details-modal-body {
-    padding: 12px 12px 32px;
-  }
-
-  .vehicle-details-modal-body .vehiculo-detail-parent-card {
-    padding: 12px !important;
-    border-radius: 16px !important;
-    margin-bottom: 16px;
+    padding: 14px 14px 32px;
   }
 }
 
@@ -277,11 +320,6 @@ html.dark .vehicle-details-modal-body::-webkit-scrollbar-thumb:hover {
   }
 
   .vehicle-details-modal-body {
-    padding: 8px 8px 28px;
-  }
-
-  .vehicle-details-modal-body .vehiculo-detail-parent-card {
-    padding: 8px !important;
-    border-radius: 14px !important;
+    padding: 10px 10px 28px;
   }
 }
