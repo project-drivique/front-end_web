@@ -3948,7 +3948,13 @@
     "noCouponsForVehicle": "No hay cupones disponibles para este vehículo en este momento.",
     "emptyTitle": "No hay cupones activos disponibles para este vehículo en este momento",
     "allVehicles": "Todos los vehículos",
-    "couponRejected": "El cupón no se pudo aplicar a esta reserva."
+    "couponRejected": "El cupón no se pudo aplicar a esta reserva.",
+    "couponCannotBeApplied": "No se pudo aplicar el cupón",
+    "couponRejectedDefault": "Este cupón no se pudo aplicar a tu reserva. Es posible que ya lo hayas utilizado o no cumpla los requisitos de la reserva.",
+    "alreadyUsed": "Ya has utilizado este cupón en una reserva anterior.",
+    "notActive": "El cupón no se encuentra activo o ha expirado.",
+    "limitReached": "Este cupón ha alcanzado el límite máximo de usos disponibles.",
+    "conditionsNotMet": "La reserva no cumple las condiciones mínimas requeridas para este cupón."
   },
   "placeholder": {
     "title": "Aún falta implementar esta pantalla",
