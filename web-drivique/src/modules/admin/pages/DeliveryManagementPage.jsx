@@ -401,7 +401,7 @@ export default function DeliveryManagementPage() {
   }, [filtrados, conductoresFiltrados, activeTab, t])
 
   return (
-    <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`}>
+    <div className={`management-shell ${tema === 'oscuro' ? 'management-shell--dark' : ''}`} data-theme={tema}>
       <ManagementSidebar branchOnly={esEncargado} />
       <main className="management-main doc-verification-main">
         <div className="cities-container" style={{ maxWidth: '100%' }}>
