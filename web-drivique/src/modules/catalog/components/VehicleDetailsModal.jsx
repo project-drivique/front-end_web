@@ -190,72 +190,185 @@ export default function VehicleDetailsModal({
 
         {/* Modal Body */}
         <div
-          className="vehicle-details-modal-body vehiculo-detail-page-wrap"
+          className="vehicle-details-modal-body"
           style={{ background: c.cardBg }}
         >
-          <div
-            className="vehiculo-detail-parent-card"
-            style={{
-              background: c.cardBg,
-              border: `1px solid ${c.cardBorder}`,
-              padding: '16px',
-            }}
-          >
-            {/* 3 Equal Width Columns Grid */}
-            <div className="vehiculo-detail-grid">
-              {/* Col 1: Galería + Sucursal + Pico y Placa */}
-              <div className="vehiculo-col-left">
-                <div className="vdm-block-gallery">
-                  <ImageGallery
-                    imagenes={vehiculo.imagenes || []}
-                    nombreVehiculo={vehiculo.nombre}
-                    calificacion={(vehiculo.comentarios?.length || vehiculo.totalResenas) ? vehiculo.calificacion : 0}
-                    c={c}
-                  />
-                </div>
-
-                <div className="vdm-block-branch">
-                  <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
-                </div>
-
-                <div className="vdm-block-picoplaca">
-                  <PicoYPlacaCard c={c} />
-                </div>
+          <div className="vdm-layout-grid">
+            {/* Columna Principal: Galería + Ficha de Características + Descripción + Equipamiento */}
+            <div className="vdm-col-main">
+              <div className="vdm-block-gallery">
+                <ImageGallery
+                  imagenes={vehiculo.imagenes || []}
+                  nombreVehiculo={vehiculo.nombre}
+                  calificacion={(vehiculo.comentarios?.length || vehiculo.totalResenas) ? vehiculo.calificacion : 0}
+                  c={c}
+                />
               </div>
 
-              {/* Col 2: Descripción + Seguros + Equipamiento + Requisitos */}
-              <div className="vehiculo-col-center">
+              <div className="vdm-block-specs">
+                <VehicleCharacteristics vehiculo={vehiculo} c={c} />
+              </div>
+
+              {vehiculo.descripcion && (
                 <div className="vdm-block-description">
                   <DescriptionSection descripcion={vehiculo.descripcion} id={vehiculo.id} c={c} />
                 </div>
+              )}
 
-                <div className="vdm-block-insurance">
-                  <PricingSection
-                    tarifas={vehiculo.tarifas}
-                    seguros={vehiculo.seguros}
-                    showTarifas={false}
-                    showSeguros={true}
-                    c={c}
-                  />
+              <div className="vdm-block-equipment">
+                <EquipmentSection
+                  caracteristicas={vehiculo.caracteristicas}
+                  equipamiento={vehiculo.equipamientoTecnologico}
+                  showTech={true}
+                  showGeneral={true}
+                  c={c}
+                />
+              </div>
+            </div>
+
+            {/* Columna Comercial y Operativa: Precio/Reserva + Seguros + Requisitos + Sucursal + Pico y Placa */}
+            <div className="vdm-col-side">
+              {/* Tarjeta de Reserva y Precios */}
+              <div
+                className="vehiculo-reserve-card vdm-block-reserve"
+                style={{
+                  margin: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  background: c.cardBg,
+                  border: `1px solid ${c.cardBorder}`,
+                  padding: 'clamp(14px, 2vw, 20px)',
+                  borderRadius: 16,
+                  boxSizing: 'border-box',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <FaTag color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={13} />
+                    <h3 style={{ fontSize: 13, fontWeight: 700, color: c.titleColor, margin: 0 }}>
+                      {t('catalogo.pricePerDay', 'Precio por día')}
+                    </h3>
+                  </div>
+                  {promo && (
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: c.isDark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5',
+                        color: c.isDark ? '#34d399' : '#047857',
+                        border: `1px solid ${c.isDark ? 'rgba(52, 211, 153, 0.3)' : '#a7f3d0'}`,
+                        fontSize: 11,
+                        fontWeight: 800,
+                        padding: '2px 8px',
+                        borderRadius: 999,
+                        letterSpacing: '0.02em',
+                      }}
+                    >
+                      {promo.tipoDescuento === 'porcentaje' ? `-${promo.valorDescuento}%` : `-${formatCurrency(promo.valorDescuento, moneda)}`}
+                    </span>
+                  )}
                 </div>
 
-                <div className="vdm-block-equipment">
-                  <EquipmentSection
-                    caracteristicas={vehiculo.caracteristicas}
-                    equipamiento={vehiculo.equipamientoTecnologico}
-                    showTech={false}
-                    showGeneral={true}
-                    c={c}
-                  />
+                {/* Caja elegante de desglose de precio */}
+                <div
+                  style={{
+                    background: c.isDark ? '#111827' : '#ffffff',
+                    border: `1px solid ${c.cardBorder}`,
+                    borderRadius: 10,
+                    padding: '8px 12px',
+                    marginBottom: 12,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 6,
+                  }}
+                >
+                  {promo && (vehiculo.precio > precioFinal) ? (
+                    <>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: 12, color: c.textSecondary, fontWeight: 500 }}>
+                          {t('catalogo.before', 'Antes')}
+                        </span>
+                        <span style={{ fontSize: 12, color: c.textSecondary, textDecoration: 'line-through', fontWeight: 600 }}>
+                          {formatCurrency(vehiculo.precio, moneda)} <span style={{ fontSize: 10.5, fontWeight: 500 }}>{t('catalogo.perDay', '/día')}</span>
+                        </span>
+                      </div>
+                      <div style={{ height: 1, background: c.cardBorder, opacity: 0.6 }} />
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: 12.5, color: 'var(--brand-text, #1e3a8a)', fontWeight: 700 }}>
+                          {t('catalogo.now', 'Ahora')}
+                        </span>
+                        <span style={{ fontSize: 14, color: 'var(--brand-text, #1e3a8a)', fontWeight: 800 }}>
+                          {formatCurrency(precioFinal, moneda)}{' '}
+                          <span style={{ fontSize: 11, fontWeight: 600, color: c.textSecondary }}>{t('catalogo.perDay', '/día')}</span>
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: 12, color: c.textSecondary, fontWeight: 600 }}>
+                        {t('catalogo.rate', 'Tarifa base')}
+                      </span>
+                      <span style={{ fontSize: 14, color: 'var(--brand-text, #1e3a8a)', fontWeight: 800 }}>
+                        {formatCurrency(precioFinal, moneda)}{' '}
+                        <span style={{ fontSize: 11, fontWeight: 600, color: c.textSecondary }}>{t('catalogo.perDay', '/día')}</span>
+                      </span>
+                    </div>
+                  )}
                 </div>
 
-                <div className="vdm-block-requirements">
-                  <RentalRequirements c={c} />
-                </div>
+                <button
+                  className="vehiculo-reserve-btn"
+                  onClick={handleReservar}
+                  style={{
+                    padding: '11px 16px',
+                    fontSize: 13.5,
+                    fontWeight: 700,
+                    borderRadius: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <FaCar size={14} />
+                  <span>{t('catalogo.reserveNow', 'Reservar ahora')}</span>
+                </button>
               </div>
 
-              {/* Col 3: Tarifas + Características + Reservar */}
-              <div className="vehiculo-col-right">
+              {/* Seguros y Cobertura */}
+              <div className="vdm-block-insurance">
+                <PricingSection
+                  tarifas={vehiculo.tarifas}
+                  seguros={vehiculo.seguros}
+                  showTarifas={false}
+                  showSeguros={true}
+                  c={c}
+                />
+              </div>
+
+              {/* Requisitos para rentar */}
+              <div className="vdm-block-requirements">
+                <RentalRequirements c={c} />
+              </div>
+
+              {/* Sucursal de entrega y devolución */}
+              <div className="vdm-block-branch">
+                <BranchInfo sucursalInfo={vehiculo.sucursalInfo} c={c} />
+              </div>
+
+              {/* Pico y Placa */}
+              <div className="vdm-block-picoplaca">
+                <PicoYPlacaCard c={c} />
+              </div>
+
+              {/* Tarifas extendidas por kilometraje (si están configuradas) */}
+              {vehiculo.tarifas && (
                 <div className="vdm-block-rates">
                   <PricingSection
                     tarifas={vehiculo.tarifas}
@@ -265,124 +378,12 @@ export default function VehicleDetailsModal({
                     c={c}
                   />
                 </div>
-
-                <div className="vdm-block-specs">
-                  <VehicleCharacteristics vehiculo={vehiculo} c={c} />
-                </div>
-
-                <div
-                  className="vehiculo-reserve-card vdm-block-reserve"
-                  style={{
-                    margin: 0,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    background: c.cardBg,
-                    border: `1px solid ${c.cardBorder}`,
-                    padding: 'clamp(14px, 2vw, 20px)',
-                    borderRadius: 16,
-                    boxSizing: 'border-box',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <FaTag color={c?.accentText || "var(--brand-primary, #1e3a8a)"} size={13} />
-                      <h3 style={{ fontSize: 13, fontWeight: 700, color: c.titleColor, margin: 0 }}>
-                        {t('catalogo.pricePerDay', 'Precio por día')}
-                      </h3>
-                    </div>
-                    {promo && (
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          background: c.isDark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5',
-                          color: c.isDark ? '#34d399' : '#047857',
-                          border: `1px solid ${c.isDark ? 'rgba(52, 211, 153, 0.3)' : '#a7f3d0'}`,
-                          fontSize: 11,
-                          fontWeight: 800,
-                          padding: '2px 8px',
-                          borderRadius: 999,
-                          letterSpacing: '0.02em',
-                        }}
-                      >
-                        {promo.tipoDescuento === 'porcentaje' ? `-${promo.valorDescuento}%` : `-${formatCurrency(promo.valorDescuento, moneda)}`}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Caja elegante de desglose de precio con fondo blanco */}
-                  <div
-                    style={{
-                      background: c.isDark ? '#111827' : '#ffffff',
-                      border: `1px solid ${c.cardBorder}`,
-                      borderRadius: 10,
-                      padding: '7px 12px',
-                      marginBottom: 10,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 5,
-                    }}
-                  >
-                    {promo && (vehiculo.precio > precioFinal) ? (
-                      <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: 12, color: c.textSecondary, fontWeight: 500 }}>
-                            {t('catalogo.before', 'Antes')}
-                          </span>
-                          <span style={{ fontSize: 12, color: c.textSecondary, textDecoration: 'line-through', fontWeight: 600 }}>
-                            {formatCurrency(vehiculo.precio, moneda)} <span style={{ fontSize: 10.5, fontWeight: 500 }}>{t('catalogo.perDay', '/día')}</span>
-                          </span>
-                        </div>
-                        <div style={{ height: 1, background: c.cardBorder, opacity: 0.6 }} />
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: 12.5, color: 'var(--brand-text, #1e3a8a)', fontWeight: 700 }}>
-                            {t('catalogo.now', 'Ahora')}
-                          </span>
-                          <span style={{ fontSize: 13.5, color: 'var(--brand-text, #1e3a8a)', fontWeight: 800 }}>
-                            {formatCurrency(precioFinal, moneda)}{' '}
-                            <span style={{ fontSize: 11, fontWeight: 600, color: c.textSecondary }}>{t('catalogo.perDay', '/día')}</span>
-                          </span>
-                        </div>
-                      </>
-                    ) : (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: 12, color: c.textSecondary, fontWeight: 600 }}>
-                          {t('catalogo.rate', 'Tarifa base')}
-                        </span>
-                        <span style={{ fontSize: 13.5, color: 'var(--brand-text, #1e3a8a)', fontWeight: 800 }}>
-                          {formatCurrency(precioFinal, moneda)}{' '}
-                          <span style={{ fontSize: 11, fontWeight: 600, color: c.textSecondary }}>{t('catalogo.perDay', '/día')}</span>
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <button
-                    className="vehiculo-reserve-btn"
-                    onClick={handleReservar}
-                    style={{
-                      padding: '10px 16px',
-                      fontSize: 13,
-                      fontWeight: 700,
-                      borderRadius: 8,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 8,
-                      width: '100%',
-                      boxSizing: 'border-box',
-                    }}
-                  >
-                    <FaCar size={13} />
-                    <span>{t('catalogo.reserveNow', 'Reservar ahora')}</span>
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
+          </div>
 
-            {/* Reseñas integradas */}
+          {/* Reseñas integradas */}
+          <div className="vdm-block-reviews">
             <ReviewsSection
               comentarios={vehiculo.comentarios}
               calificacion={vehiculo.calificacion}
