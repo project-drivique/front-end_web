@@ -6,8 +6,9 @@ import { authService } from '@/services/authService'
 import { useAuthStore } from '@/store/authStore'
 import { createPkceChallenge } from '../utils/pkce'
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim()
-const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_APP_ID?.trim()
+// IDs públicos (no son secretos). Respaldo para builds sin .env (p. ej. Docker en Hostinger), iguales a los del backend.
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() || '18960724578-h53pr526uva5mtb9doup86f5hjei231c.apps.googleusercontent.com'
+const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_APP_ID?.trim() || '1072551762252390'
 
 /* ── Carga dinámica del SDK de Google Identity Services (GIS) ── */
 function cargarGoogleSDK() {
@@ -213,7 +214,7 @@ export function useSocialRegistration({ onExito } = {}) {
       const { codeVerifier, nonce, state } = await createPkceChallenge()
 
       const authResp = await new Promise((resolve, reject) => {
-        if (window.isSecureContext && window.FB) {
+        if (window.FB && typeof window.FB.login === 'function') {
           try {
             window.FB.login(
               (response) => {
@@ -223,7 +224,7 @@ export function useSocialRegistration({ onExito } = {}) {
                   reject(new Error('popup_closed'))
                 }
               },
-              { scope: 'public_profile', return_scopes: true }
+              { scope: 'public_profile,email', return_scopes: true }
             )
             return
           } catch {
