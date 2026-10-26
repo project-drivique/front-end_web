@@ -1,3 +1,5 @@
+import { captchaTokenStore } from './captchaTokenStore'
+
 let apiInstance = null
 
 async function getApi() {
@@ -30,7 +32,11 @@ export const reservationsService = {
   crearReserva: async (datosReserva) => {
     const api = await getApi()
     // Initiate checkout (creates a hold)
-    const { data } = await api.post('/reservations/checkout/initiate', datosReserva)
+    // El captcha se valida en el servidor: el token es de un solo uso
+    const captchaToken = captchaTokenStore.consume()
+    const { data } = await api.post('/reservations/checkout/initiate', datosReserva, {
+      headers: captchaToken ? { 'X-Captcha-Token': captchaToken } : undefined,
+    })
     return data
   },
   
