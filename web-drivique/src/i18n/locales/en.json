@@ -2523,11 +2523,17 @@
       "accountLocked": "Account locked. Use Forgot your password?",
       "invalidCredentials": "Invalid credentials. Remaining attempts: {{remaining}}",
       "maxAttemptsReached": "Account locked after {{max}} failed attempts.",
-      "temporaryLock": "Account temporarily locked for {{minutes}} minutes.",
+      "temporaryLock": "For security we locked your account for {{minutes}} minute(s) after too many failed attempts. You can reset your password with \"Forgot your password?\".",
       "accessDenied": "You do not have permission to access. Contact the main administrator.",
       "serviceUnavailable": "The server could not start your session. Please try again.",
       "accountNotFoundTitle": "Account not found",
-      "accountNotFound": "There is no account registered with that email."
+      "accountNotFound": "There is no account with this email. Check the spelling or sign up.",
+      "wrongPassword": "Incorrect password. Check it and try again. Attempts left: {{remaining}}.",
+      "wrongPasswordSimple": "Incorrect password. Check it and try again.",
+      "accountDisabled": "Your account is disabled. Contact support to reactivate it.",
+      "network": "We could not reach the server. Check your internet connection and try again.",
+      "generic": "We could not sign you in. Please try again.",
+      "wrongPasswordTitle": "Incorrect password"
     },
     "togglePassword": "Show or hide password"
   },
@@ -3589,7 +3595,7 @@
     "passwordSet": "Password Set",
     "passwordSetHint": "Click \"Change Password\" to update it",
     "passwordUpdatedTitle": "Password Updated!",
-    "passwordUpdatedText": "Your password has been updated successfully.",
+    "passwordUpdatedText": "Your password was updated. For security, please sign in again with your new password.",
     "passwordMatch": "Passwords match",
     "passwordNoMatch": "Passwords do not match",
     "verifyEmail": "Verify Email",
@@ -3648,7 +3654,8 @@
       "emailInvalid": "Invalid email format",
       "emailTaken": "This email is already registered",
       "updateFailed": "Could not update profile",
-      "newPasswordRequired": "Enter the new password."
+      "newPasswordRequired": "Enter the new password.",
+      "samePassword": "The new password must be different from the current one."
     },
     "roles": {
       "usuario": "User",
@@ -3948,7 +3955,13 @@
     "noCouponsForVehicle": "There are no coupons available for this vehicle at the moment.",
     "emptyTitle": "There are no active coupons available for this vehicle at the moment",
     "allVehicles": "All vehicles",
-    "couponRejected": "The coupon could not be applied to this reservation."
+    "couponRejected": "The coupon could not be applied to this reservation.",
+    "couponCannotBeApplied": "The coupon could not be applied",
+    "couponRejectedDefault": "This coupon could not be applied to your booking. You may have already used it or it does not meet the requirements.",
+    "alreadyUsed": "You have already used this coupon on a previous booking.",
+    "notActive": "The coupon is not active or has expired.",
+    "limitReached": "This coupon has reached its maximum number of uses.",
+    "conditionsNotMet": "The booking does not meet the minimum conditions required for this coupon."
   },
   "placeholder": {
     "title": "This screen is not implemented yet",
@@ -5119,7 +5132,8 @@
     "total_de_registros": "Total records:",
     "detalle_del_reporte": "Report detail",
     "control_de_auditoria": "Audit control:",
-    "valido_para_supervision_interna_gestio": "Valid for internal supervision, financial management and accounting."
+    "valido_para_supervision_interna_gestio": "Valid for internal supervision, financial management and accounting.",
+    "vehiculo_apartado_desc": "Another customer has just reserved this vehicle for these dates while you were filling in the form. If they do not complete the payment within the allowed time, it will be available again. You can also explore other available vehicles in the catalog."
   },
   "docNames": {
     "CC": "Citizenship ID Card",
@@ -5681,6 +5695,7 @@
     "refreshTooltip": "Generate new code",
     "emptyCode": "Please enter the security code.",
     "invalidCode": "Incorrect code. A new code has been generated.",
-    "mustVerify": "You must complete the security verification before confirming the reservation."
+    "mustVerify": "You must complete the security verification before confirming the reservation.",
+    "loadError": "The verification could not be loaded. Check your connection and reload the page."
   }
 }

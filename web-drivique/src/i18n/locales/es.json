@@ -2523,11 +2523,17 @@
       "accountLocked": "Cuenta bloqueada. Usa ¿Olvidaste tu contraseña?",
       "invalidCredentials": "Credenciales incorrectas. Intentos restantes: {{remaining}}",
       "maxAttemptsReached": "Cuenta bloqueada tras {{max}} intentos fallidos.",
-      "temporaryLock": "Cuenta bloqueada temporalmente durante {{minutes}} minutos.",
+      "temporaryLock": "Por seguridad bloqueamos tu cuenta durante {{minutes}} minuto(s) por demasiados intentos fallidos. Puedes recuperar tu contraseña con «¿Olvidaste tu contraseña?».",
       "accessDenied": "No tienes permisos para acceder. Contacta al administrador principal.",
       "serviceUnavailable": "No se pudo iniciar sesión por un error del servidor. Intenta nuevamente.",
       "accountNotFoundTitle": "Cuenta no encontrada",
-      "accountNotFound": "No existe una cuenta registrada con ese correo."
+      "accountNotFound": "No existe una cuenta con este correo. Revisa que esté bien escrito o regístrate.",
+      "wrongPassword": "Contraseña incorrecta. Revísala e inténtalo de nuevo. Intentos restantes: {{remaining}}.",
+      "wrongPasswordSimple": "Contraseña incorrecta. Revísala e inténtalo de nuevo.",
+      "accountDisabled": "Tu cuenta está desactivada. Contacta a soporte para reactivarla.",
+      "network": "No pudimos conectar con el servidor. Revisa tu conexión a internet e inténtalo de nuevo.",
+      "generic": "No pudimos iniciar tu sesión. Inténtalo de nuevo.",
+      "wrongPasswordTitle": "Contraseña incorrecta"
     },
     "togglePassword": "Mostrar u ocultar contraseña"
   },
@@ -3589,7 +3595,7 @@
     "passwordSet": "Contraseña establecida",
     "passwordSetHint": "Haz clic en \"Cambiar contraseña\" para actualizarla",
     "passwordUpdatedTitle": "¡Contraseña actualizada!",
-    "passwordUpdatedText": "Tu contraseña se ha actualizado correctamente.",
+    "passwordUpdatedText": "Tu contraseña se actualizó correctamente. Por seguridad, inicia sesión de nuevo con la nueva contraseña.",
     "passwordMatch": "Las contraseñas coinciden",
     "passwordNoMatch": "Las contraseñas no coinciden",
     "verifyEmail": "Verificar correo",
@@ -3648,7 +3654,8 @@
       "emailInvalid": "Formato de correo inválido",
       "emailTaken": "Este correo ya está registrado",
       "updateFailed": "No se pudo actualizar el perfil",
-      "newPasswordRequired": "Ingresa la nueva contraseña."
+      "newPasswordRequired": "Ingresa la nueva contraseña.",
+      "samePassword": "La nueva contraseña debe ser diferente a la actual."
     },
     "roles": {
       "usuario": "Usuario",
@@ -5125,7 +5132,8 @@
     "total_de_registros": "Total de Registros:",
     "detalle_del_reporte": "Detalle del Reporte",
     "control_de_auditoria": "Control de Auditoría:",
-    "valido_para_supervision_interna_gestio": "Válido para supervisión interna, gestión financiera y contabilidad."
+    "valido_para_supervision_interna_gestio": "Válido para supervisión interna, gestión financiera y contabilidad.",
+    "vehiculo_apartado_desc": "Otro cliente acaba de apartar este vehículo para estas fechas mientras completabas el formulario. Si no completa su pago dentro del plazo, volverá a estar libre. También puedes explorar otros vehículos disponibles en el catálogo."
   },
   "docNames": {
     "CC": "Cédula de Ciudadanía",
@@ -5687,6 +5695,7 @@
     "refreshTooltip": "Generar nuevo código",
     "emptyCode": "Por favor ingresa el código de seguridad.",
     "invalidCode": "Código incorrecto. Generamos uno nuevo.",
-    "mustVerify": "Debes completar la verificación de seguridad antes de confirmar la reserva."
+    "mustVerify": "Debes completar la verificación de seguridad antes de confirmar la reserva.",
+    "loadError": "No se pudo cargar la verificación. Revisa tu conexión y recarga la página."
   }
 }

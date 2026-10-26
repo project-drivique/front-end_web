@@ -48,8 +48,14 @@ export function useCambiarContrasena() {
       setForm({ actual: '', nueva: '', confirmar: '' })
       setTimeout(() => setExito(false), 4000)
     } catch (err) {
-      const msg = err?.response?.data?.mensaje || err?.message || t('perfil.errors.currentPasswordWrong')
-      setErrores({ actual: msg })
+      const data = err?.response?.data || {}
+      const code = data.errors?.[0]?.code || ''
+      if (code === 'INVALID_PASSWORD') setErrores({ actual: t('perfil.errors.currentPasswordWrong') })
+      else if (code === 'SAME_PASSWORD') setErrores({ nueva: t('perfil.errors.samePassword') })
+      else if (code === 'WEAK_PASSWORD') setErrores({ nueva: t('perfil.errors.passwordWeak', 'La nueva contraseña no cumple los criterios de seguridad.') })
+      else if (code === 'ACCOUNT_LOCKED' || err?.response?.status === 423) setErrores({ actual: t('login.errors.temporaryLock', { minutes: Number(data.meta?.lockedMinutes) || 30 }) })
+      else if (!err?.response) setErrores({ actual: t('login.errors.network') })
+      else setErrores({ actual: data.detail || t('perfil.errors.updateFailed') })
     } finally {
       setCargando(false)
     }
