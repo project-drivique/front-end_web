@@ -53,6 +53,17 @@ export function accessibleAccent(color, background, minimum = 4.5) {
   return target
 }
 
+// Degradado secundario -> primario con texto siempre legible: el texto se elige según el secundario y, si el primario
+// es muy distinto (por ejemplo oscuro a claro), el extremo del degradado se acerca al secundario hasta que se lea.
+export function gradientTone(secondary, primary, minimum = 4.5) {
+  const text = readableText(secondary)
+  for (let step = 0; step <= 20; step += 1) {
+    const end = step === 0 ? primary : mixHex(primary, secondary, step / 20)
+    if (contrastRatio(text, end) >= minimum) return { text, end }
+  }
+  return { text, end: secondary }
+}
+
 export function createBrandTokens(colors) {
   const primary = normalizeHex(colors?.primary) || '#2563EB'
   const secondary = normalizeHex(colors?.secondary) || '#1E3A8A'
@@ -62,6 +73,7 @@ export function createBrandTokens(colors) {
   const accentRgb = hexToRgb(accent)
   const primaryTarget = readableText(primary) === '#FFFFFF' ? '#000000' : '#FFFFFF'
   const secondaryTarget = readableText(secondary) === '#FFFFFF' ? '#000000' : '#FFFFFF'
+  const gradientToneResult = gradientTone(secondary, primary)
   const isOriginalDrivique = primary === '#2563EB' && secondary === '#1E3A8A' && accent === '#60A5FA'
 
   return {
@@ -70,6 +82,7 @@ export function createBrandTokens(colors) {
     secondaryRgb: `${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}`,
     accentRgb: `${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}`,
     onPrimary: readableText(primary), onSecondary: readableText(secondary), onAccent: readableText(accent),
+    onGradient: gradientToneResult.text, gradientEnd: gradientToneResult.end,
     primaryHover: isOriginalDrivique ? '#1D4ED8' : mixHex(primary, primaryTarget, 0.13),
     primaryActive: isOriginalDrivique ? '#1E40AF' : mixHex(primary, primaryTarget, 0.22),
     secondaryHover: isOriginalDrivique ? '#162D6E' : mixHex(secondary, secondaryTarget, 0.13),
@@ -97,6 +110,8 @@ export function applyBrand(config) {
     '--brand-on-primary': tokens.onPrimary,
     '--brand-on-secondary': tokens.onSecondary,
     '--brand-on-accent': tokens.onAccent,
+    '--brand-on-gradient': tokens.onGradient,
+    '--brand-gradient-end': tokens.gradientEnd,
     '--brand-primary-hover': tokens.primaryHover,
     '--brand-primary-active': tokens.primaryActive,
     '--brand-secondary-hover': tokens.secondaryHover,

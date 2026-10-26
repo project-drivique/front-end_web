@@ -131,7 +131,7 @@
   height: 32px;
   border-radius: 10px;
   background: linear-gradient(135deg, var(--brand-primary, #2563eb) 0%, var(--brand-secondary, #1e3a8a) 100%);
-  color: #ffffff;
+  color: var(--brand-on-gradient,#ffffff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -238,7 +238,7 @@
 
 .report-type-card-modern.selected .card-icon-bubble {
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border-color: var(--brand-primary, #2563eb);
 }
 
@@ -406,7 +406,7 @@
 
 .date-preset-pill.active {
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   box-shadow: 0 3px 10px rgba(var(--brand-primary-rgb), 0.25);
 }
 
@@ -619,7 +619,7 @@
   padding: 0 28px;
   border-radius: 12px;
   background: linear-gradient(135deg, var(--brand-primary, #2563eb) 0%, var(--brand-secondary, #1e3a8a) 100%);
-  color: #ffffff;
+  color: var(--brand-on-gradient,#ffffff);
   font-size: 14.5px;
   font-weight: 800;
   border: none;
@@ -935,7 +935,7 @@
 
 .btn-history-action.print:hover {
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border-color: var(--brand-primary, #2563eb);
 }
 
@@ -1134,7 +1134,7 @@
 
 .management-shell--dark .report-type-card-modern.selected .card-icon-bubble {
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border-color: var(--brand-primary, #2563eb);
 }
 
@@ -1201,7 +1201,7 @@
 
 .management-shell--dark .date-preset-pill.active {
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   box-shadow: 0 3px 10px rgba(var(--brand-primary-rgb, 37, 99, 235), 0.4);
 }
 
