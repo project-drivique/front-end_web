@@ -48,8 +48,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
   // Estado del Modal de 2 Columnas
   const [activeSection, setActiveSection] = useState('identidad') // 'identidad' | 'licencia' | 'reserva'
-  const [identidadPage, setIdentidadPage] = useState(1) // 1 | 2
-  const [licenciaPage, setLicenciaPage] = useState(1) // 1 | 2
+  const [, setIdentidadPage] = useState(1) // 1 | 2
+  const [, setLicenciaPage] = useState(1) // 1 | 2
   const [errorMessage, setErrorMessage] = useState('')
 
   // Checklist Interactivo en el Modal
