@@ -634,8 +634,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       {filtered.map((item, index) => {
                         const docIdFile = item.documentoIdentidadPdf || `Cedula-${item.documentoIdentidad}.pdf`
                         const licFile = item.licenciaConduccionPdf || `Licencia-${item.documentoIdentidad}.pdf`
-                        const docIdUrl = getSafeDocUrl(item.fotoCedulaFrente || item.pdfCedulaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-                        const licUrl = getSafeDocUrl(item.fotoLicenciaFrente || item.pdfLicenciaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                        const docIdUrl = getSafeDocUrl(item.fotoCedulaFrente || item.pdfCedulaUrl || item.frontUrl)
+                        const licUrl = getSafeDocUrl(item.fotoLicenciaFrente || item.pdfLicenciaUrl || item.frontUrl)
                         const { fecha, hora } = getUploadDateTime(item.fechaSubida)
                         const resState = reservationMap[item.reservaCodigo] || item.reservaEstado || 'confirmada'
 
@@ -753,8 +753,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   {filtered.map((item, index) => {
                     const docIdFile = item.documentoIdentidadPdf || `Cedula-${item.documentoIdentidad}.pdf`
                     const licFile = item.licenciaConduccionPdf || `Licencia-${item.documentoIdentidad}.pdf`
-                    const docIdUrl = getSafeDocUrl(item.fotoCedulaFrente || item.pdfCedulaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-                    const licUrl = getSafeDocUrl(item.fotoLicenciaFrente || item.pdfLicenciaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                    const docIdUrl = getSafeDocUrl(item.fotoCedulaFrente || item.pdfCedulaUrl || item.frontUrl)
+                    const licUrl = getSafeDocUrl(item.fotoLicenciaFrente || item.pdfLicenciaUrl || item.frontUrl)
                     const { fecha, hora } = getUploadDateTime(item.fechaSubida)
                     const resState = reservationMap[item.reservaCodigo] || item.reservaEstado || 'confirmada'
 
