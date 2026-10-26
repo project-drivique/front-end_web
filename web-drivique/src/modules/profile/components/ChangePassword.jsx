@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaLock, FaEye, FaEyeSlash, FaTimes } from 'react-icons/fa'
 import { useCambiarContrasena } from '../hooks/useChangePassword'
+import { useNavigate } from 'react-router-dom'
 import { showAlert } from '@/utils/swalConfig'
+import { useAuthStore } from '../../../store/authStore'
 
 export default function CambiarContrasena({ c, esModoOscuro }) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const logout = useAuthStore((state) => state.logout)
   const {
     form, errores, cargando, exito,
     modoEdicion, setModoEdicion,
@@ -23,9 +27,13 @@ export default function CambiarContrasena({ c, esModoOscuro }) {
         text: t('perfil.passwordUpdatedText', 'Tu contraseña se ha actualizado correctamente.'),
         confirmButtonText: t('hc4.entendido', 'Entendido'),
         confirmButtonColor: 'var(--brand-secondary)',
+      }).then(() => {
+        // El servidor cerró todas las sesiones al cambiar la contraseña: se vuelve a iniciar con la nueva
+        logout()
+        navigate('/login', { replace: true })
       })
     }
-  }, [exito, t])
+  }, [exito, t, logout, navigate])
 
   const inputStyle = (hasError) => ({
     width: '100%',

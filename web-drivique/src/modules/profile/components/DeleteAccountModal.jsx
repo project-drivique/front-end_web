@@ -42,9 +42,16 @@ export default function DeleteAccountModal({ isOpen, onClose, c, esModoOscuro })
       window.location.replace('/')
     } catch (err) {
       const data = err?.response?.data || {}
-      const message = err?.response?.status === 401
-        ? t('perfil.currentPasswordWrong', 'Contraseña actual incorrecta')
-        : data.detail || data.message || t('perfil.deleteAccountFail', 'Error al eliminar la cuenta.')
+      const code = data.errors?.[0]?.code || ''
+      let message
+      if (!err?.response) message = t('login.errors.network')
+      else if (code === 'INVALID_PASSWORD' || err.response.status === 401) {
+        message = data.meta?.remainingAttempts !== undefined
+          ? t('login.errors.wrongPassword', { remaining: data.meta.remainingAttempts })
+          : t('perfil.currentPasswordWrong', 'Contraseña actual incorrecta')
+      } else if (code === 'ACCOUNT_LOCKED' || err.response.status === 423) {
+        message = t('login.errors.temporaryLock', { minutes: Number(data.meta?.lockedMinutes) || 30 })
+      } else message = data.detail || data.message || t('perfil.deleteAccountFail', 'Error al eliminar la cuenta.')
       setError(message)
     } finally {
       setCargando(false)

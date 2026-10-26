@@ -74,11 +74,11 @@ export default function LoginPage() {
     if (errores.general) {
       setModalConfig({
         type: bloqueado ? 'error' : 'warning',
-        title: bloqueado ? t('login.blocked') : t('login.loginError'),
+        title: errores.titulo || (bloqueado ? t('login.blocked') : t('login.loginError')),
         text: errores.general,
       })
     }
-  }, [errores.general, bloqueado, t])
+  }, [errores.general, errores.titulo, bloqueado, t])
 
   useEffect(() => {
     if (exito) {

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { showAlert } from '../../../utils/swalConfig'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { authService } from '../../../services/authService'
@@ -22,7 +21,7 @@ export function useLogin() {
   const [cargando, setCargando] = useState(false)
   const [intentos, setIntentos] = useState(0)
   const [bloqueadoHasta, setBloqueadoHasta] = useState(0)
-  const [errores, setErrores] = useState({ correo: '', contrasena: '', general: '' })
+  const [errores, setErrores] = useState({ correo: '', contrasena: '', general: '', titulo: '' })
   const [exito, setExito] = useState('')
   const bloqueado = Boolean(bloqueadoHasta)
 
@@ -69,7 +68,7 @@ export function useLogin() {
     if (!validarFormulario()) return
 
     setCargando(true)
-    setErrores({ correo: '', contrasena: '', general: '' })
+    setErrores({ correo: '', contrasena: '', general: '', titulo: '' })
 
     try {
       const datos = await authService.login({ correo, contrasena })
@@ -114,19 +113,49 @@ export function useLogin() {
     } catch (error) {
       const status = error?.response?.status
       const data = error?.response?.data || {}
+      // El servidor entrega un código estable por cada caso: el mensaje se arma aquí, en el idioma de la persona
+      const code = data.errors?.[0]?.code || ''
+      const meta = data.meta || {}
 
-      if (status === 404) {
-        showAlert({
-          icon: 'error',
-          title: t('login.errors.accountNotFoundTitle', 'Cuenta no encontrada'),
-          text: data.detail || t('login.errors.accountNotFound', 'No existe una cuenta registrada con ese correo.'),
-          confirmButtonText: t('common.accept', 'Aceptar'),
-        })
+      if (!error?.response) {
+        setErrores((prev) => ({ ...prev, general: t('login.errors.network') }))
+        return
+      }
+
+      if (code === 'ACCOUNT_NOT_FOUND' || status === 404) {
+        setErrores((prev) => ({
+          ...prev,
+          correo: t('login.errors.accountNotFound'),
+          // Además del aviso bajo el campo, un modal claro
+          titulo: t('login.errors.accountNotFoundTitle'),
+          general: t('login.errors.accountNotFound'),
+        }))
+        return
+      }
+
+      if (code === 'INVALID_PASSWORD') {
+        setIntentos((n) => n + 1)
+        const mensaje = meta.remainingAttempts !== undefined
+          ? t('login.errors.wrongPassword', { remaining: meta.remainingAttempts })
+          : t('login.errors.wrongPasswordSimple')
+        setErrores((prev) => ({ ...prev, contrasena: mensaje, titulo: t('login.errors.wrongPasswordTitle'), general: mensaje }))
+        return
+      }
+
+      if (code === 'ACCOUNT_LOCKED' || status === 423 || status === 429) {
+        const minutes = Number(meta.lockedMinutes) || 30
+        setBloqueadoHasta(Date.now() + minutes * 60 * 1000)
+        setErrores((prev) => ({ ...prev, general: t('login.errors.temporaryLock', { minutes }) }))
+        return
+      }
+
+      if (code === 'ACCOUNT_DISABLED') {
+        setErrores((prev) => ({ ...prev, general: t('login.errors.accountDisabled') }))
         return
       }
 
       if (status === 403 || status === 401) {
-        if (data.errorCode === 'USER_NOT_VERIFIED' || data.detail?.includes('verifi') || data.message?.includes('verifi') || data.message === 'User is not verified' || data.errorCode === 'UNVERIFIED_ACCOUNT') {
+        if (code === 'EMAIL_NOT_VERIFIED' || data.errorCode === 'USER_NOT_VERIFIED' || data.detail?.includes('verifi') || data.message?.includes('verifi') || data.message === 'User is not verified') {
           iniciarVerificacionCorreo(correo, { contrasena })
           authService.enviarCodigoVerificacion(correo).catch(console.error)
           navigate('/verificar-correo')
@@ -136,32 +165,19 @@ export function useLogin() {
         return
       }
 
-      if (status >= 500) {
-        setErrores((prev) => ({
-          ...prev,
-          general: data.detail || t('login.errors.serviceUnavailable'),
-        }))
-        return
-      }
-
-      const nuevosIntentos = intentos + 1
-      setIntentos(nuevosIntentos)
-
-      if (status === 423 || status === 429) {
-        setBloqueadoHasta(data.bloqueadoHasta || Date.now() + 5 * 60 * 1000)
-        setErrores((prev) => ({
-          ...prev,
-          general: t('login.errors.temporaryLock', { minutes: 5 }),
-        }))
-      } else {
-        setErrores((prev) => ({
-          ...prev,
-          general: t('login.errors.invalidCredentials', { remaining: data.restantes ?? Math.max(0, MAX_INTENTOS - nuevosIntentos) }),
-        }))
-      }
+      setErrores((prev) => ({
+        ...prev,
+        general: status >= 500 ? t('login.errors.serviceUnavailable') : t('login.errors.generic'),
+      }))
     } finally {
       setCargando(false)
     }
+  }
+
+  // Al volver a escribir la contraseña desaparece el aviso de contraseña incorrecta
+  const cambiarContrasena = (valor) => {
+    setContrasena(valor)
+    if (errores.contrasena) setErrores((prev) => ({ ...prev, contrasena: '' }))
   }
 
   const handleCorreoChange = (valor) => {
@@ -180,7 +196,7 @@ export function useLogin() {
     bloqueado,
     errores,
     exito,
-    setContrasena,
+    setContrasena: cambiarContrasena,
     setMostrarPass,
     handleCorreoChange,
     handleSubmit,
