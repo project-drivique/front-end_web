@@ -1395,7 +1395,7 @@
   padding: 10px 14px;
   border-radius: 8px;
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border: none;
   font-size: 13px;
   font-weight: 700;

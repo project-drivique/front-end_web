@@ -48,8 +48,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
 
   // Estado del Modal de 2 Columnas
   const [activeSection, setActiveSection] = useState('identidad') // 'identidad' | 'licencia' | 'reserva'
-  const [identidadPage, setIdentidadPage] = useState(1) // 1 | 2
-  const [licenciaPage, setLicenciaPage] = useState(1) // 1 | 2
+  const [, setIdentidadPage] = useState(1) // 1 | 2
+  const [, setLicenciaPage] = useState(1) // 1 | 2
   const [errorMessage, setErrorMessage] = useState('')
 
   // Checklist Interactivo en el Modal
@@ -634,8 +634,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       {filtered.map((item, index) => {
                         const docIdFile = item.documentoIdentidadPdf || `Cedula-${item.documentoIdentidad}.pdf`
                         const licFile = item.licenciaConduccionPdf || `Licencia-${item.documentoIdentidad}.pdf`
-                        const docIdUrl = getSafeDocUrl(item.fotoCedulaFrente || item.pdfCedulaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-                        const licUrl = getSafeDocUrl(item.fotoLicenciaFrente || item.pdfLicenciaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                        const docIdUrl = getSafeDocUrl(item.fotoCedulaFrente || item.pdfCedulaUrl || item.frontUrl)
+                        const licUrl = getSafeDocUrl(item.fotoLicenciaFrente || item.pdfLicenciaUrl || item.frontUrl)
                         const { fecha, hora } = getUploadDateTime(item.fechaSubida)
                         const resState = reservationMap[item.reservaCodigo] || item.reservaEstado || 'confirmada'
 
@@ -753,8 +753,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                   {filtered.map((item, index) => {
                     const docIdFile = item.documentoIdentidadPdf || `Cedula-${item.documentoIdentidad}.pdf`
                     const licFile = item.licenciaConduccionPdf || `Licencia-${item.documentoIdentidad}.pdf`
-                    const docIdUrl = getSafeDocUrl(item.fotoCedulaFrente || item.pdfCedulaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-                    const licUrl = getSafeDocUrl(item.fotoLicenciaFrente || item.pdfLicenciaUrl || item.frontUrl) || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                    const docIdUrl = getSafeDocUrl(item.fotoCedulaFrente || item.pdfCedulaUrl || item.frontUrl)
+                    const licUrl = getSafeDocUrl(item.fotoLicenciaFrente || item.pdfLicenciaUrl || item.frontUrl)
                     const { fecha, hora } = getUploadDateTime(item.fechaSubida)
                     const resState = reservationMap[item.reservaCodigo] || item.reservaEstado || 'confirmada'
 

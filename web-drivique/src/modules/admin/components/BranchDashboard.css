@@ -166,7 +166,7 @@ body.dark .branch-breadcrumb-title,
   height: 32px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--brand-primary, #2563eb), var(--brand-secondary, #1e3a8a));
-  color: #ffffff;
+  color: var(--brand-on-gradient,#ffffff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -514,7 +514,7 @@ body.dark .branch-breadcrumb-title,
 
 .branch-notif-filter-pill--active {
   background: var(--brand-primary, #2563eb) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   border-color: var(--brand-primary, #2563eb) !important;
   box-shadow: 0 2px 6px rgba(var(--brand-primary-rgb), 0.25);
 }
@@ -833,7 +833,7 @@ body.dark .branch-notif-card-bottom-actions,
   background: linear-gradient(135deg, var(--brand-primary, #2563eb), var(--brand-secondary, #1e3a8a));
   border-radius: 20px;
   padding: 24px 28px;
-  color: #ffffff !important;
+  color: var(--brand-on-gradient,#ffffff) !important;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1320,7 +1320,7 @@ body.dark .branch-notif-card-bottom-actions,
 
 .branch-schedule-pill-tab--active {
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   box-shadow: 0 4px 12px rgba(var(--brand-primary-rgb), 0.25);
 }
 
@@ -1694,20 +1694,20 @@ body.dark .branch-notif-card-bottom-actions,
 .branch-inline-calendar .react-datepicker__day--in-range,
 .branch-inline-calendar .react-datepicker__day--in-selecting-range {
   background-color: var(--brand-primary, #2563eb) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   border-radius: 8px;
 }
 
 .branch-inline-calendar .react-datepicker__day--range-start,
 .branch-inline-calendar .react-datepicker__day--selecting-range-start {
   background-color: var(--brand-secondary, #1e3a8a) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-secondary,#ffffff) !important;
   border-radius: 8px 0 0 8px;
 }
 
 .branch-inline-calendar .react-datepicker__day--range-end {
   background-color: var(--brand-primary, #2563eb) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   border-radius: 0 8px 8px 0;
 }
 
@@ -1746,7 +1746,7 @@ body.dark .branch-notif-card-bottom-actions,
 .branch-preset-btn--active {
   background: var(--brand-primary, #2563eb);
   border-color: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
 }
 
 .branch-range-status-chip {
@@ -2297,7 +2297,7 @@ html.dark .branch-preset-btn--active,
 .management-shell--dark .branch-preset-btn--active {
   background: var(--brand-primary, #2563eb);
   border-color: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
 }
 
 html.dark .branch-action-icon-btn,
@@ -2374,7 +2374,7 @@ html.dark .branch-schedule-pill-tab,
 html.dark .branch-schedule-pill-tab--active,
 .management-shell--dark .branch-schedule-pill-tab--active {
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
 }
 
 /* RESPONSIVE */
@@ -2522,20 +2522,20 @@ html.dark .branch-schedule-pill-tab--active,
 
 .native-cal-day--selected-single {
   background: var(--brand-primary, #2563eb) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   font-weight: 700;
 }
 
 .native-cal-day--range-start {
   background: var(--brand-primary, #2563eb) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   border-radius: 8px 0 0 8px;
   font-weight: 700;
 }
 
 .native-cal-day--range-end {
   background: var(--brand-primary, #2563eb) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   border-radius: 0 8px 8px 0;
   font-weight: 700;
 }

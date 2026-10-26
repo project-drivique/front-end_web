@@ -91,7 +91,7 @@ body.dark .cities-topbar h1 {
   border-radius: 12px;
   padding: 12px 22px;
   background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   font-weight: 800;
   font-size: 13px;
   display: inline-flex;
@@ -432,7 +432,7 @@ body.dark .cities-topbar h1 {
 .cities-row-actions button:hover {
   background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-hover) 100%);
   border-color: var(--brand-primary);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   transform: scale(1.1);
   box-shadow: 0 6px 16px rgba(var(--brand-primary-rgb), 0.3);
 }
@@ -790,7 +790,7 @@ body.dark .branch-user-profile-chip {
   height: 32px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--brand-primary, #2563eb), var(--brand-primary-hover));
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   font-size: 13px;
   font-weight: 700;
   display: flex;
