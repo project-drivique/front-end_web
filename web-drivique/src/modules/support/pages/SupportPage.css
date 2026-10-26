@@ -65,7 +65,7 @@
 
 .soporte-tab-btn.activa {
   background: var(--brand-primary);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   box-shadow: 0 4px 14px rgba(var(--brand-primary-rgb), 0.25);
 }
 
@@ -127,7 +127,7 @@
 
 .btn-reportar-incidencia-hero {
   background: var(--brand-primary);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border: none;
   border-radius: 14px;
   padding: 14px 28px;
@@ -366,7 +366,7 @@
 
 .tipo-chip-btn.seleccionado {
   background: var(--brand-primary);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border-color: var(--brand-primary);
   box-shadow: 0 4px 14px rgba(var(--brand-primary-rgb), 0.25);
 }

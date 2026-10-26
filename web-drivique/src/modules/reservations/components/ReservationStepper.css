@@ -55,7 +55,7 @@
 
 .res-stepper-badge--active {
   background: var(--brand-gradient);
-  color: var(--brand-on-primary, #ffffff);
+  color: var(--brand-on-gradient, #ffffff);
   box-shadow: var(--brand-shadow, 0 2px 10px rgba(var(--brand-primary-rgb, 37, 99, 235), 0.3));
 }
 
