@@ -806,7 +806,7 @@ export function useReservationFlow() {
         showAlert({
           icon: 'warning',
           title: t('hc.vehiculo_no_disponible', 'Vehículo no disponible'),
-          text: t('hc.vehiculo_apartado_desc', 'Otro cliente acaba de apartar este vehículo para estas fechas mientras completabas el formulario. Si no completa su pago en 15 minutos, volverá a estar libre. También puedes explorar otros vehículos disponibles en el catálogo.'),
+          text: t('hc.vehiculo_apartado_desc', 'Otro cliente acaba de apartar este vehículo para estas fechas mientras completabas el formulario. Si no completa su pago dentro del plazo, volverá a estar libre. También puedes explorar otros vehículos disponibles en el catálogo.'),
           confirmButtonText: t('hc.ver_otros_vehiculos', 'Ver otros vehículos'),
           showCancelButton: true,
           cancelButtonText: t('common.close', 'Cerrar'),

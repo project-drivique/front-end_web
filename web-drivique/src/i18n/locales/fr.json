@@ -5139,7 +5139,8 @@
     "total_de_registros": "Total des enregistrements :",
     "detalle_del_reporte": "Détail du rapport",
     "control_de_auditoria": "Contrôle d’audit :",
-    "valido_para_supervision_interna_gestio": "Valable pour la supervision interne, la gestion financière et la comptabilité."
+    "valido_para_supervision_interna_gestio": "Valable pour la supervision interne, la gestion financière et la comptabilité.",
+    "vehiculo_apartado_desc": "Un autre client vient de réserver ce véhicule pour ces dates pendant que vous remplissiez le formulaire. S’il ne finalise pas son paiement dans le délai imparti, le véhicule sera de nouveau disponible. Vous pouvez aussi consulter d’autres véhicules disponibles dans le catalogue."
   },
   "docNames": {
     "CC": "Carte d’identité",
