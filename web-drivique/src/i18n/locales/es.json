@@ -3595,7 +3595,7 @@
     "passwordSet": "Contraseña establecida",
     "passwordSetHint": "Haz clic en \"Cambiar contraseña\" para actualizarla",
     "passwordUpdatedTitle": "¡Contraseña actualizada!",
-    "passwordUpdatedText": "Tu contraseña se ha actualizado correctamente.",
+    "passwordUpdatedText": "Tu contraseña se actualizó correctamente. Por seguridad, inicia sesión de nuevo con la nueva contraseña.",
     "passwordMatch": "Las contraseñas coinciden",
     "passwordNoMatch": "Las contraseñas no coinciden",
     "verifyEmail": "Verificar correo",
@@ -3654,7 +3654,8 @@
       "emailInvalid": "Formato de correo inválido",
       "emailTaken": "Este correo ya está registrado",
       "updateFailed": "No se pudo actualizar el perfil",
-      "newPasswordRequired": "Ingresa la nueva contraseña."
+      "newPasswordRequired": "Ingresa la nueva contraseña.",
+      "samePassword": "La nueva contraseña debe ser diferente a la actual."
     },
     "roles": {
       "usuario": "Usuario",

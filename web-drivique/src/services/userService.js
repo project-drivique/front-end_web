@@ -71,29 +71,13 @@ export const userService = {
   },
 
   getPreferences: async () => {
-    try {
-      const { data } = await api.get('/user/preferences')
-      return data
-    } catch (err) {
-      if (err.response?.status === 404) {
-        const { data } = await api.get('/users/me/preferences')
-        return data
-      }
-      throw err
-    }
+    const { data } = await api.get('/users/me/preferences')
+    return data
   },
 
   updatePreferences: async (preferences) => {
-    try {
-      const { data } = await api.put('/user/preferences', preferences)
-      return data
-    } catch (err) {
-      if (err.response?.status === 404) {
-        const { data } = await api.put('/users/me/preferences', preferences)
-        return data
-      }
-      throw err
-    }
+    const { data } = await api.put('/users/me/preferences', preferences)
+    return data
   },
 
   eliminarCuenta: async (password) => {
@@ -123,26 +107,17 @@ export const userService = {
     return userService.uploadDocument(formData)
   },
 
-  verificarCorreoDisponible: async (correo) => {
-    try {
-      const { data } = await api.post('/usuario/verificar-correo', { correo })
-      return data
-    } catch {
-      return { disponible: true }
-    }
-  },
+  // El correo de la cuenta no se puede cambiar desde el perfil (el servidor lo mantiene bloqueado)
+  verificarCorreoDisponible: async () => ({ disponible: true }),
 
+  // Confirma la contraseña actual con el servidor; si es incorrecta lanza el error (antes se ignoraba y siempre pasaba)
   verificarContrasena: async (contrasena) => {
-    try {
-      const { data } = await api.post('/usuario/verificar-contrasena', { contrasena })
-      return data
-    } catch {
-      return { valida: true }
-    }
+    await api.post('/auth/verify-password', { password: contrasena })
+    return { valida: true }
   },
 
   cambiarContrasena: async (contrasenaActual, contrasenaNueva) => {
-    const { data } = await api.post('/usuario/cambiar-contrasena', { contrasenaActual, contrasenaNueva })
+    const { data } = await api.post('/auth/change-password', { currentPassword: contrasenaActual, newPassword: contrasenaNueva })
     return data
   },
 }
