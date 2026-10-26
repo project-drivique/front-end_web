@@ -1,3 +1,4 @@
+import { withIdempotency } from './idempotency'
 import { api } from './httpClient'
 import { SUCURSALES } from '../modules/catalog/constants'
 import i18n from '@/i18n'
@@ -186,7 +187,8 @@ export const reservationManagementService = {
     const reserva = cache.find((r) => String(r.id).toLowerCase() === search || String(r.codigo).toLowerCase() === search)
     if (!reserva?.codigoPagoEfectivo) throw new Error('La reserva no tiene código de pago en efectivo.')
     try {
-      await api.post('/payments/cash/confirm', { cashPaymentCode: reserva.codigoPagoEfectivo })
+      // Un cobro en efectivo repetido (doble clic) no debe registrarse dos veces
+      await withIdempotency(`cash:${reserva.codigoPagoEfectivo}`, (key) => api.post('/payments/cash/confirm', { cashPaymentCode: reserva.codigoPagoEfectivo }, { headers: { 'Idempotency-Key': key } }))
     } catch (error) {
       throw toError(error)
     }
