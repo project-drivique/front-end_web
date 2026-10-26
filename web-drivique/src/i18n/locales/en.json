@@ -5132,7 +5132,8 @@
     "total_de_registros": "Total records:",
     "detalle_del_reporte": "Report detail",
     "control_de_auditoria": "Audit control:",
-    "valido_para_supervision_interna_gestio": "Valid for internal supervision, financial management and accounting."
+    "valido_para_supervision_interna_gestio": "Valid for internal supervision, financial management and accounting.",
+    "vehiculo_apartado_desc": "Another customer has just reserved this vehicle for these dates while you were filling in the form. If they do not complete the payment within the allowed time, it will be available again. You can also explore other available vehicles in the catalog."
   },
   "docNames": {
     "CC": "Citizenship ID Card",

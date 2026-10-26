@@ -5139,7 +5139,8 @@
     "total_de_registros": "Total de registos:",
     "detalle_del_reporte": "Detalhe do relatório",
     "control_de_auditoria": "Controlo de auditoria:",
-    "valido_para_supervision_interna_gestio": "Válido para supervisão interna, gestão financeira e contabilidade."
+    "valido_para_supervision_interna_gestio": "Válido para supervisão interna, gestão financeira e contabilidade.",
+    "vehiculo_apartado_desc": "Outro cliente acabou de reservar este veículo para estas datas enquanto preenchia o formulário. Se não concluir o pagamento dentro do prazo, voltará a ficar disponível. Pode também explorar outros veículos disponíveis no catálogo."
   },
   "docNames": {
     "CC": "Cédula de Cidadania",
