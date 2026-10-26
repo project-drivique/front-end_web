@@ -15,6 +15,9 @@ import './CityManagementPage.css'
 import './IncidentManagementPage.css'
 import './DocumentVerificationPage.css'
 
+// Marcador neutro cuando la evidencia no tiene vista previa (nunca una foto de internet)
+const NO_PREVIEW = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="260"><rect width="100%" height="100%" fill="#f1f5f9"/><text x="50%" y="50%" fill="#64748b" font-family="sans-serif" font-size="16" text-anchor="middle">Sin vista previa</text></svg>')
+
 export default function IncidentManagementPage() {
   const { t } = useTranslation()
   const { tema } = useLanding()
@@ -784,7 +787,7 @@ export default function IncidentManagementPage() {
                         <td style={{ color: 'var(--city-text, #0f172a)', fontWeight: 600 }}>{r.contactoNombre}</td>
                         <td style={{ color: 'var(--city-text)' }}>{r.vehiculo}</td>
                         <td>
-                          <img src={getVehiculoImagen(r)} alt={r.vehiculo} style={{ width: 44, height: 28, borderRadius: 6, objectFit: 'cover', border: '1px solid #cbd5e1' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg' }} />
+                          <img src={getVehiculoImagen(r) || undefined} alt={r.vehiculo} style={{ width: 44, height: 28, borderRadius: 6, objectFit: 'cover', border: '1px solid #cbd5e1' }} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/a2cb0b378c25efdb1e116246f84149744c2f4081.jpg' }} />
                         </td>
                         <td style={{ color: 'var(--city-muted, #64748b)', fontWeight: 700 }}>{r.placa}</td>
                         <td style={{ color: 'var(--city-text, #334155)', fontWeight: 600 }}>
@@ -974,7 +977,7 @@ export default function IncidentManagementPage() {
                 {/* Banner de Vehículo con Imagen */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '14px 0', padding: '12px 16px', background: 'var(--city-soft)', borderRadius: 14, border: '1px solid var(--city-border)' }}>
                   <img
-                    src={getVehiculoImagen(modalDetalle)}
+                    src={getVehiculoImagen(modalDetalle) || undefined}
                     alt={modalDetalle.vehiculo}
                     style={{ width: 76, height: 50, objectFit: 'cover', borderRadius: 10, border: '1px solid #cbd5e1', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
                     onError={(e) => {
@@ -1254,7 +1257,7 @@ export default function IncidentManagementPage() {
                           onClick={() => setZoomMedia({ url: modalDetalle.evidenciaFoto1Url, title: `Evidencia Foto 1: ${modalDetalle.evidenciaFoto1}`, isVideo: false })}
                         >
                           <img
-                            src={modalDetalle.evidenciaFoto1Url || 'https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=400&q=80'}
+                            src={modalDetalle.evidenciaFoto1Url || NO_PREVIEW}
                             alt={t('hc4.evidencia_1', 'Evidencia 1')}
                             className="incident-gallery-preview"
                           />
@@ -1271,7 +1274,7 @@ export default function IncidentManagementPage() {
                           onClick={() => setZoomMedia({ url: modalDetalle.evidenciaFoto2Url, title: `Evidencia Foto 2: ${modalDetalle.evidenciaFoto2}`, isVideo: false })}
                         >
                           <img
-                            src={modalDetalle.evidenciaFoto2Url || 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=400&q=80'}
+                            src={modalDetalle.evidenciaFoto2Url || NO_PREVIEW}
                             alt={t('hc4.evidencia_2', 'Evidencia 2')}
                             className="incident-gallery-preview"
                           />
@@ -1288,7 +1291,7 @@ export default function IncidentManagementPage() {
                           onClick={() => setZoomMedia({ url: modalDetalle.evidenciaFoto3Url, title: `Evidencia Foto 3: ${modalDetalle.evidenciaFoto3}`, isVideo: false })}
                         >
                           <img
-                            src={modalDetalle.evidenciaFoto3Url || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=400&q=80'}
+                            src={modalDetalle.evidenciaFoto3Url || NO_PREVIEW}
                             alt={t('hc4.evidencia_3', 'Evidencia 3')}
                             className="incident-gallery-preview"
                           />

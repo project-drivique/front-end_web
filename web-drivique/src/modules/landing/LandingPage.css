@@ -276,7 +276,7 @@
   box-sizing: border-box;
   border-radius: 14px;
   background: var(--brand-gradient);
-  color: var(--brand-on-primary);
+  color: var(--brand-on-gradient);
   box-shadow: var(--brand-shadow);
   font-size: 14px;
   font-weight: 800;
@@ -597,7 +597,7 @@ body.dark .landing-step-card__number,
   margin-bottom: 18px;
   border-radius: 16px;
   background: var(--brand-gradient);
-  color: var(--brand-on-primary);
+  color: var(--brand-on-gradient);
   box-shadow: 0 14px 28px rgba(var(--brand-secondary-rgb), .20);
 }
 
@@ -790,7 +790,7 @@ body.dark .landing-feature-card--highlight,
   padding: 11px 14px;
   border-radius: 14px;
   background: var(--brand-gradient);
-  color: var(--brand-on-primary);
+  color: var(--brand-on-gradient);
   font-size: 12px;
   font-weight: 900;
 }
@@ -846,7 +846,7 @@ body.dark .landing-feature-card--highlight,
 
 .landing-app-primary {
   background: var(--brand-gradient);
-  color: var(--brand-on-primary);
+  color: var(--brand-on-gradient);
   box-shadow: var(--brand-shadow);
 }
 

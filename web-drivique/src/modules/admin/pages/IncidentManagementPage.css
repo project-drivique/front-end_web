@@ -91,7 +91,7 @@
 .cities-modal__actions .incident-modal-btn-submit,
 .cities-modal__actions button.incident-modal-btn-submit {
   background: var(--brand-primary) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   border: 1px solid var(--brand-primary) !important;
   border-radius: 9999px !important;
   font-weight: 800 !important;
@@ -853,7 +853,7 @@ html.dark .toggle-btn.active {
 
 .incident-step.is-active .incident-step-circle {
   background: var(--brand-primary);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border-color: var(--brand-primary);
   box-shadow: 0 0 0 4px rgba(var(--brand-primary-rgb), 0.2);
 }
