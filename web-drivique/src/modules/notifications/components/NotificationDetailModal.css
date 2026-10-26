@@ -202,7 +202,7 @@
 
 .notif-detail-action-btn.primary {
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
 }
 
 .notif-detail-action-btn.primary:hover {
