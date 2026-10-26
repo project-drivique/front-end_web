@@ -2523,11 +2523,17 @@
       "accountLocked": "Compte bloqué. Utilisez Mot de passe oublié ?",
       "invalidCredentials": "Identifiants incorrects. Tentatives restantes : {{remaining}}",
       "maxAttemptsReached": "Compte bloqué après {{max}} tentatives échouées.",
-      "temporaryLock": "Compte temporairement bloqué pendant {{minutes}} minutes.",
+      "temporaryLock": "Par sécurité, votre compte est bloqué pendant {{minutes}} minute(s) après trop de tentatives échouées. Vous pouvez réinitialiser votre mot de passe via « Mot de passe oublié ? ».",
       "accessDenied": "Vous n’avez pas les autorisations nécessaires. Contactez l’administrateur principal.",
       "serviceUnavailable": "Impossible de se connecter en raison d’une erreur du serveur. Veuillez réessayer.",
       "accountNotFoundTitle": "Compte introuvable",
-      "accountNotFound": "Aucun compte n’est enregistré avec cette adresse e-mail."
+      "accountNotFound": "Aucun compte n’existe avec cet e-mail. Vérifiez l’orthographe ou inscrivez-vous.",
+      "wrongPassword": "Mot de passe incorrect. Vérifiez-le et réessayez. Tentatives restantes : {{remaining}}.",
+      "wrongPasswordSimple": "Mot de passe incorrect. Vérifiez-le et réessayez.",
+      "accountDisabled": "Votre compte est désactivé. Contactez le support pour le réactiver.",
+      "network": "Impossible de joindre le serveur. Vérifiez votre connexion internet et réessayez.",
+      "generic": "Impossible de vous connecter. Veuillez réessayer.",
+      "wrongPasswordTitle": "Mot de passe incorrect"
     },
     "togglePassword": "Afficher ou masquer le mot de passe"
   },

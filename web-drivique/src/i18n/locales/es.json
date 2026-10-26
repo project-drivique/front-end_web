@@ -2523,11 +2523,17 @@
       "accountLocked": "Cuenta bloqueada. Usa ¿Olvidaste tu contraseña?",
       "invalidCredentials": "Credenciales incorrectas. Intentos restantes: {{remaining}}",
       "maxAttemptsReached": "Cuenta bloqueada tras {{max}} intentos fallidos.",
-      "temporaryLock": "Cuenta bloqueada temporalmente durante {{minutes}} minutos.",
+      "temporaryLock": "Por seguridad bloqueamos tu cuenta durante {{minutes}} minuto(s) por demasiados intentos fallidos. Puedes recuperar tu contraseña con «¿Olvidaste tu contraseña?».",
       "accessDenied": "No tienes permisos para acceder. Contacta al administrador principal.",
       "serviceUnavailable": "No se pudo iniciar sesión por un error del servidor. Intenta nuevamente.",
       "accountNotFoundTitle": "Cuenta no encontrada",
-      "accountNotFound": "No existe una cuenta registrada con ese correo."
+      "accountNotFound": "No existe una cuenta con este correo. Revisa que esté bien escrito o regístrate.",
+      "wrongPassword": "Contraseña incorrecta. Revísala e inténtalo de nuevo. Intentos restantes: {{remaining}}.",
+      "wrongPasswordSimple": "Contraseña incorrecta. Revísala e inténtalo de nuevo.",
+      "accountDisabled": "Tu cuenta está desactivada. Contacta a soporte para reactivarla.",
+      "network": "No pudimos conectar con el servidor. Revisa tu conexión a internet e inténtalo de nuevo.",
+      "generic": "No pudimos iniciar tu sesión. Inténtalo de nuevo.",
+      "wrongPasswordTitle": "Contraseña incorrecta"
     },
     "togglePassword": "Mostrar u ocultar contraseña"
   },
