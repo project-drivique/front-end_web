@@ -92,7 +92,7 @@
 
 .eb-btn--primary {
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
 }
 
 .eb-btn--primary:hover {

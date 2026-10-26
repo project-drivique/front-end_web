@@ -5,12 +5,12 @@ Tecnólogo en Análisis y Desarrollo de Software
 
 ---
 
-## 🚗 Descripción del Proyecto
+##  Descripción del Proyecto
 **Drivique** es una plataforma web moderna, segura y de alto rendimiento diseñada para la gestión integral del alquiler de vehículos. Ofrece experiencias optimizadas tanto para clientes (catálogo interactivo, cotizaciones en tiempo real, reserva paso a paso, firma digital de contratos y pasarela de pago) como para administradores y encargados de sucursal (panel operativo en tiempo real, control de entregas/devoluciones, gestión de flota, reportes financieros y auditoría).
 
 ---
 
-## 🛠️ Stack Tecnológico
+##  Stack Tecnológico
 * **Core:** [React 19](https://react.dev/) + [Vite 8](https://vite.dev/)
 * **Enrutamiento y Rendimiento:** [React Router 7](https://reactrouter.com/) con *Code Splitting* y *Lazy Loading* (`React.lazy` + `Suspense`)
 * **Gestión de Estado Global:** [Zustand 5](https://zustand-demo.pmnd.rs/)
@@ -24,7 +24,7 @@ Tecnólogo en Análisis y Desarrollo de Software
 
 ---
 
-## 🏛️ Arquitectura y Patrones de Diseño
+##  Arquitectura y Patrones de Diseño
 
 El código sigue estrictos estándares de ingeniería de software y separación de responsabilidades (*Separation of Concerns*):
 
@@ -44,7 +44,7 @@ El código sigue estrictos estándares de ingeniería de software y separación 
 
 ---
 
-## 📁 Estructura Modular del Proyecto
+##  Estructura Modular del Proyecto
 
 ```text
 front-end_web/
@@ -76,7 +76,7 @@ front-end_web/
 
 ---
 
-## 🌿 Gobernanza de Ramas Git
+##  Gobernanza de Ramas Git
 
 El repositorio se rige bajo el modelo de ramas controladas:
 * `main` → Código de producción estable, verificado y aprobado.
@@ -86,7 +86,7 @@ El repositorio se rige bajo el modelo de ramas controladas:
 
 ---
 
-## ⚙️ Instalación y Ejecución Local
+##  Instalación y Ejecución Local
 
 ### 1. Clonar el repositorio:
 ```bash
@@ -111,7 +111,7 @@ npm run build
 
 ---
 
-## 👥 Equipo de Desarrollo
+##  Equipo de Desarrollo
 * **Laura Vanessa Perez Perdomo**
 * **Danna Valentina Barrios Penagos**
 * **Emily Sharith Amezquita Saavedra**
