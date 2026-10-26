@@ -32,7 +32,6 @@ function loadTurnstile() {
  */
 export default function SecurityCaptcha({
   onVerified,
-  isVerified,
   hasError = false,
   c,
   style = {}
@@ -42,6 +41,8 @@ export default function SecurityCaptcha({
   const widgetIdRef = useRef(null);
   const onVerifiedRef = useRef(onVerified);
   const [status, setStatus] = useState('loading'); // loading | ready | failed | off
+  const [hasToken, setHasToken] = useState(false);
+  const verified = hasToken;
 
   useEffect(() => {
     onVerifiedRef.current = onVerified;
@@ -50,9 +51,10 @@ export default function SecurityCaptcha({
   useEffect(() => {
     let cancelled = false;
 
-    const notify = (verified, token) => {
-      captchaTokenStore.set(verified ? token : null);
-      if (typeof onVerifiedRef.current === 'function') onVerifiedRef.current(verified, token);
+    const notify = (ok, token) => {
+      captchaTokenStore.set(ok ? token : null);
+      if (!cancelled) setHasToken(Boolean(ok && token));
+      if (typeof onVerifiedRef.current === 'function') onVerifiedRef.current(ok, token);
     };
 
     (async () => {
@@ -61,7 +63,8 @@ export default function SecurityCaptcha({
         if (cancelled) return;
         if (!config?.enabled) {
           setStatus('off');
-          notify(true, null);
+          captchaTokenStore.set(null);
+          if (typeof onVerifiedRef.current === 'function') onVerifiedRef.current(true, null);
           return;
         }
         const turnstile = await loadTurnstile();
@@ -71,6 +74,7 @@ export default function SecurityCaptcha({
           theme: c?.isDark ? 'dark' : 'light',
           callback: (token) => notify(true, token),
           'expired-callback': () => notify(false),
+          'timeout-callback': () => notify(false),
           'error-callback': () => {
             notify(false);
             setStatus('failed');
@@ -84,6 +88,7 @@ export default function SecurityCaptcha({
 
     // Cuando el servidor consume el token (reserva creada o con error) el widget se reinicia
     const unsubscribe = captchaTokenStore.subscribe(() => {
+      setHasToken(false);
       if (window.turnstile && widgetIdRef.current !== null) {
         window.turnstile.reset(widgetIdRef.current);
       }
@@ -102,15 +107,17 @@ export default function SecurityCaptcha({
       }
       widgetIdRef.current = null;
       captchaTokenStore.set(null);
+      // El padre no debe seguir creyendo que está verificado cuando el widget ya no existe
+      if (typeof onVerifiedRef.current === 'function') onVerifiedRef.current(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (status === 'off') return null;
 
-  const borderColor = hasError && !isVerified
+  const borderColor = hasError && !verified
     ? '#ef4444'
-    : isVerified
+    : verified
       ? '#10b981'
       : (c?.cardBorder || '#e2e8f0');
 
@@ -127,7 +134,7 @@ export default function SecurityCaptcha({
           borderRadius: 14,
           background: c?.isDark ? 'rgba(30, 41, 59, 0.75)' : '#ffffff',
           border: `1.5px solid ${borderColor}`,
-          boxShadow: isVerified ? '0 2px 10px rgba(16, 185, 129, 0.12)' : '0 1px 4px rgba(0, 0, 0, 0.05)',
+          boxShadow: verified ? '0 2px 10px rgba(16, 185, 129, 0.12)' : '0 1px 4px rgba(0, 0, 0, 0.05)',
           transition: 'all 0.25s ease'
         }}
       >
@@ -141,27 +148,27 @@ export default function SecurityCaptcha({
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-              background: isVerified ? '#10b981' : 'rgba(2, 132, 199, 0.1)',
-              color: isVerified ? '#ffffff' : '#0284c7',
+              background: verified ? '#10b981' : 'rgba(2, 132, 199, 0.1)',
+              color: verified ? '#ffffff' : '#0284c7',
               transition: 'all 0.2s'
             }}
           >
-            {isVerified ? <FaCheck size={16} /> : <FaShieldAlt size={16} />}
+            {verified ? <FaCheck size={16} /> : <FaShieldAlt size={16} />}
           </div>
           <div>
             <div
               style={{
                 fontSize: 14,
                 fontWeight: 600,
-                color: isVerified ? (c?.isDark ? '#34d399' : '#059669') : (c?.textPrimary || '#0f172a')
+                color: verified ? (c?.isDark ? '#34d399' : '#059669') : (c?.textPrimary || '#0f172a')
               }}
             >
-              {isVerified
+              {verified
                 ? t('captcha.successLabel', 'Humano verificado con éxito')
                 : t('captcha.verifyHuman', 'Confirmar que soy una persona')}
             </div>
             <div style={{ fontSize: 12, color: c?.textMuted || '#64748b', marginTop: 2 }}>
-              {isVerified
+              {verified
                 ? t('captcha.verifiedDesc', 'Verificación completada. Ya puedes confirmar tu reserva.')
                 : status === 'failed'
                   ? t('captcha.loadError', 'No se pudo cargar la verificación. Revisa tu conexión y recarga la página.')
@@ -172,12 +179,12 @@ export default function SecurityCaptcha({
 
         <div
           ref={containerRef}
-          style={{ minHeight: 65, display: isVerified && status === 'ready' ? 'none' : 'block' }}
+          style={{ minHeight: 65 }}
           aria-live="polite"
         />
       </div>
 
-      {hasError && !isVerified && (
+      {hasError && !verified && (
         <div
           style={{
             display: 'flex',

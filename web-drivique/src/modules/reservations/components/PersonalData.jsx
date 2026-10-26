@@ -8,6 +8,7 @@ import { getNombreTipoDoc, getSiglaDoc } from '@/utils/documentUtils';
 import { FaUser, FaIdCard, FaCheckCircle, FaCloudUploadAlt, FaTrashAlt } from 'react-icons/fa';
 import paisesMock from '@/config/datos/nationalities.json';
 import SecurityCaptcha from './SecurityCaptcha';
+import { captchaTokenStore } from '../../../services/captchaTokenStore';
 
 const getPrefijoPais = (nacionalidad) => {
   if (!nacionalidad) return '';
@@ -191,9 +192,11 @@ export default function DatosPersonales({
   const [captchaVerificado, setCaptchaVerificado] = useState(false);
   const [errorCaptcha, setErrorCaptcha] = useState(false);
   const captchaRef = useRef(null);
+  const captchaDesactivado = useRef(false);
 
   const handleConfirmarConCaptcha = () => {
-    if (!captchaVerificado) {
+    // Se exige un token vigente del captcha (no solo la marca visual): el servidor lo valida
+    if (!captchaVerificado || (!captchaTokenStore.get() && !captchaDesactivado.current)) {
       setErrorCaptcha(true);
       if (captchaRef.current) {
         captchaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -778,7 +781,8 @@ export default function DatosPersonales({
       <div ref={captchaRef} style={{ marginBottom: 20 }}>
         <SecurityCaptcha
           isVerified={captchaVerificado}
-          onVerified={(verified) => {
+          onVerified={(verified, token) => {
+            captchaDesactivado.current = Boolean(verified && !token);
             setCaptchaVerificado(verified);
             if (verified) setErrorCaptcha(false);
           }}
