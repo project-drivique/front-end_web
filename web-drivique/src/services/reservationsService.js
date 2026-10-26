@@ -1,4 +1,5 @@
 import { captchaTokenStore } from './captchaTokenStore'
+import { withIdempotency } from './idempotency'
 
 let apiInstance = null
 
@@ -34,8 +35,11 @@ export const reservationsService = {
     // Initiate checkout (creates a hold)
     // El captcha se valida en el servidor: el token es de un solo uso
     const captchaToken = captchaTokenStore.consume()
-    const { data } = await api.post('/reservations/checkout/initiate', datosReserva, {
-      headers: captchaToken ? { 'X-Captcha-Token': captchaToken } : undefined,
+    const data = await withIdempotency(`initiate:${JSON.stringify(datosReserva)}`, async (key) => {
+      const response = await api.post('/reservations/checkout/initiate', datosReserva, {
+        headers: { 'Idempotency-Key': key, ...(captchaToken ? { 'X-Captcha-Token': captchaToken } : {}) },
+      })
+      return response.data
     })
     return data
   },
@@ -50,14 +54,18 @@ export const reservationsService = {
   confirmarPago: async (holdId, transactionId) => {
     const api = await getApi()
     const params = transactionId ? { transactionId } : {}
-    const { data } = await api.post(`/reservations/checkout/confirm/${holdId}`, null, { params })
-    return data
+    return withIdempotency(`confirm:${holdId}:${transactionId || ''}`, async (key) => {
+      const { data } = await api.post(`/reservations/checkout/confirm/${holdId}`, null, { params, headers: { 'Idempotency-Key': key } })
+      return data
+    })
   },
 
   reportarPagoFallido: async (holdId) => {
     const api = await getApi()
-    const { data } = await api.post(`/reservations/checkout/payment-failed/${holdId}`)
-    return data
+    return withIdempotency(`payment-failed:${holdId}`, async (key) => {
+      const { data } = await api.post(`/reservations/checkout/payment-failed/${holdId}`, null, { headers: { 'Idempotency-Key': key } })
+      return data
+    })
   },
 
   cancelarReserva: async (id) => {
