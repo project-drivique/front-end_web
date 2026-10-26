@@ -3536,7 +3536,10 @@
     "reportIncident": "Support / Signaler un incident",
     "rateAndReview": "Noter et évaluer mon expérience",
     "starsCount": "{{count}} étoiles",
-    "wompiDeadlineNotice": "Vous disposez d’environ {{horas}} heures à partir de maintenant pour effectuer le paiement sécurisé en ligne. Si vous ne payez pas dans ce délai, la réservation sera annulée automatiquement."
+    "wompiDeadlineNotice": "Vous disposez d’environ {{horas}} heures à partir de maintenant pour effectuer le paiement sécurisé en ligne. Si vous ne payez pas dans ce délai, la réservation sera annulée automatiquement.",
+    "errorHoraRetiroPasada": "L’heure de retrait sélectionnée est déjà passée. Veuillez choisir une heure ultérieure.",
+    "errorHoraDevolucionPasada": "L’heure de retour sélectionnée est déjà passée. Veuillez choisir une heure ultérieure.",
+    "errorDevolucionAntesRetiro": "L’heure de retour ne peut pas être antérieure à l’heure de retrait le même jour."
   },
   "perfil": {
     "title": "Mon profil",
@@ -3582,7 +3585,7 @@
     "passwordSet": "Mot de passe défini",
     "passwordSetHint": "Cliquez sur \"Changer le mot de passe\" pour le mettre à jour",
     "passwordUpdatedTitle": "Mot de passe mis à jour !",
-    "passwordUpdatedText": "Votre mot de passe a été modifié avec succès.",
+    "passwordUpdatedText": "Votre mot de passe a été mis à jour. Par sécurité, reconnectez-vous avec le nouveau mot de passe.",
     "passwordMatch": "Les mots de passe correspondent",
     "passwordNoMatch": "Les mots de passe ne correspondent pas",
     "verifyEmail": "Vérifier l'e-mail",
@@ -3641,7 +3644,8 @@
       "emailInvalid": "Format d'e-mail non valide",
       "emailTaken": "Cet e-mail est déjà enregistré",
       "updateFailed": "Impossible de mettre à jour le profil",
-      "newPasswordRequired": "Saisissez le nouveau mot de passe."
+      "newPasswordRequired": "Saisissez le nouveau mot de passe.",
+      "samePassword": "Le nouveau mot de passe doit être différent de l’actuel."
     },
     "roles": {
       "usuario": "Utilisateur",
@@ -3941,7 +3945,13 @@
     "noCouponsForVehicle": "Aucun coupon n’est disponible pour ce véhicule pour le moment.",
     "emptyTitle": "Aucun coupon actif n’est disponible pour ce véhicule pour le moment",
     "allVehicles": "Tous les véhicules",
-    "couponRejected": "Le coupon n’a pas pu être appliqué à cette réservation."
+    "couponRejected": "Le coupon n’a pas pu être appliqué à cette réservation.",
+    "couponCannotBeApplied": "Le coupon n’a pas pu être appliqué",
+    "couponRejectedDefault": "Ce coupon n’a pas pu être appliqué à votre réservation. Vous l’avez peut-être déjà utilisé ou il ne remplit pas les conditions.",
+    "alreadyUsed": "Vous avez déjà utilisé ce coupon pour une réservation précédente.",
+    "notActive": "Le coupon n’est pas actif ou a expiré.",
+    "limitReached": "Ce coupon a atteint son nombre maximal d’utilisations.",
+    "conditionsNotMet": "La réservation ne remplit pas les conditions minimales requises pour ce coupon."
   },
   "placeholder": {
     "title": "Cet écran n'est pas encore implémenté",

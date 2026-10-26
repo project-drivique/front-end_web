@@ -3595,7 +3595,7 @@
     "passwordSet": "Password Set",
     "passwordSetHint": "Click \"Change Password\" to update it",
     "passwordUpdatedTitle": "Password Updated!",
-    "passwordUpdatedText": "Your password has been updated successfully.",
+    "passwordUpdatedText": "Your password was updated. For security, please sign in again with your new password.",
     "passwordMatch": "Passwords match",
     "passwordNoMatch": "Passwords do not match",
     "verifyEmail": "Verify Email",
@@ -3654,7 +3654,8 @@
       "emailInvalid": "Invalid email format",
       "emailTaken": "This email is already registered",
       "updateFailed": "Could not update profile",
-      "newPasswordRequired": "Enter the new password."
+      "newPasswordRequired": "Enter the new password.",
+      "samePassword": "The new password must be different from the current one."
     },
     "roles": {
       "usuario": "User",
@@ -3954,7 +3955,13 @@
     "noCouponsForVehicle": "There are no coupons available for this vehicle at the moment.",
     "emptyTitle": "There are no active coupons available for this vehicle at the moment",
     "allVehicles": "All vehicles",
-    "couponRejected": "The coupon could not be applied to this reservation."
+    "couponRejected": "The coupon could not be applied to this reservation.",
+    "couponCannotBeApplied": "The coupon could not be applied",
+    "couponRejectedDefault": "This coupon could not be applied to your booking. You may have already used it or it does not meet the requirements.",
+    "alreadyUsed": "You have already used this coupon on a previous booking.",
+    "notActive": "The coupon is not active or has expired.",
+    "limitReached": "This coupon has reached its maximum number of uses.",
+    "conditionsNotMet": "The booking does not meet the minimum conditions required for this coupon."
   },
   "placeholder": {
     "title": "This screen is not implemented yet",

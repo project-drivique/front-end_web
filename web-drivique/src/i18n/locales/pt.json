@@ -3536,7 +3536,10 @@
     "reportIncident": "Suporte / Reportar ocorrência",
     "rateAndReview": "Avaliar a minha experiência",
     "starsCount": "{{count}} estrelas",
-    "wompiDeadlineNotice": "Tem aproximadamente {{horas}} horas a partir de agora para efetuar o pagamento seguro online. Se não pagar dentro deste prazo, a reserva será cancelada automaticamente."
+    "wompiDeadlineNotice": "Tem aproximadamente {{horas}} horas a partir de agora para efetuar o pagamento seguro online. Se não pagar dentro deste prazo, a reserva será cancelada automaticamente.",
+    "errorHoraRetiroPasada": "A hora de levantamento selecionada já passou. Selecione uma hora posterior.",
+    "errorHoraDevolucionPasada": "A hora de devolução selecionada já passou. Selecione uma hora posterior.",
+    "errorDevolucionAntesRetiro": "A hora de devolução não pode ser anterior à hora de levantamento no mesmo dia."
   },
   "perfil": {
     "title": "O meu perfil",
@@ -3582,7 +3585,7 @@
     "passwordSet": "Palavra-passe definida",
     "passwordSetHint": "Clique em \"Alterar palavra-passe\" para atualizá-la",
     "passwordUpdatedTitle": "Palavra-passe atualizada!",
-    "passwordUpdatedText": "A sua palavra-passe foi alterada com sucesso.",
+    "passwordUpdatedText": "A sua palavra-passe foi atualizada. Por segurança, inicie sessão novamente com a nova palavra-passe.",
     "passwordMatch": "As palavras-passe coincidem",
     "passwordNoMatch": "As palavras-passe não coincidem",
     "verifyEmail": "Verificar e-mail",
@@ -3641,7 +3644,8 @@
       "emailInvalid": "Formato de e-mail inválido",
       "emailTaken": "Este e-mail já está registado",
       "updateFailed": "Não foi possível atualizar o perfil",
-      "newPasswordRequired": "Introduza a nova palavra-passe."
+      "newPasswordRequired": "Introduza a nova palavra-passe.",
+      "samePassword": "A nova palavra-passe tem de ser diferente da atual."
     },
     "roles": {
       "usuario": "Utilizador",
@@ -3941,7 +3945,13 @@
     "noCouponsForVehicle": "Não há cupões disponíveis para este veículo neste momento.",
     "emptyTitle": "Não há cupões ativos disponíveis para este veículo neste momento",
     "allVehicles": "Todos os veículos",
-    "couponRejected": "Não foi possível aplicar o cupão a esta reserva."
+    "couponRejected": "Não foi possível aplicar o cupão a esta reserva.",
+    "couponCannotBeApplied": "Não foi possível aplicar o cupão",
+    "couponRejectedDefault": "Este cupão não pôde ser aplicado à sua reserva. É possível que já o tenha utilizado ou que não cumpra os requisitos.",
+    "alreadyUsed": "Já utilizou este cupão numa reserva anterior.",
+    "notActive": "O cupão não está ativo ou expirou.",
+    "limitReached": "Este cupão atingiu o limite máximo de utilizações.",
+    "conditionsNotMet": "A reserva não cumpre as condições mínimas exigidas para este cupão."
   },
   "placeholder": {
     "title": "Esta tela ainda não foi implementada",
