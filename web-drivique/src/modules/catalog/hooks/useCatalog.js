@@ -1,3 +1,4 @@
+import { useAuthStore } from '../../../store/authStore'
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { eachDayOfInterval, format, parseISO } from 'date-fns'
@@ -114,12 +115,17 @@ export function useCatalogo({ esFavorito = () => false } = {}) {
     cargarVehiculos()
   }, [cargarVehiculos])
 
+  // Las reservas propias solo existen con sesión: un invitado no debe pedirlas (daba 401 en cada visita al catálogo)
+  const hayToken = useAuthStore((state) => Boolean(state.token))
   useEffect(() => {
+    if (!hayToken) {
+      setReservas([])
+      return
+    }
     reservationsService.getReservas()
-       
       .then(setReservas)
       .catch(() => setReservas([]))
-  }, [])
+  }, [hayToken])
 
   const diasOcupadosPorVehiculo = useMemo(() => {
     const mapa = new Map()
