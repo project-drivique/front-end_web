@@ -233,7 +233,7 @@
 
 .kpi-action-btn--reports {
   background: var(--brand-primary, #0f172a);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border-color: var(--brand-primary, #0f172a);
 }
 

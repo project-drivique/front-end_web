@@ -511,7 +511,7 @@
 
 .doc-page-btn.is-active {
   background: var(--brand-primary);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border-color: var(--brand-primary);
   font-weight: 700;
 }
@@ -675,7 +675,7 @@
   padding: 4px 12px;
   border-radius: 9999px;
   background: var(--brand-primary);
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   font-size: 11.5px;
   font-weight: 700;
   text-decoration: none;

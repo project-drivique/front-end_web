@@ -183,7 +183,7 @@ html.dark .cash-filter-btn.active {
 /* Botón primario de la marca Drivique (Verde Esmeralda) */
 .cash-btn-primary {
   background: var(--brand-primary, #047857);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border: none;
   border-radius: 8px;
   padding: 8px 14px;
@@ -316,7 +316,7 @@ html.dark .cash-obs-input {
   height: 48px;
   border-radius: 10px;
   background: var(--brand-primary, #047857);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border: none;
   font-size: 15px;
   font-weight: 800;
@@ -628,14 +628,14 @@ html.dark .cash-cal-day.in-range {
 
 .cash-cal-day.range-start {
   background: var(--brand-primary, #047857) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   border-radius: 8px 0 0 8px;
   font-weight: 800;
 }
 
 .cash-cal-day.range-end {
   background: var(--brand-primary, #047857) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   border-radius: 0 8px 8px 0;
   font-weight: 800;
 }

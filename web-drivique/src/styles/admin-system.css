@@ -175,7 +175,7 @@
 .cities-primary, .management-action, .brand-primary {
   min-height: 44px; padding: 10px 16px !important; border-radius: 10px !important;
   background: var(--brand-primary) !important; border: 1px solid var(--brand-primary) !important;
-  color: #fff !important; font-size: 13px !important; font-weight: 750 !important;
+  color: var(--brand-on-primary,#fff) !important; font-size: 13px !important; font-weight: 750 !important;
   box-shadow: 0 5px 14px color-mix(in srgb, var(--brand-primary) 24%, transparent) !important;
   transform: none !important;
 }
@@ -442,7 +442,7 @@
   border: none !important;
   border-radius: 8px !important;
   background: linear-gradient(135deg, var(--brand-primary-hover) 0%, var(--brand-primary) 100%) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   padding: 6px 14px !important;
   font-size: 12px !important;
   font-weight: 600 !important;
@@ -459,7 +459,7 @@
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 10px rgba(var(--brand-primary-rgb), 0.35) !important;
   background: linear-gradient(135deg, var(--brand-primary-active) 0%, var(--brand-primary-hover) 100%) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
 }
 .cities-row-actions button.is-delete,
 .cities-row-actions button.is-danger,
