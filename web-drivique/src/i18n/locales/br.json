@@ -5685,6 +5685,7 @@
     "refreshTooltip": "Gerar novo código",
     "emptyCode": "Por favor digite o código de segurança.",
     "invalidCode": "Código incorreto. Geramos um novo.",
-    "mustVerify": "Você deve concluir a verificação de segurança antes de confirmar a reserva."
+    "mustVerify": "Você deve concluir a verificação de segurança antes de confirmar a reserva.",
+    "loadError": "Não foi possível carregar a verificação. Verifique sua conexão e recarregue a página."
   }
 }
