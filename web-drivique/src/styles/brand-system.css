@@ -10,6 +10,7 @@
   --brand-on-primary: #ffffff;
   --brand-on-secondary: #ffffff;
   --brand-on-accent: #0f172a;
+  --brand-on-gradient: #ffffff;
   --brand-primary-hover: #1d4ed8;
   --brand-primary-active: #1e40af;
   --brand-secondary-hover: #162d6e;
@@ -26,8 +27,9 @@
   --brand-soft: var(--brand-soft-light);
   --brand-soft-strong: var(--brand-soft-strong-light);
   --brand-primary-soft: var(--brand-soft);
-  --brand-gradient: linear-gradient(135deg, var(--brand-secondary), var(--brand-primary));
-  --brand-gradient-hover: linear-gradient(135deg, var(--brand-secondary-hover), var(--brand-primary-hover));
+  --brand-gradient-end: var(--brand-primary);
+  --brand-gradient: linear-gradient(135deg, var(--brand-secondary), var(--brand-gradient-end));
+  --brand-gradient-hover: linear-gradient(135deg, var(--brand-secondary-hover), var(--brand-gradient-end));
   --brand-shadow: 0 8px 24px rgba(var(--brand-primary-rgb), .22);
   --brand-focus: 0 0 0 3px rgba(var(--brand-primary-rgb), .20);
   --texto-acento: var(--brand-text);
@@ -128,7 +130,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .reserva-stepper .step-circle.active,
 .reserva-stepper .step-circle.completed {
   background: var(--brand-gradient) !important;
-  color: var(--brand-on-primary) !important;
+  color: var(--brand-on-gradient) !important;
   border-color: var(--brand-primary) !important;
   box-shadow: var(--brand-shadow) !important;
 }
@@ -160,7 +162,7 @@ input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color:
 .perfil-container .perfil-badge,
 .perfil-container .perfil-icon-box { background: var(--brand-soft) !important; color: var(--brand-text) !important; }
 .perfil-container .perfil-primary-button,
-.perfil-container button[type="submit"]:not(.danger-button) { background: var(--brand-gradient) !important; color: var(--brand-on-primary) !important; }
+.perfil-container button[type="submit"]:not(.danger-button) { background: var(--brand-gradient) !important; color: var(--brand-on-gradient) !important; }
 
 /* Notificaciones y soporte. */
 .notificaciones-header-title p,

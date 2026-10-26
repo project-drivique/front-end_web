@@ -210,7 +210,7 @@
   padding: 10px 22px;
   border-radius: 12px;
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border: none;
   font-size: 13.5px;
   font-weight: 700;

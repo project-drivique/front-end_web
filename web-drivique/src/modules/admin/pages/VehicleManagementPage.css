@@ -271,7 +271,7 @@
 .cities-row-actions button {
   border: none !important;
   background: linear-gradient(135deg, var(--brand-secondary, #1d4ed8) 0%, var(--brand-primary, #2563eb) 100%) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-gradient,#ffffff) !important;
   border-radius: 8px !important;
   padding: 0 16px !important;
   min-width: 82px !important;
@@ -296,7 +296,7 @@
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 10px rgba(var(--brand-primary-rgb), 0.35) !important;
   background: linear-gradient(135deg, var(--brand-secondary, #1e40af) 0%, var(--brand-secondary, #1d4ed8) 100%) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-secondary,#ffffff) !important;
 }
 
 .btn-row-action.is-delete,
@@ -557,7 +557,7 @@
   justify-content: space-between;
   gap: 20px;
   box-shadow: 0 10px 25px -5px rgba(var(--brand-primary-rgb), 0.25);
-  color: #ffffff;
+  color: var(--brand-on-gradient,#ffffff);
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -1278,7 +1278,7 @@ button.fleet-gallery-btn span,
 
 .fleet-gallery-btn.is-edit:hover {
   background: var(--brand-primary, #2563eb) !important;
-  color: #ffffff !important;
+  color: var(--brand-on-primary,#ffffff) !important;
   border-color: var(--brand-primary, #2563eb) !important;
 }
 
@@ -1435,7 +1435,7 @@ body.dark .fleet-gallery-btn.is-edit {
 .management-shell--dark .fleet-gallery-btn.is-edit:hover,
 body.dark .fleet-gallery-btn.is-edit:hover {
   background: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
 }
 
 .management-shell--dark .fleet-gallery-btn.is-delete,

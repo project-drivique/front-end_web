@@ -65,7 +65,7 @@
 
 .notificacion-tab-btn.activa {
   background: var(--brand-primary);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   box-shadow: 0 4px 14px rgba(var(--brand-primary-rgb), 0.25);
 }
 
@@ -403,7 +403,7 @@
   padding: 10px 16px;
   border-radius: 12px;
   background: var(--brand-primary);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   border: none;
   font-size: 13px;
   font-weight: 800;
@@ -571,7 +571,7 @@
 .notif-filtro-chip.activo {
   background: var(--brand-primary, #2563eb);
   border-color: var(--brand-primary, #2563eb);
-  color: #ffffff;
+  color: var(--brand-on-primary,#ffffff);
   box-shadow: 0 2px 8px rgba(var(--brand-primary-rgb), 0.25);
 }
 

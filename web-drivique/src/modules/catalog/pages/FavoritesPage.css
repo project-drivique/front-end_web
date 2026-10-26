@@ -356,7 +356,7 @@ html.dark .btn-eliminar-favorito-card:hover {
   align-items: center;
   gap: 8px;
   background: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-primary) 100%);
-  color: #ffffff;
+  color: var(--brand-on-gradient,#ffffff);
   border: none;
   padding: 10px 20px;
   border-radius: 12px;
