@@ -18,6 +18,31 @@ const estadoReserva = (r) => {
   return 'confirmada'
 }
 
+// Dónde se entrega y dónde se recibe el vehículo, tal como los guardó el servidor (sucursal o domicilio)
+function lugaresDesdeServidor(puntos) {
+  const lista = Array.isArray(puntos) ? puntos : []
+  const lugares = {}
+  const direccionDe = (p) => [p.address, p.cityName].filter(Boolean).join(', ')
+  const retiro = lista.find((p) => String(p.pointType).toUpperCase() === 'PICKUP')
+  const devolucion = lista.find((p) => String(p.pointType).toUpperCase() === 'RETURN')
+  if (retiro?.modality === 'HOME_DELIVERY') {
+    lugares.sucursalRetiro = 'domicilio'
+    lugares.domicilioDireccion = direccionDe(retiro)
+    lugares.domicilioBarrio = retiro.neighborhood || ''
+    lugares.domicilioReferencias = retiro.referenceDetails || ''
+  } else if (retiro?.branchName) {
+    lugares.sucursalRetiro = retiro.branchName
+  }
+  if (devolucion?.modality === 'HOME_DELIVERY') {
+    lugares.sucursalDevolucion = 'domicilio'
+    lugares.domicilioDevolucionDireccion = direccionDe(devolucion)
+    lugares.domicilioDevolucionBarrio = devolucion.neighborhood || ''
+  } else if (devolucion?.branchName) {
+    lugares.sucursalDevolucion = devolucion.branchName
+  }
+  return lugares
+}
+
 export function useHistorialReservas() {
   const { t } = useTranslation()
   const [reservas, setReservas] = useState([])
@@ -59,6 +84,7 @@ export function useHistorialReservas() {
 
           return {
             ...r,
+            ...lugaresDesdeServidor(r.deliveryPoints),
             id: r.id,
             createdAt: rawCreatedAt,
             codigo: refCode,
