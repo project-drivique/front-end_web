@@ -810,7 +810,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const resolverLugar = (loc, dom) => {
     if (!loc) return sucursalPago
     if (loc === 'domicilio') {
-      return dom ? `A Domicilio (${dom})` : 'A Domicilio'
+      return dom ? `${t('reservas.atHome', 'A Domicilio')} (${dom})` : t('reservas.atHome', 'A Domicilio')
     }
     if (loc === 'aeropuerto') return 'Aeropuerto'
     if (loc === 'terminal') return 'Terminal'
@@ -1136,10 +1136,10 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
             <div className="modal-wompi-subcard" style={{ padding: '22px 20px 20px', alignItems: 'center' }}>
               <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid var(--borde, #e2e8f0)', textAlign: 'center' }}>
                 <h3 className="modal-wompi-titulo" style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: 'var(--texto-primary)' }}>
-                  Domicilio
+                  {t('reservas.homeCardTitle', 'Domicilio')}
                 </h3>
                 <p className="modal-wompi-desc" style={{ fontSize: '12px', margin: '3px 0 0', textAlign: 'center', color: 'var(--texto-second)' }}>
-                  Código de seguridad para validación al momento de la entrega.
+                  {t('reservas.homeCardSubtitle', 'Código de seguridad para validación al momento de la entrega.')}
                 </p>
               </div>
 
@@ -1156,7 +1156,8 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
               <div className="modal-wompi-total-box" style={{ width: '100%', padding: '16px 18px', marginBottom: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div className="nequi-pin-boxes">
-                    {String(domicilioPin || '----').slice(0, 4).split('').map((char, i) => (
+                    {/* El código de entrega tiene 6 caracteres: se muestran todos, igual que en el correo del conductor */}
+                    {String(domicilioPin || '------').split('').map((char, i) => (
                       <div key={i} className="nequi-pin-box">
                         {revelarPin ? char : '•'}
                       </div>
@@ -1173,7 +1174,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 </div>
 
                 <span style={{ fontSize: '11.5px', color: 'var(--texto-second)', textAlign: 'center', fontWeight: 500 }}>
-                  Confírmale este código al conductor encargado de entregar el vehículo.
+                  {t('reservas.homeCardHint', 'Confírmale este código al conductor encargado de entregar el vehículo.')}
                 </span>
               </div>
 
@@ -1193,7 +1194,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 {/* Ciudad */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                    Ciudad:
+                    {t('reservas.homeCity', 'Ciudad')}:
                   </span>
                   <strong style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--texto-primary)' }}>
                     {ciudadPago}
@@ -1205,7 +1206,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 {/* Estado del Domicilio (Ubicado antes de Conductor Asignado) */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                    Estado del Domicilio:
+                    {t('reservas.homeStatus', 'Estado del domicilio')}:
                   </span>
                   <strong style={{
                     fontSize: '13.5px',
@@ -1214,10 +1215,10 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                       ? '#047857'
                       : (domicilioEstado === 'EN_CAMINO' ? 'var(--brand-primary-hover)' : '#b45309')
                   }}>
-                    {domicilioEstado === 'EN_PREPARACION' && 'En proceso'}
-                    {domicilioEstado === 'EN_CAMINO' && 'Agente en camino'}
-                    {domicilioEstado === 'ENTREGADO' && 'Entregado'}
-                    {domicilioEstado === 'RECOGIDO' && 'Recogido'}
+                    {domicilioEstado === 'EN_PREPARACION' && t('reservas.homeStatusPreparing', 'En proceso')}
+                    {domicilioEstado === 'EN_CAMINO' && t('reservas.homeStatusOnTheWay', 'Agente en camino')}
+                    {domicilioEstado === 'ENTREGADO' && t('reservas.homeStatusDelivered', 'Entregado')}
+                    {domicilioEstado === 'RECOGIDO' && t('reservas.homeStatusPickedUp', 'Recogido')}
                   </strong>
                 </div>
 
@@ -1226,11 +1227,11 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                 {/* Conductor Asignado */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                    Conductor Asignado:
+                    {t('reservas.homeDriver', 'Conductor asignado')}:
                   </span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <strong style={{ fontSize: '13.5px', fontWeight: 700, color: domicilioConductor ? 'var(--texto-primary)' : '#b45309' }}>
-                      {domicilioConductor ? domicilioConductor : 'En proceso'}
+                      {domicilioConductor ? domicilioConductor : t('reservas.homeStatusPreparing', 'En proceso')}
                     </strong>
 
                     {domicilioTelefonoConductor && (
@@ -1257,21 +1258,21 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                       <>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                            Información de Entrega:
+                            {t('reservas.homeDeliveryInfo', 'Información de entrega')}:
                           </span>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('hc.direccion_exacta', 'Dirección Exacta:')}</span>
-                            <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioRetiro || 'A convenir'}</strong>
+                            <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioRetiro || t('reservas.homeToArrange', 'A convenir')}</strong>
                           </div>
                           {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Barrio:</span>
+                              <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('reservas.homeNeighborhood', 'Barrio')}:</span>
                               <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}</strong>
                             </div>
                           )}
                           {(reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias) && (
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Indicaciones / Ref:</span>
+                              <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('reservas.homeReferences', 'Indicaciones / Ref.')}</span>
                               <strong style={{ fontSize: '12px', color: 'var(--texto-primary)' }}>{reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias}</strong>
                             </div>
                           )}
@@ -1288,15 +1289,15 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                     {esDomicilioDevolucion && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                          Información de Recogida:
+                          {t('reservas.homePickupInfo', 'Información de recogida')}:
                         </span>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('hc.direccion_exacta', 'Dirección Exacta:')}</span>
-                          <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioDevolucion || domicilioRetiro || 'A convenir'}</strong>
+                          <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioDevolucion || domicilioRetiro || t('reservas.homeToArrange', 'A convenir')}</strong>
                         </div>
                         {(reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio) && (
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>Barrio:</span>
+                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('reservas.homeNeighborhood', 'Barrio')}:</span>
                             <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio}</strong>
                           </div>
                         )}
@@ -1327,7 +1328,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
                       padding: '4px 8px'
                     }}
                   >
-                    <span>{verMasDomicilio ? 'Ocultar detalles' : t('hc2.ver_mas_detalles', 'Ver más detalles')}</span>
+                    <span>{verMasDomicilio ? t('reservas.homeLessDetails', 'Ocultar detalles') : t('hc2.ver_mas_detalles', 'Ver más detalles')}</span>
                     <FaChevronDown style={{ transform: verMasDomicilio ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} size={12} />
                   </button>
                 </div>

@@ -2670,7 +2670,8 @@
     "errors": {
       "googleSDKError": "The Google SDK could not be loaded",
       "googleError": "Registration with Google could not be completed. Please try again.",
-      "facebookError": "Registration with Facebook could not be completed. Please try again."
+      "facebookError": "Registration with Facebook could not be completed. Please try again.",
+      "facebookSdk": "Facebook could not be loaded. Turn off your ad blocker or the browser's tracking prevention for this site and try again."
     },
     "successText": "Your account was registered successfully. We are taking you to your dashboard."
   },
@@ -3549,7 +3550,34 @@
     "reportIncident": "Support / Report an incident",
     "rateAndReview": "Rate and review my experience",
     "starsCount": "{{count}} stars",
-    "wompiDeadlineNotice": "You have approximately {{horas}} hours from now to make the secure online payment. If you do not pay within this period, the reservation will be cancelled automatically."
+    "wompiDeadlineNotice": "You have approximately {{horas}} hours from now to make the secure online payment. If you do not pay within this period, the reservation will be cancelled automatically.",
+    "homeCardTitle": "Home delivery",
+    "homeCardSubtitle": "Security code to validate at the moment of delivery.",
+    "homeCardHint": "Give this code to the driver in charge of delivering the vehicle.",
+    "homeCity": "City",
+    "homeStatus": "Delivery status",
+    "homeStatusPreparing": "In progress",
+    "homeStatusOnTheWay": "Agent on the way",
+    "homeStatusDelivered": "Delivered",
+    "homeStatusPickedUp": "Picked up",
+    "homeDriver": "Assigned driver",
+    "homeMoreDetails": "See more details",
+    "homeLessDetails": "Hide details",
+    "homeDeliveryInfo": "Delivery information",
+    "homePickupInfo": "Pickup information",
+    "homeAddress": "Exact address",
+    "homeNeighborhood": "Neighborhood",
+    "homeReferences": "Directions / Ref.",
+    "homeToArrange": "To be arranged",
+    "atHome": "Home delivery",
+    "cancelTitle": "Cancel reservation?",
+    "cancelConfirmText": "Are you sure you want to cancel this reservation? This will release the vehicle.",
+    "yesCancel": "Yes, cancel reservation",
+    "cancelledTitle": "Reservation cancelled",
+    "cancelledDesc": "The reservation was cancelled successfully.",
+    "cancelling": "Cancelling reservation...",
+    "cancelReservation": "Cancel reservation",
+    "cancelError": "We could not cancel your reservation right now. Please try again in a few minutes."
   },
   "perfil": {
     "title": "My Profile",
