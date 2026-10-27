@@ -56,6 +56,12 @@ export function resolveDocumentUrl(url) {
   const token = useAuthStore.getState()?.token || ''
   const tokenParam = token ? `&token=${encodeURIComponent(token)}` : ''
 
+  // Una URL ya resuelta (por ejemplo la que recibe la ventana ampliada) no se vuelve a transformar:
+  // procesarla de nuevo la convertía en una ruta inválida
+  if (url.includes('/kyc/documents/file')) {
+    return url
+  }
+
   // Manejo especial para documentos confidenciales KYC cifrados con AES-256
   if (url.includes('/kyc/')) {
     let kycPath = url.trim()
