@@ -8,6 +8,8 @@ import { promotionManagementService } from '../../../services/promotionManagemen
 import { formatCurrency } from '@/utils/currencyUtils'
 import { vehicleManagementService } from '../../../services/vehicleManagementService'
 import { catalogService } from '../../../services/catalogService'
+import { getCoberturasSeguro, getPlanesKilometraje } from '../../../services/pricingService'
+import { SUCURSALES } from '../constants'
 
 import ImageGallery from './detail/ImageGallery'
 import VehicleCharacteristics from './detail/VehicleCharacteristics'
@@ -23,6 +25,20 @@ import GuestReserveModal from './GuestReserveModal'
 import './VehicleDetailsModal.css'
 import '../pages/CatalogPage.css'
 import '../pages/VehicleDetailsPage.css'
+
+const precioDe = (item) => Number(item?.dailyRate ?? item?.precio ?? 0)
+
+// Seguros y planes de kilometraje salen del servidor; se piden una sola vez para todas las ventanas de detalle
+let preciosCache = null
+const cargarPrecios = () => {
+  if (!preciosCache) {
+    preciosCache = Promise.all([getCoberturasSeguro(), getPlanesKilometraje()]).catch(() => {
+      preciosCache = null
+      return [[], []]
+    })
+  }
+  return preciosCache
+}
 
 export default function VehicleDetailsModal({
   isOpen,
@@ -81,22 +97,51 @@ export default function VehicleDetailsModal({
     return vehicleManagementService.getById(targetId)
   }, [targetId, vehiculoProp, vehiculoCargado])
 
+  const [precios, setPrecios] = useState({ coberturas: [], planes: [] })
+  useEffect(() => {
+    if (!isOpen) return undefined
+    let activo = true
+    cargarPrecios().then(([coberturas, planes]) => {
+      if (activo) setPrecios({ coberturas, planes })
+    })
+    return () => { activo = false }
+  }, [isOpen])
+
   const vehiculo = useMemo(() => {
     if (!baseVehiculo) return null
+    const limitado = precios.planes.find((plan) => plan.includedKm != null)
+    const ilimitado = precios.planes.find((plan) => plan.includedKm == null || /unlimited|ilimitado/i.test(plan.name || ''))
+    const hayPlanes = Boolean(limitado || ilimitado)
+    const sede = SUCURSALES.find((s) => baseVehiculo.sucursalId && String(s.id) === String(baseVehiculo.sucursalId))
+      || SUCURSALES.find((s) => s.nombre === baseVehiculo.sucursal)
     return {
       ...baseVehiculo,
       caracteristicas: baseVehiculo.caracteristicas || [],
       equipamientoTecnologico: baseVehiculo.equipamientoTecnologico || [],
-      seguros: baseVehiculo.seguros || [{ nombre: t('hc2.proteccion_basica_estandar', 'Protección Básica Estándar'), precio: 0, descripcion: t('hc2.cobertura_estandar', 'Cobertura estándar') }],
+      seguros: precios.coberturas.length
+        ? [...precios.coberturas]
+          .sort((a, b) => precioDe(a) - precioDe(b))
+          .map((seguro) => ({ ...seguro, nombre: seguro.name, precio: precioDe(seguro), descripcion: seguro.description }))
+        : (baseVehiculo.seguros || []),
       servicios: baseVehiculo.servicios || [],
+      tarifas: hayPlanes
+        ? {
+          ...(baseVehiculo.tarifas || {}),
+          kmLimitado: limitado
+            ? { id: limitado.id, km: limitado.includedKm, precio: precioDe(limitado), excedente: Number(limitado.extraKmRate || 0) }
+            : baseVehiculo.tarifas?.kmLimitado,
+          kmIlimitado: ilimitado ? { id: ilimitado.id, precio: precioDe(ilimitado) } : baseVehiculo.tarifas?.kmIlimitado,
+        }
+        : baseVehiculo.tarifas,
       imagenes: baseVehiculo.imagenes || (baseVehiculo.imagen ? [baseVehiculo.imagen] : []),
+      // Dirección y horario reales de la sucursal: sin dirección no hay botón "Cómo llegar"
       sucursalInfo: baseVehiculo.sucursalInfo || {
-        nombre: baseVehiculo.sucursal || '',
-        direccion: '',
-        horario: 'Lun a dom, 6:00 am - 10:00 pm',
+        nombre: sede?.nombre || baseVehiculo.sucursal || '',
+        direccion: sede?.direccion || '',
+        horario: sede?.horario || '',
       },
     }
-  }, [baseVehiculo])
+  }, [baseVehiculo, precios])
 
   const promo = useMemo(() => {
     if (!vehiculo) return null
