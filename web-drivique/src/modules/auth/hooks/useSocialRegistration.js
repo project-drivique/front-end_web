@@ -28,13 +28,21 @@ function cargarGoogleSDK() {
 }
 
 /* ── Carga dinámica del SDK oficial de Facebook (Meta) ── */
+const FACEBOOK_SDK_TIMEOUT_MS = 10000
+let facebookSdkPromise = null
+
+// Una sola carga del SDK; si el navegador lo bloquea o no responde, falla en vez de dejar la pantalla cargando para siempre
 function cargarFacebookSDK() {
-  return new Promise((resolve) => {
-    if (window.FB) {
-      resolve()
-      return
+  if (window.FB && facebookSdkPromise === null) return Promise.resolve()
+  if (facebookSdkPromise) return facebookSdkPromise
+  facebookSdkPromise = new Promise((resolve, reject) => {
+    const fallar = (motivo) => {
+      facebookSdkPromise = null
+      reject(new Error(motivo))
     }
+    const timer = setTimeout(() => fallar('facebook_sdk_timeout'), FACEBOOK_SDK_TIMEOUT_MS)
     window.fbAsyncInit = () => {
+      clearTimeout(timer)
       window.FB.init({
         appId: FACEBOOK_APP_ID,
         cookie: true,
@@ -47,8 +55,14 @@ function cargarFacebookSDK() {
     script.src = 'https://connect.facebook.net/es_LA/sdk.js'
     script.async = true
     script.defer = true
+    script.onerror = () => {
+      clearTimeout(timer)
+      script.remove()
+      fallar('facebook_sdk_blocked')
+    }
     document.head.appendChild(script)
   })
+  return facebookSdkPromise
 }
 
 function deriveNamesFromEmail(email) {
@@ -337,7 +351,9 @@ export function useSocialRegistration({ onExito } = {}) {
         err?.response?.data?.message ||
         err?.response?.data?.detail ||
         err?.response?.data?.error ||
-        err?.message ||
+        (String(err?.message || '').startsWith('facebook_sdk')
+          ? t('registro.errors.facebookSdk', 'No se pudo cargar Facebook. Desactiva el bloqueador de anuncios o la prevención de rastreo del navegador para este sitio e inténtalo de nuevo.')
+          : err?.message) ||
         t('registro.errors.facebookError', 'Error al autenticar con la API de Facebook')
       )
     } finally {
