@@ -70,7 +70,8 @@ export const reservationsService = {
 
   cancelarReserva: async (id) => {
     const api = await getApi()
-    const { data } = await api.patch(`/reservations/${id}/cancel`)
+    // El servidor exige el motivo: sin cuerpo respondía 400
+    const { data } = await api.patch(`/reservations/${id}/cancel`, { reason: 'Cancelada por el cliente desde la web' })
     return data
   },
 
