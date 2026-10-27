@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
+import i18n from '../i18n'
 
 import { configuredApiUrl } from '../config/apiConfig'
 
@@ -25,6 +26,9 @@ export function clearSessionTokens() {
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token
   if (token) config.headers.Authorization = `Bearer ${token}`
+  // El servidor escribe los correos en el idioma que la persona está usando en la web
+  const language = i18n.resolvedLanguage || i18n.language
+  if (language) config.headers['X-App-Language'] = language
   return config
 })
 
