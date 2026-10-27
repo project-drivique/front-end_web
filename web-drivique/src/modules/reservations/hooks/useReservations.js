@@ -4,15 +4,28 @@ import { reservationsService } from '../../../services/reservationsService'
 import { catalogService } from '../../../services/catalogService'
 import { obtenerEstadoVisible } from '../utils/reservationStatus'
 
+const pad = (n) => String(n).padStart(2, '0')
+const CON_ZONA = /(Z|[+-]\d{2}:?\d{2})$/i
+
+// El servidor entrega los instantes en UTC (…Z). Se pasan a la hora local de la persona para mostrar la fecha y la hora
+// que eligió: leer el texto sin convertir mostraba la hora UTC (cinco horas más tarde en Colombia).
+const aHoraLocal = (valor) => {
+  if (!valor || typeof valor !== 'string' || !valor.includes('T') || !CON_ZONA.test(valor)) return valor
+  const d = new Date(valor)
+  if (Number.isNaN(d.getTime())) return valor
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`
+}
+
 const estadoReserva = (r) => {
   const raw = r.status || r.estado || r.rawEstado
   if (raw) {
     const visible = obtenerEstadoVisible(raw)
     if (visible) return visible
   }
-  const hoy = new Date().toISOString().split('T')[0]
-  const inicio = (r.pickupDate || r.fechaInicio || r.reservaDetalles?.fechaInicio || '').slice(0, 10)
-  const fin = (r.returnDate || r.fechaFin || r.reservaDetalles?.fechaFin || '').slice(0, 10)
+  const ahora = new Date()
+  const hoy = `${ahora.getFullYear()}-${pad(ahora.getMonth() + 1)}-${pad(ahora.getDate())}`
+  const inicio = (aHoraLocal(r.pickupDate) || r.fechaInicio || r.reservaDetalles?.fechaInicio || '').slice(0, 10)
+  const fin = (aHoraLocal(r.returnDate) || r.fechaFin || r.reservaDetalles?.fechaFin || '').slice(0, 10)
   if (fin && fin < hoy) return 'finalizada'
   if (inicio && fin && inicio <= hoy && hoy <= fin) return 'en_curso'
   return 'confirmada'
@@ -58,8 +71,8 @@ export function useHistorialReservas() {
         (data || []).map(async (r) => {
           const vehiculoId = r.vehicleId || r.vehiculoId
           const vehiculoCatalog = vehiculoId ? await catalogService.getVehiculoById(vehiculoId).catch(() => null) : null
-          const fechaInicio = r.pickupDate || r.fechaInicio || r.reservaDetalles?.fechaInicio
-          const fechaFin = r.returnDate || r.fechaFin || r.reservaDetalles?.fechaFin
+          const fechaInicio = aHoraLocal(r.pickupDate) || r.fechaInicio || r.reservaDetalles?.fechaInicio
+          const fechaFin = aHoraLocal(r.returnDate) || r.fechaFin || r.reservaDetalles?.fechaFin
           const rawStatus = r.status || r.estado
           const estadoFinal = estadoReserva({ ...r, estado: rawStatus, fechaInicio, fechaFin })
           const totalVal = r.totalEstimated != null ? Number(r.totalEstimated) : (r.total != null ? Number(r.total) : (r.totalCOP != null ? Number(r.totalCOP) : 0))
