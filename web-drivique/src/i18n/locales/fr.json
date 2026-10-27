@@ -2670,7 +2670,8 @@
     "errors": {
       "googleSDKError": "Impossible de charger le SDK de Google",
       "googleError": "L’inscription avec Google n’a pas pu être finalisée. Veuillez réessayer.",
-      "facebookError": "L’inscription avec Facebook n’a pas pu être finalisée. Veuillez réessayer."
+      "facebookError": "L’inscription avec Facebook n’a pas pu être finalisée. Veuillez réessayer.",
+      "facebookSdk": "Impossible de charger Facebook. Désactivez le bloqueur de publicités ou la prévention du suivi du navigateur pour ce site et réessayez."
     },
     "successText": "Votre compte a bien été créé. Nous vous redirigeons vers votre tableau de bord."
   },
@@ -3539,7 +3540,34 @@
     "wompiDeadlineNotice": "Vous disposez d’environ {{horas}} heures à partir de maintenant pour effectuer le paiement sécurisé en ligne. Si vous ne payez pas dans ce délai, la réservation sera annulée automatiquement.",
     "errorHoraRetiroPasada": "L’heure de retrait sélectionnée est déjà passée. Veuillez choisir une heure ultérieure.",
     "errorHoraDevolucionPasada": "L’heure de retour sélectionnée est déjà passée. Veuillez choisir une heure ultérieure.",
-    "errorDevolucionAntesRetiro": "L’heure de retour ne peut pas être antérieure à l’heure de retrait le même jour."
+    "errorDevolucionAntesRetiro": "L’heure de retour ne peut pas être antérieure à l’heure de retrait le même jour.",
+    "homeCardTitle": "Livraison à domicile",
+    "homeCardSubtitle": "Code de sécurité à valider au moment de la livraison.",
+    "homeCardHint": "Communiquez ce code au chauffeur chargé de livrer le véhicule.",
+    "homeCity": "Ville",
+    "homeStatus": "Statut de la livraison",
+    "homeStatusPreparing": "En cours",
+    "homeStatusOnTheWay": "Agent en route",
+    "homeStatusDelivered": "Livré",
+    "homeStatusPickedUp": "Récupéré",
+    "homeDriver": "Chauffeur assigné",
+    "homeMoreDetails": "Voir plus de détails",
+    "homeLessDetails": "Masquer les détails",
+    "homeDeliveryInfo": "Informations de livraison",
+    "homePickupInfo": "Informations de reprise",
+    "homeAddress": "Adresse exacte",
+    "homeNeighborhood": "Quartier",
+    "homeReferences": "Indications / Réf.",
+    "homeToArrange": "À convenir",
+    "atHome": "À domicile",
+    "cancelTitle": "Annuler la réservation ?",
+    "cancelConfirmText": "Voulez-vous vraiment annuler cette réservation ? Le véhicule sera libéré.",
+    "yesCancel": "Oui, annuler la réservation",
+    "cancelledTitle": "Réservation annulée",
+    "cancelledDesc": "La réservation a été annulée avec succès.",
+    "cancelling": "Annulation en cours...",
+    "cancelReservation": "Annuler la réservation",
+    "cancelError": "Nous n'avons pas pu annuler votre réservation pour le moment. Réessayez dans quelques minutes."
   },
   "perfil": {
     "title": "Mon profil",
