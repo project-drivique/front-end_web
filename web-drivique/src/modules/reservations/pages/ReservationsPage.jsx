@@ -1156,7 +1156,8 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
               <div className="modal-wompi-total-box" style={{ width: '100%', padding: '16px 18px', marginBottom: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div className="nequi-pin-boxes">
-                    {String(domicilioPin || '----').slice(0, 4).split('').map((char, i) => (
+                    {/* El código de entrega tiene 6 caracteres: se muestran todos, igual que en el correo del conductor */}
+                    {String(domicilioPin || '------').split('').map((char, i) => (
                       <div key={i} className="nequi-pin-box">
                         {revelarPin ? char : '•'}
                       </div>

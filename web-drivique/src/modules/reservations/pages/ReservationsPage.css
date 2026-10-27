@@ -1238,6 +1238,20 @@ html.dark .detalle-cerrar-btn-custom:hover {
   gap: 10px;
 }
 
+/* Seis cuadros: en pantallas angostas se reducen para que quepan junto al ojo */
+@media (max-width: 480px) {
+  .nequi-pin-boxes {
+    gap: 6px;
+  }
+
+  .nequi-pin-box {
+    width: 34px !important;
+    height: 44px !important;
+    font-size: 18px !important;
+    border-radius: 10px !important;
+  }
+}
+
 .nequi-pin-box {
   width: 44px;
   height: 52px;
