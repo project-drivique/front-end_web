@@ -1,5 +1,6 @@
 import { captchaTokenStore } from './captchaTokenStore'
 import { withIdempotency } from './idempotency'
+import i18n from '@/i18n'
 
 let apiInstance = null
 
@@ -79,7 +80,7 @@ export const reservationsService = {
       const estado = error?.response?.status
       const detalle = error?.response?.data?.detail
       const esDeNegocio = [403, 404, 409].includes(estado) && typeof detalle === 'string' && detalle.trim()
-      throw new Error(esDeNegocio ? detalle : 'No pudimos cancelar tu reserva en este momento. Inténtalo de nuevo en unos minutos.', { cause: error })
+      throw new Error(esDeNegocio ? detalle : i18n.t('reservas.cancelError', 'No pudimos cancelar tu reserva en este momento. Inténtalo de nuevo en unos minutos.'), { cause: error })
     }
   },
 
