@@ -630,7 +630,9 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
   const esFinalizadaModal = ['finalizada', 'completada', 'finalizado', 'completado', 'completed'].includes(estadoNormModal) || backendStatus === 'COMPLETED'
 
+  // En la revisión documental estándar no se cancela: solo se ofrece cuando la reserva espera por estar fuera del horario de la sucursal
   const puedeCancelarModal = (
+    !(isPendingDocs && !isPendingSchedule) &&
     !esFinalizadaModal &&
     estadoNormModal !== 'cancelada' &&
     estadoNormModal !== 'cancelled' &&
