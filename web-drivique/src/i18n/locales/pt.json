@@ -2670,7 +2670,8 @@
     "errors": {
       "googleSDKError": "Não foi possível carregar o SDK da Google",
       "googleError": "Não foi possível concluir o registo com a Google. Tente novamente.",
-      "facebookError": "Não foi possível concluir o registo com o Facebook. Tente novamente."
+      "facebookError": "Não foi possível concluir o registo com o Facebook. Tente novamente.",
+      "facebookSdk": "Não foi possível carregar o Facebook. Desative o bloqueador de anúncios ou a prevenção de rastreamento do navegador para este site e tente novamente."
     },
     "successText": "A sua conta foi registada com sucesso. Estamos a levá-lo para o seu painel."
   },
@@ -3539,7 +3540,34 @@
     "wompiDeadlineNotice": "Tem aproximadamente {{horas}} horas a partir de agora para efetuar o pagamento seguro online. Se não pagar dentro deste prazo, a reserva será cancelada automaticamente.",
     "errorHoraRetiroPasada": "A hora de levantamento selecionada já passou. Selecione uma hora posterior.",
     "errorHoraDevolucionPasada": "A hora de devolução selecionada já passou. Selecione uma hora posterior.",
-    "errorDevolucionAntesRetiro": "A hora de devolução não pode ser anterior à hora de levantamento no mesmo dia."
+    "errorDevolucionAntesRetiro": "A hora de devolução não pode ser anterior à hora de levantamento no mesmo dia.",
+    "homeCardTitle": "Domicílio",
+    "homeCardSubtitle": "Código de segurança para validação no momento da entrega.",
+    "homeCardHint": "Confirme este código ao condutor responsável por entregar o veículo.",
+    "homeCity": "Cidade",
+    "homeStatus": "Estado do domicílio",
+    "homeStatusPreparing": "Em processamento",
+    "homeStatusOnTheWay": "Agente a caminho",
+    "homeStatusDelivered": "Entregue",
+    "homeStatusPickedUp": "Recolhido",
+    "homeDriver": "Condutor atribuído",
+    "homeMoreDetails": "Ver mais detalhes",
+    "homeLessDetails": "Ocultar detalhes",
+    "homeDeliveryInfo": "Informações de entrega",
+    "homePickupInfo": "Informações de recolha",
+    "homeAddress": "Morada exata",
+    "homeNeighborhood": "Bairro",
+    "homeReferences": "Indicações / Ref.",
+    "homeToArrange": "A combinar",
+    "atHome": "Ao domicílio",
+    "cancelTitle": "Cancelar reserva?",
+    "cancelConfirmText": "Tem a certeza de que quer cancelar esta reserva? Esta ação libertará o veículo.",
+    "yesCancel": "Sim, cancelar reserva",
+    "cancelledTitle": "Reserva cancelada",
+    "cancelledDesc": "A reserva foi cancelada com sucesso.",
+    "cancelling": "A cancelar a reserva...",
+    "cancelReservation": "Cancelar reserva",
+    "cancelError": "Não foi possível cancelar a sua reserva neste momento. Tente novamente dentro de alguns minutos."
   },
   "perfil": {
     "title": "O meu perfil",
