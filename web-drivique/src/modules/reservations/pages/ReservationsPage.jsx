@@ -630,16 +630,9 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
   const esFinalizadaModal = ['finalizada', 'completada', 'finalizado', 'completado', 'completed'].includes(estadoNormModal) || backendStatus === 'COMPLETED'
 
-  // En la revisión documental estándar no se cancela: solo se ofrece cuando la reserva espera por estar fuera del horario de la sucursal
-  const puedeCancelarModal = (
-    !(isPendingDocs && !isPendingSchedule) &&
-    !esFinalizadaModal &&
-    estadoNormModal !== 'cancelada' &&
-    estadoNormModal !== 'cancelled' &&
-    backendStatus !== 'CANCELLED' &&
-    backendStatus !== 'CANCELLED_TIMEOUT' &&
-    backendStatus !== 'CANCELLED_BY_USER'
-  )
+  // Solo se cancela mientras no hay pago: pendiente de pago, o en espera por haberse hecho fuera del horario de la sucursal.
+  // En la revisión documental estándar y con la reserva ya pagada o confirmada el botón no se ofrece.
+  const puedeCancelarModal = isPendingPayment || isPendingSchedule
 
   const handleCancelarReserva = async () => {
     const result = await showAlert({
@@ -828,7 +821,8 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
   const domicilioRetiro = reserva.domicilioDireccion || reservaOriginal?.domicilioDireccion || reservaOriginal?.reservaDetalles?.domicilioDireccion
 
   const lugarDevolucionRaw = reserva.sucursalDevolucion || reservaOriginal?.sucursalDevolucion || reservaOriginal?.reservaDetalles?.sucursalDevolucion || lugarRetiroRaw
-  const domicilioDevolucion = reserva.domicilioDevolucionDireccion || reservaOriginal?.domicilioDevolucionDireccion || domicilioRetiro
+  // Si el retiro es a domicilio pero la devolución es en sucursal, no se arrastra la dirección del retiro
+  const domicilioDevolucion = reserva.domicilioDevolucionDireccion || reservaOriginal?.domicilioDevolucionDireccion || (lugarDevolucionRaw === 'domicilio' ? domicilioRetiro : undefined)
 
   const lugarRetiro = resolverLugar(lugarRetiroRaw, domicilioRetiro)
   const lugarDevolucion = resolverLugar(lugarDevolucionRaw, domicilioDevolucion)
