@@ -626,7 +626,8 @@ export default function ManagementDashboard({ branchOnly = false }) {
                       : (r.reservaDetalles?.fechaFin || r.fechaFin || '')
                     
                     const fechaSolo = fechaRaw ? fechaRaw.slice(0, 10) : 'N/A'
-                    const horaSolo = fechaRaw && fechaRaw.length > 10 ? fechaRaw.slice(11, 16) : '08:00 AM'
+                    // La hora que el servidor ya entregó en hora local; la fecha sola no la trae
+                    const horaSolo = (activeTab === 'entregas' ? r.horaInicio : r.horaFin) || (fechaRaw && fechaRaw.length > 10 ? fechaRaw.slice(11, 16) : '—')
                     const clienteNombre = r.clienteNombre || r.datosForm?.nombres || t('hc2.cliente_drivique', 'Cliente Drivique')
 
                     return (
