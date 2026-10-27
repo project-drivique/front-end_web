@@ -70,9 +70,17 @@ export const reservationsService = {
 
   cancelarReserva: async (id) => {
     const api = await getApi()
-    // El servidor exige el motivo: sin cuerpo respondía 400
-    const { data } = await api.patch(`/reservations/${id}/cancel`, { reason: 'Cancelada por el cliente desde la web' })
-    return data
+    try {
+      // El servidor exige el motivo: sin cuerpo respondía 400
+      const { data } = await api.patch(`/reservations/${id}/cancel`, { reason: 'Cancelada por el cliente desde la web' })
+      return data
+    } catch (error) {
+      // La persona nunca debe ver "Request failed with status code 400": solo mensajes de negocio del servidor o uno claro
+      const estado = error?.response?.status
+      const detalle = error?.response?.data?.detail
+      const esDeNegocio = [403, 404, 409].includes(estado) && typeof detalle === 'string' && detalle.trim()
+      throw new Error(esDeNegocio ? detalle : 'No pudimos cancelar tu reserva en este momento. Inténtalo de nuevo en unos minutos.', { cause: error })
+    }
   },
 
   guardarValoracion: async (id, valoracion) => {

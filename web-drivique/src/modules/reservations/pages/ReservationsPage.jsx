@@ -630,9 +630,9 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
   const esFinalizadaModal = ['finalizada', 'completada', 'finalizado', 'completado', 'completed'].includes(estadoNormModal) || backendStatus === 'COMPLETED'
 
-  // Solo se cancela mientras no hay pago: pendiente de pago, o en espera por haberse hecho fuera del horario de la sucursal.
-  // En la revisión documental estándar y con la reserva ya pagada o confirmada el botón no se ofrece.
-  const puedeCancelarModal = isPendingPayment || isPendingSchedule
+  // Solo se cancela mientras no hay pago: pendiente de pago, en revisión de documentos o en espera del horario de la sucursal.
+  // Con la reserva ya pagada, confirmada, en curso o finalizada el botón no se ofrece.
+  const puedeCancelarModal = isPendingPayment || isPendingDocs || isPendingSchedule
 
   const handleCancelarReserva = async () => {
     const result = await showAlert({
