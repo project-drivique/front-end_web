@@ -18,6 +18,17 @@ import ManagementSidebar from "../components/ManagementSidebar";
 import "./CityManagementPage.css";
 import "./ContractManagementPage.css";
 
+// La firma llega como instante UTC: se muestra en la hora local de quien la consulta, no la del servidor
+const fechaFirmaLocal = (iso) => {
+  const d = iso ? new Date(iso) : null
+  if (!d || Number.isNaN(d.getTime())) return { fecha: '-', hora: '-' }
+  const pad = (n) => String(n).padStart(2, '0')
+  return {
+    fecha: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
+    hora: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
+  }
+}
+
 export default function ContractManagementPage() {
   const { t } = useTranslation();
   const { tema } = useLanding();
@@ -319,10 +330,10 @@ export default function ContractManagementPage() {
                         {c.vehiculoNombre ? c.vehiculoNombre.split(' ').slice(1).join(' ') || '-' : '-'}
                       </td>
                       <td style={{ fontWeight: "normal", color: "#374151" }}>
-                        {c.fechaFirma ? String(c.fechaFirma).split('T')[0] : '-'}
+                        {fechaFirmaLocal(c.fechaFirma).fecha}
                       </td>
                       <td style={{ fontWeight: "normal", color: "#374151" }}>
-                        {c.fechaFirma && String(c.fechaFirma).includes('T') ? String(c.fechaFirma).split('T')[1].substring(0, 5) : '10:00'}
+                        {fechaFirmaLocal(c.fechaFirma).hora}
                       </td>
                       <td style={{ textAlign: 'center', fontWeight: '600', color: c.isSigned ? '#10b981' : '#ef4444' }}>
                         {c.isSigned ? t('common.yes', 'Sí') : t('common.no', 'No')}
