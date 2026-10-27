@@ -2670,7 +2670,8 @@
     "errors": {
       "googleSDKError": "No se pudo cargar el SDK de Google",
       "googleError": "No se pudo completar el registro con Google. Intenta nuevamente.",
-      "facebookError": "No se pudo completar el registro con Facebook. Intenta nuevamente."
+      "facebookError": "No se pudo completar el registro con Facebook. Intenta nuevamente.",
+      "facebookSdk": "No se pudo cargar Facebook. Desactiva el bloqueador de anuncios o la prevención de rastreo del navegador para este sitio e inténtalo de nuevo."
     },
     "successText": "Tu cuenta quedó registrada correctamente. Te estamos llevando a tu panel."
   },
@@ -3549,7 +3550,34 @@
     "reportIncident": "Soporte / Reportar Incidencia",
     "rateAndReview": "Calificar y reseñar mi experiencia",
     "starsCount": "{{count}} estrellas",
-    "wompiDeadlineNotice": "Tienes aproximadamente {{horas}} horas desde ahora para realizar el pago seguro en línea. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente."
+    "wompiDeadlineNotice": "Tienes aproximadamente {{horas}} horas desde ahora para realizar el pago seguro en línea. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.",
+    "homeCardTitle": "Domicilio",
+    "homeCardSubtitle": "Código de seguridad para validación al momento de la entrega.",
+    "homeCardHint": "Confírmale este código al conductor encargado de entregar el vehículo.",
+    "homeCity": "Ciudad",
+    "homeStatus": "Estado del domicilio",
+    "homeStatusPreparing": "En proceso",
+    "homeStatusOnTheWay": "Agente en camino",
+    "homeStatusDelivered": "Entregado",
+    "homeStatusPickedUp": "Recogido",
+    "homeDriver": "Conductor asignado",
+    "homeMoreDetails": "Ver más detalles",
+    "homeLessDetails": "Ocultar detalles",
+    "homeDeliveryInfo": "Información de entrega",
+    "homePickupInfo": "Información de recogida",
+    "homeAddress": "Dirección exacta",
+    "homeNeighborhood": "Barrio",
+    "homeReferences": "Indicaciones / Ref.",
+    "homeToArrange": "A convenir",
+    "atHome": "A Domicilio",
+    "cancelTitle": "¿Cancelar reserva?",
+    "cancelConfirmText": "¿Estás seguro de que deseas cancelar esta reserva? Esta acción liberará el vehículo.",
+    "yesCancel": "Sí, cancelar reserva",
+    "cancelledTitle": "Reserva cancelada",
+    "cancelledDesc": "La reserva ha sido cancelada exitosamente.",
+    "cancelling": "Cancelando reserva...",
+    "cancelReservation": "Cancelar reserva",
+    "cancelError": "No pudimos cancelar tu reserva en este momento. Inténtalo de nuevo en unos minutos."
   },
   "perfil": {
     "title": "Mi perfil",
