@@ -235,7 +235,7 @@ export default function SucursalesPage() {
       }
     })
     return map
-  }, [vehiculos])
+  }, [vehiculos, SUCURSALES_GRID])
 
   const flotaFiltrada = useMemo(() => {
     if (!sucursalActiva) return []
@@ -261,7 +261,7 @@ export default function SucursalesPage() {
   const sucursalesPagina = useMemo(() => {
     const inicio = (pagina - 1) * SUCURSALES_POR_PAGINA
     return SUCURSALES_GRID.slice(inicio, inicio + SUCURSALES_POR_PAGINA)
-  }, [pagina])
+  }, [pagina, SUCURSALES_GRID])
 
   const getTagTraducido = (tag) => {
     if (tag === 'Aeropuerto') return t('sucursales.tags.airport', 'Aeropuerto')
