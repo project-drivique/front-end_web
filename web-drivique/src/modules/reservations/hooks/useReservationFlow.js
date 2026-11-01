@@ -240,34 +240,16 @@ export function useReservationFlow() {
           title: t('vehiculo.cashBranchTitle'),
           background: 'var(--bg-tarjeta)',
           color: 'var(--texto-primary)',
-          width: 440,
-          html: `<div style="text-align:left;font-size:13.5px;line-height:1.5;color:var(--texto-primary);">
-              <p style="margin:0 0 14px;color:var(--texto-second);text-align:center;font-size:13px;line-height:1.45;">${t('vehiculo.cashBranchIntro')}</p>
-              <div style="background:var(--bg-item);border:1px solid var(--borde);border-radius:14px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.03);">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--borde);">
-                  <div style="font-weight:700;color:var(--texto-primary);font-size:14.5px;display:flex;align-items:center;gap:6px;">
-                    <span>🏢</span>
-                    <span>${sucursal.nombre}</span>
-                  </div>
-                  <span style="font-size:11px;font-weight:700;background:rgba(225,29,72,0.1);color:#e11d48;padding:2px 8px;border-radius:12px;">Sede</span>
-                </div>
-                <div style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;">
-                  <div style="display:flex;align-items:center;gap:6px;">
-                    <span style="color:var(--texto-second);min-width:65px;">📍 <strong>${t('vehiculo.cashBranchCity')}:</strong></span>
-                    <span style="color:var(--texto-primary);">${sucursal.ciudad}</span>
-                  </div>
-                  <div style="display:flex;align-items:flex-start;gap:6px;">
-                    <span style="color:var(--texto-second);min-width:65px;">🧭 <strong>${t('vehiculo.cashBranchAddress')}:</strong></span>
-                    <span style="color:var(--texto-primary);">${sucursal.direccion || t('vehiculo.cashBranchNoAddress')}</span>
-                  </div>
-                </div>
-              </div>
-              <div style="margin-top:12px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--texto-second);">
-                <span style="font-size:14px;">💡</span>
-                <span>Presenta tu documento y código de reserva en taquilla para pagar y retirar el vehículo.</span>
-              </div>
-            </div>`,
-          confirmButtonText: t('common.understand', 'Entendido'),
+          html: `<div style="font-size:13.5px;line-height:1.5;color:var(--texto-primary);">
+            <p style="margin:0 0 14px;color:var(--texto-second);text-align:center;font-size:13px;line-height:1.45;">${t('vehiculo.cashBranchIntro')}</p>
+            <div style="text-align:left;background:var(--bg-item);border:1px solid var(--borde);border-radius:12px;padding:12px 14px;">
+              <p style="margin:0 0 4px;font-weight:700;color:var(--texto-primary);font-size:14px;">${sucursal.nombre}</p>
+              <p style="margin:0 0 2px;color:var(--texto-second);font-size:12.5px;"><strong>${t('vehiculo.cashBranchCity')}:</strong> ${sucursal.ciudad}</p>
+              <p style="margin:0;color:var(--texto-second);font-size:12.5px;"><strong>${t('vehiculo.cashBranchAddress')}:</strong> ${sucursal.direccion || t('vehiculo.cashBranchNoAddress')}</p>
+            </div>
+          </div>`,
+          confirmButtonText: t('common.close'),
+          width: 340,
         })
       }
     }
