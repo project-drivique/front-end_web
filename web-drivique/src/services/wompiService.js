@@ -48,6 +48,20 @@ export const iniciarPagoWompi = async ({
       payload.contractId = cleanRef;
     }
   }
+
+  // Si contractId no fue provisto (requerido por el backend Spring Boot), se obtiene el contrato asociado
+  if (!payload.contractId && payload.reservationReference) {
+    try {
+      const { contractService } = await import('./contractService.js');
+      const contract = await contractService.obtenerPorReserva(payload.reservationReference);
+      if (contract?.id && isUuid(contract.id)) {
+        payload.contractId = String(contract.id).trim();
+      }
+    } catch {
+      // Si aún no se puede resolver, el backend responderá con el detalle RFC 7807 correspondiente
+    }
+  }
+
   const { data } = await api.post('/payments/wompi/initiate', payload);
   return data;
 };

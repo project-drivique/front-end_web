@@ -14,7 +14,7 @@ export class WompiPaymentStrategy extends PaymentStrategy {
   /**
    * Genera el intento de pago con firma de integridad en servidor y obtiene la URL de redirección.
    */
-  async processPayment({ reference, amountInCents, redirectUrl }) {
+  async processPayment({ reference, contractId = null, amountInCents, redirectUrl }) {
     if (!reference || !amountInCents) {
       throw new Error('[WompiPaymentStrategy] Referencia y monto son requeridos.');
     }
@@ -32,6 +32,7 @@ export class WompiPaymentStrategy extends PaymentStrategy {
 
     const url = await construirUrlCheckout({
       reference: attemptRef,
+      contractId: contractId || null,
       amountInCents,
       redirectUrl: targetRedirect,
     });
