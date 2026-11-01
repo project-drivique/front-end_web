@@ -22,9 +22,11 @@ function armarExpedientes(documentos) {
   }
 
   return [...porUsuario.values()].map((docs) => {
-    const identidad = docs.find(esIdentidad) || docs[0]
-    const licencia = docs.find(esLicencia) || null
-    const principal = identidad || docs[0]
+    const docIdentidad = docs.find(esIdentidad)
+    const docLicencia = docs.find(esLicencia)
+    const identidad = docIdentidad || (docs.length === 1 && !docLicencia ? docs[0] : null)
+    const licencia = docLicencia
+    const principal = identidad || licencia || docs[0]
     const revisado = docs.find((d) => d.reviewedAt)
     return {
       id: principal.id,
