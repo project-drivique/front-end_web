@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { useAuthStore } from '../store/authStore'
-import i18n from '../i18n'
+import { useAuthStore } from '../store/authStore.js'
+import i18n from '../i18n/index.js'
 
-import { configuredApiUrl } from '../config/apiConfig'
+import { configuredApiUrl } from '../config/apiConfig.js'
 
 const REFRESH_TOKEN_KEY = 'drivique_refresh_token'
 let refreshRequest = null
@@ -14,19 +14,22 @@ export const api = axios.create({
 
 export function setSessionTokens({ accessToken, refreshToken, userProfile }) {
   if (accessToken) useAuthStore.setState({ token: accessToken })
-  if (refreshToken) sessionStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
+  if (refreshToken && typeof sessionStorage !== 'undefined') {
+    sessionStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
+  }
   if (userProfile) useAuthStore.getState().actualizarUsuario(userProfile)
 }
 
 export function clearSessionTokens() {
-  sessionStorage.removeItem(REFRESH_TOKEN_KEY)
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.removeItem(REFRESH_TOKEN_KEY)
+  }
   useAuthStore.getState().logout()
 }
 
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token
   if (token) config.headers.Authorization = `Bearer ${token}`
-  // El servidor escribe los correos en el idioma que la persona está usando en la web
   const language = i18n.resolvedLanguage || i18n.language
   if (language) config.headers['X-App-Language'] = language
   return config
@@ -36,10 +39,9 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const request = error.config
-    const refreshToken = sessionStorage.getItem(REFRESH_TOKEN_KEY)
+    const refreshToken = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(REFRESH_TOKEN_KEY) : null
     const isRefreshRequest = request?.url?.includes('/auth/refresh')
 
-    // Solo se renueva la sesión si la petición iba con sesión: un visitante (sin token) no debe quedar logueado
     const teniaSesion = Boolean(request?.headers?.Authorization)
     if (error.response?.status !== 401 || request?._retried || isRefreshRequest || !refreshToken || !teniaSesion) {
       return Promise.reject(error)
