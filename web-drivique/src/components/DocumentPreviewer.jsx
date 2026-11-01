@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FaFilePdf, FaEye, FaSpinner, FaIdCard } from 'react-icons/fa'
+import { FaFilePdf, FaSpinner, FaIdCard } from 'react-icons/fa'
 import { api } from '../services/httpClient'
 import { resolveDocumentUrl } from '../utils/documentUtils'
 
@@ -7,7 +7,6 @@ export default function DocumentPreviewer({
   url,
   title = 'Documento KYC',
   isZoomed = false,
-  onZoom,
   onBlobReady,
   className = '',
   style = {},
@@ -89,7 +88,7 @@ export default function DocumentPreviewer({
           alignItems: 'center',
           justifyContent: 'center',
           height: '100%',
-          minHeight: isZoomed ? '50vh' : '320px',
+          minHeight: isZoomed ? '50vh' : '380px',
           gap: 12,
           ...style,
         }}
@@ -119,7 +118,7 @@ export default function DocumentPreviewer({
           alignItems: 'center',
           justifyContent: 'center',
           height: '100%',
-          minHeight: isZoomed ? '50vh' : '320px',
+          minHeight: isZoomed ? '50vh' : '380px',
           gap: 10,
           padding: 24,
           textAlign: 'center',
@@ -173,35 +172,30 @@ export default function DocumentPreviewer({
     return (
       <div
         className={`doc-preview-container ${className}`}
-        onClick={() => onZoom && onZoom({ url: blobUrl, title, isPdf: true })}
-        title={isZoomed ? title : 'Clic para ampliar documento'}
         style={{
           width: '100%',
           height: '100%',
-          minHeight: isZoomed ? '68vh' : '340px',
+          minHeight: isZoomed ? '68vh' : '420px',
           position: 'relative',
-          cursor: isZoomed ? 'default' : 'pointer',
+          cursor: 'default',
+          overflow: 'hidden',
+          borderRadius: 8,
           ...style,
         }}
       >
         <iframe
-          src={`${blobUrl}#toolbar=${isZoomed ? '1' : '0'}&navpanes=0&scrollbar=0`}
+          src={`${blobUrl}#toolbar=${isZoomed ? '1' : '0'}&navpanes=0`}
           title={title}
           className="doc-preview-iframe"
           style={{
             width: '100%',
             height: '100%',
-            minHeight: isZoomed ? '68vh' : '340px',
+            minHeight: isZoomed ? '68vh' : '420px',
             border: 'none',
             borderRadius: 8,
-            pointerEvents: isZoomed ? 'auto' : 'none',
+            pointerEvents: 'auto',
           }}
         />
-        {!isZoomed && (
-          <div className="doc-preview-hover-overlay">
-            <FaEye /> Ampliar PDF
-          </div>
-        )}
       </div>
     )
   }
@@ -209,14 +203,14 @@ export default function DocumentPreviewer({
   return (
     <div
       className={`doc-preview-container ${className}`}
-      onClick={() => onZoom && onZoom({ url: blobUrl, title, isPdf: false })}
-      title={isZoomed ? title : 'Clic para ampliar documento'}
       style={{
         width: '100%',
         height: '100%',
-        minHeight: isZoomed ? '60vh' : '340px',
+        minHeight: isZoomed ? '60vh' : '380px',
         position: 'relative',
-        cursor: isZoomed ? 'default' : 'pointer',
+        cursor: 'default',
+        overflow: 'auto',
+        borderRadius: 8,
         ...style,
       }}
     >
@@ -227,15 +221,10 @@ export default function DocumentPreviewer({
         style={{
           width: '100%',
           height: '100%',
-          maxHeight: isZoomed ? '70vh' : '380px',
+          maxHeight: isZoomed ? '70vh' : '420px',
           objectFit: 'contain',
         }}
       />
-      {!isZoomed && (
-        <div className="doc-preview-hover-overlay">
-          <FaEye /> Ampliar
-        </div>
-      )}
     </div>
   )
 }
