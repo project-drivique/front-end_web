@@ -1,9 +1,10 @@
-import { PaymentStrategy } from './PaymentStrategy';
-import { construirUrlCheckout } from '@/services/wompiService';
+import { PaymentStrategy } from './PaymentStrategy.js';
+import { construirUrlCheckout } from '../../../services/wompiService.js';
 
 /**
  * Estrategia Concreta: WompiPaymentStrategy
- * Implementa el procesamiento de pago a través de la pasarela Wompi Web Checkout.
+ * Implementa el procesamiento de pago a través de la pasarela Wompi Web Checkout
+ * delegando la firma de integridad al servidor (`POST /v1/payments/wompi/initiate`).
  */
 export class WompiPaymentStrategy extends PaymentStrategy {
   constructor() {
@@ -11,7 +12,7 @@ export class WompiPaymentStrategy extends PaymentStrategy {
   }
 
   /**
-   * Genera el intento de pago con firma de integridad y obtiene la URL de redirección.
+   * Genera el intento de pago con firma de integridad en servidor y obtiene la URL de redirección.
    */
   async processPayment({ reference, amountInCents, redirectUrl }) {
     if (!reference || !amountInCents) {

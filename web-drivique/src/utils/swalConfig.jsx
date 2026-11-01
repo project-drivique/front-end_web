@@ -2,6 +2,15 @@ import { createRoot } from 'react-dom/client'
 import AlertModal from '../modules/catalog/components/AlertModal'
 import { FaCheckCircle, FaExclamationTriangle, FaInfoCircle, FaQuestionCircle } from 'react-icons/fa'
 
+const sanitizeHtmlToText = (rawHtml) => {
+  if (typeof rawHtml !== 'string') return rawHtml
+  return rawHtml
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .trim()
+}
+
 export const showAlert = (options) => {
   return new Promise((resolve) => {
     const div = document.createElement('div')
@@ -42,7 +51,7 @@ export const showAlert = (options) => {
     else if (iconType === 'question') IconComponent = <FaQuestionCircle size={22} color={esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)'} />
 
     const mensajeContent = options.html 
-      ? <span dangerouslySetInnerHTML={{ __html: options.html }} /> 
+      ? <span style={{ whiteSpace: 'pre-line' }}>{sanitizeHtmlToText(options.html)}</span> 
       : options.text
 
     root.render(
