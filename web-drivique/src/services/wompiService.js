@@ -35,13 +35,18 @@ export const iniciarPagoWompi = async ({
   const payload = {
     paymentMethodCode: paymentMethodCode || 'CREDIT_CARD',
   };
-  if (contractId) {
-    payload.contractId = contractId;
+  const isUuid = (val) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(val || '').trim());
+  if (contractId && isUuid(contractId)) {
+    payload.contractId = String(contractId).trim();
   }
   if (reservationReference) {
-    payload.reservationReference = String(reservationReference).includes('_')
-      ? String(reservationReference).split('_')[0]
-      : String(reservationReference);
+    const cleanRef = String(reservationReference).includes('_')
+      ? String(reservationReference).split('_')[0].trim()
+      : String(reservationReference).trim();
+    payload.reservationReference = cleanRef;
+    if (!payload.contractId && isUuid(cleanRef)) {
+      payload.contractId = cleanRef;
+    }
   }
   const { data } = await api.post('/payments/wompi/initiate', payload);
   return data;
