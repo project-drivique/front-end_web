@@ -944,10 +944,6 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
       })
       return
     }
-    if (e) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
     setPagandoWompi(true)
     try {
       const baseRef = reserva.codigo || reserva.referencia || reserva.id || reservaOriginal?.referencia
@@ -959,7 +955,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
       const centavos = aCentavos(totalNum)
       const url = await construirUrlCheckout({
         reference: attemptRef,
-        contractId: resolvedContractId || null,
+        contractId: contrato?.id || null,
         amountInCents: centavos,
         redirectUrl: `${window.location.origin}/respuesta`,
       })
