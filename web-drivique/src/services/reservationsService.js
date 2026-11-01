@@ -1,12 +1,12 @@
-import { captchaTokenStore } from './captchaTokenStore'
-import { withIdempotency } from './idempotency'
-import i18n from '@/i18n'
+import { captchaTokenStore } from './captchaTokenStore.js'
+import { withIdempotency } from './idempotency.js'
+import i18n from '../i18n/index.js'
 
 let apiInstance = null
 
 async function getApi() {
   if (!apiInstance) {
-    const { api } = await import('./httpClient') // use httpClient directly or authService? It was authService, but authService exports api? Wait, authService.js exports `api`? Let's use httpClient.
+    const { api } = await import('./httpClient.js')
     apiInstance = api
   }
   return apiInstance
@@ -33,8 +33,6 @@ export const reservationsService = {
 
   crearReserva: async (datosReserva) => {
     const api = await getApi()
-    // Initiate checkout (creates a hold)
-    // El captcha se valida en el servidor: el token es de un solo uso
     const captchaToken = captchaTokenStore.consume()
     const data = await withIdempotency(`initiate:${JSON.stringify(datosReserva)}`, async (key) => {
       const response = await api.post('/reservations/checkout/initiate', datosReserva, {
@@ -45,7 +43,6 @@ export const reservationsService = {
     return data
   },
   
-  // Puntos de entrega/devolución (sucursal o domicilio) de la reserva recién creada
   configurarPuntosEntrega: async (reservationId, points) => {
     const api = await getApi()
     const { data } = await api.post(`/reservations/${reservationId}/delivery-points`, { points })
@@ -72,11 +69,9 @@ export const reservationsService = {
   cancelarReserva: async (id) => {
     const api = await getApi()
     try {
-      // El servidor exige el motivo: sin cuerpo respondía 400
       const { data } = await api.patch(`/reservations/${id}/cancel`, { reason: 'Cancelada por el cliente desde la web' })
       return data
     } catch (error) {
-      // La persona nunca debe ver "Request failed with status code 400": solo mensajes de negocio del servidor o uno claro
       const estado = error?.response?.status
       const detalle = error?.response?.data?.detail
       const esDeNegocio = [403, 404, 409].includes(estado) && typeof detalle === 'string' && detalle.trim()
@@ -114,4 +109,3 @@ export const reservationsService = {
     }
   }
 }
-

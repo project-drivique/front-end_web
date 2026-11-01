@@ -27,25 +27,42 @@ export const isValidAuthToken = (token) => {
   }
 }
 
-// Storage personalizado: en vez de envolver { token, usuario } en un solo
-// blob JSON bajo una key, guarda cada campo en su propia key real de
-// localStorage. renta_token queda como el JWT plano (sin comillas ni JSON
-// envolvente) y renta_user como el JSON del objeto usuario.
+const getSafeSessionStorage = () => {
+  if (typeof window !== 'undefined' && window.sessionStorage) {
+    return window.sessionStorage
+  }
+  return null
+}
+
+// Storage de sesión seguro: almacena el JWT y perfil en sessionStorage (nunca en localStorage)
+// para mitigar persistencia indefinida ante XSS.
 const authStorage = {
   getItem: () => {
-    const token = localStorage.getItem(AUTH_KEYS.token)
+    const storage = getSafeSessionStorage()
+    if (!storage) {
+      return { state: { token: null, usuario: null, verificacionCorreo: null, recuperacionCorreo: null }, version: 0 }
+    }
+    const token = storage.getItem(AUTH_KEYS.token)
     let usuario
     try {
-      const usuarioRaw = localStorage.getItem(AUTH_KEYS.usuario)
+      const usuarioRaw = storage.getItem(AUTH_KEYS.usuario)
       usuario = usuarioRaw ? JSON.parse(usuarioRaw) : null
     } catch {
       usuario = null
     }
-    const verificationEmail = localStorage.getItem('renta_verification_email')
-    const recoveryEmail = localStorage.getItem('renta_recovery_email')
-    const recoveryCode = sessionStorage.getItem('renta_recovery_code')
+    const verificationEmail = storage.getItem('renta_verification_email')
+    const recoveryEmail = storage.getItem('renta_recovery_email')
+    const recoveryCode = storage.getItem('renta_recovery_code')
     if (!isValidAuthToken(token)) {
-      return { state: { token: null, usuario: null, verificacionCorreo: verificationEmail ? { correo: verificationEmail } : null, recuperacionCorreo: recoveryEmail ? { correo: recoveryEmail, codigo: recoveryCode } : null }, version: 0 }
+      return {
+        state: {
+          token: null,
+          usuario: null,
+          verificacionCorreo: verificationEmail ? { correo: verificationEmail } : null,
+          recuperacionCorreo: recoveryEmail ? { correo: recoveryEmail, codigo: recoveryCode } : null,
+        },
+        version: 0,
+      }
     }
 
     try {
@@ -74,45 +91,65 @@ const authStorage = {
       // ignore token decode error and keep existing usuario
     }
 
-    return { state: { token, usuario, verificacionCorreo: verificationEmail ? { correo: verificationEmail } : null, recuperacionCorreo: recoveryEmail ? { correo: recoveryEmail, codigo: recoveryCode } : null }, version: 0 }
+    return {
+      state: {
+        token,
+        usuario,
+        verificacionCorreo: verificationEmail ? { correo: verificationEmail } : null,
+        recuperacionCorreo: recoveryEmail ? { correo: recoveryEmail, codigo: recoveryCode } : null,
+      },
+      version: 0,
+    }
   },
   setItem: (_name, value) => {
+    const storage = getSafeSessionStorage()
+    if (!storage) return
     const { token, usuario } = value.state
     if (token) {
-      localStorage.setItem(AUTH_KEYS.token, token)
+      storage.setItem(AUTH_KEYS.token, token)
     } else {
-      localStorage.removeItem(AUTH_KEYS.token)
+      storage.removeItem(AUTH_KEYS.token)
     }
     if (usuario) {
-      localStorage.setItem(AUTH_KEYS.usuario, JSON.stringify(usuario))
+      storage.setItem(AUTH_KEYS.usuario, JSON.stringify(usuario))
     } else {
-      localStorage.removeItem(AUTH_KEYS.usuario)
+      storage.removeItem(AUTH_KEYS.usuario)
     }
     const verificationEmail = value.state.verificacionCorreo?.correo
     const recoveryEmail = value.state.recuperacionCorreo?.correo
-    verificationEmail ? localStorage.setItem('renta_verification_email', verificationEmail) : localStorage.removeItem('renta_verification_email')
-    recoveryEmail ? localStorage.setItem('renta_recovery_email', recoveryEmail) : localStorage.removeItem('renta_recovery_email')
-    if (value.state.recuperacionCorreo?.codigo) sessionStorage.setItem('renta_recovery_code', value.state.recuperacionCorreo.codigo)
+    verificationEmail
+      ? storage.setItem('renta_verification_email', verificationEmail)
+      : storage.removeItem('renta_verification_email')
+    recoveryEmail
+      ? storage.setItem('renta_recovery_email', recoveryEmail)
+      : storage.removeItem('renta_recovery_email')
+    if (value.state.recuperacionCorreo?.codigo) {
+      storage.setItem('renta_recovery_code', value.state.recuperacionCorreo.codigo)
+    }
   },
   removeItem: () => {
-    localStorage.removeItem(AUTH_KEYS.token)
-    localStorage.removeItem(AUTH_KEYS.usuario)
-    localStorage.removeItem('renta_verification_email')
-    localStorage.removeItem('renta_recovery_email')
-    sessionStorage.removeItem('renta_recovery_code')
+    const storage = getSafeSessionStorage()
+    if (!storage) return
+    storage.removeItem(AUTH_KEYS.token)
+    storage.removeItem(AUTH_KEYS.usuario)
+    storage.removeItem('renta_verification_email')
+    storage.removeItem('renta_recovery_email')
+    storage.removeItem('renta_recovery_code')
   },
 }
 
 // Lectura síncrona inmediata para evitar parpadeos (FOUC) en el primer render
 const getInitialAuthState = () => {
   try {
-    const token = localStorage.getItem(AUTH_KEYS.token)
-    const usuarioRaw = localStorage.getItem(AUTH_KEYS.usuario)
+    const storage = getSafeSessionStorage()
+    if (!storage) return { token: null, usuario: null }
+    const token = storage.getItem(AUTH_KEYS.token)
+    const usuarioRaw = storage.getItem(AUTH_KEYS.usuario)
     const usuario = usuarioRaw ? JSON.parse(usuarioRaw) : null
     const esValido = isValidAuthToken(token)
     if (!esValido) {
-      localStorage.removeItem(AUTH_KEYS.token)
-      localStorage.removeItem(AUTH_KEYS.usuario)
+      storage.removeItem(AUTH_KEYS.token)
+      storage.removeItem(AUTH_KEYS.usuario)
     }
     return {
       token: esValido ? token : null,
@@ -123,9 +160,17 @@ const getInitialAuthState = () => {
   }
 }
 
+const initialStorage = getSafeSessionStorage()
 const initialAuth = getInitialAuthState()
-initialAuth.verificacionCorreo = localStorage.getItem('renta_verification_email') ? { correo: localStorage.getItem('renta_verification_email') } : null
-initialAuth.recuperacionCorreo = localStorage.getItem('renta_recovery_email') ? { correo: localStorage.getItem('renta_recovery_email'), codigo: sessionStorage.getItem('renta_recovery_code') } : null
+initialAuth.verificacionCorreo = initialStorage?.getItem('renta_verification_email')
+  ? { correo: initialStorage.getItem('renta_verification_email') }
+  : null
+initialAuth.recuperacionCorreo = initialStorage?.getItem('renta_recovery_email')
+  ? {
+      correo: initialStorage.getItem('renta_recovery_email'),
+      codigo: initialStorage.getItem('renta_recovery_code'),
+    }
+  : null
 
 export const useAuthStore = create(
   persist(
@@ -173,10 +218,10 @@ export const useAuthStore = create(
 
       logout: () => {
         set({ token: null, usuario: null, sesion2FA: null, requiere2FA: false, verificacionCorreo: null, recuperacionCorreo: null })
-        localStorage.removeItem(AUTH_KEYS.token)
-        localStorage.removeItem(AUTH_KEYS.usuario)
-        // El token de renovación también debe borrarse: si queda, la próxima petición con 401 reabre la sesión sola
-        sessionStorage.removeItem('drivique_refresh_token')
+        const storage = getSafeSessionStorage()
+        storage?.removeItem(AUTH_KEYS.token)
+        storage?.removeItem(AUTH_KEYS.usuario)
+        storage?.removeItem('drivique_refresh_token')
       },
     }),
     {

@@ -13,6 +13,7 @@ import { inspectionService } from '../../../services/inspectionService'
 import { api } from '../../../services/httpClient'
 import { showAlert } from '../../../utils/swalConfig'
 import { resolveDocumentUrl } from '../../../utils/documentUtils'
+import DocumentPreviewer from '../../../components/DocumentPreviewer'
 import { documentVerificationService } from '../../../services/documentVerificationService'
 import FirmaContrato from '../../contracts/components/ContractSignature'
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
@@ -1739,31 +1740,15 @@ export default function ReservationManagementPage() {
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-              {zoomPdf.url && (zoomPdf.url.toLowerCase().match(/\.(jpeg|jpg|gif|png|webp)$/i) || zoomPdf.url.startsWith('data:image/')) ? (
-                <div style={{ flex: 1, minHeight: 380, display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--bg-seccion1, #f8fafc)', borderRadius: 14, padding: 16 }}>
-                  <img
-                    src={zoomPdf.url}
-                    alt={zoomPdf.title}
-                    style={{
-                      maxWidth: '100%',
-                      maxHeight: '62vh',
-                      objectFit: 'contain',
-                      borderRadius: 10,
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
-                    }}
-                  />
-                </div>
-              ) : zoomPdf.url && (zoomPdf.url.startsWith('http') || zoomPdf.url.startsWith('/uploads') || zoomPdf.url.startsWith('/api/uploads') || zoomPdf.url.startsWith('blob:') || zoomPdf.url.startsWith('data:application/pdf')) && zoomPdf.url.toLowerCase().includes('.pdf') ? (
+              {zoomPdf.url ? (
                 <div style={{ flex: 1, minHeight: 460 }}>
-                  <object
-                    data={`${zoomPdf.url}#toolbar=1`}
-                    type="application/pdf"
-                    style={{ width: '100%', height: '62vh', borderRadius: 12, border: 'none' }}
-                  >
-                    <p style={{ textAlign: 'center', padding: 24, color: 'var(--texto-second, #64748b)' }}>
-                      El visor embebido no pudo cargar el PDF. <a href={zoomPdf.url} target="_blank" rel="noreferrer" style={{ color: 'var(--brand-primary, #2563eb)', fontWeight: 700 }}>{t('hc.abrir_en_pestana_nueva', 'Abrir en pestaña nueva')}</a>
-                    </p>
-                  </object>
+                  <DocumentPreviewer
+                    url={zoomPdf.url}
+                    title={zoomPdf.title}
+                    isZoomed={true}
+                    fallbackSubtitle={zoomPdf.cliNom}
+                    fallbackDocNumber={zoomPdf.cliDoc}
+                  />
                 </div>
               ) : (
                 /* TARJETA OFICIAL KYC DE DOCUMENTO VERIFICADO EN SUCURSAL */

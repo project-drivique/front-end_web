@@ -1,5 +1,5 @@
-import { api, setSessionTokens } from './httpClient'
-export { api } from './httpClient'
+import { api, setSessionTokens } from './httpClient.js'
+export { api } from './httpClient.js'
 
 export const DURACION_CODIGO_VERIFICACION_MS = 15 * 60 * 1000
 
@@ -13,9 +13,16 @@ const FRONTEND_ROLE_BY_BACKEND_ROLE = Object.freeze({
 
 const normalizarRol = (roles = []) => FRONTEND_ROLE_BY_BACKEND_ROLE[roles[0]] || 'usuario'
 
+const getDeviceUserAgent = () =>
+  typeof navigator !== 'undefined' && navigator.userAgent ? navigator.userAgent : 'DriviqueWebClient'
+
 export const authService = {
   async login({ correo, contrasena }) {
-    const { data } = await api.post('/auth/login', { email: correo, password: contrasena, deviceInfo: navigator.userAgent })
+    const { data } = await api.post('/auth/login', {
+      email: correo,
+      password: contrasena,
+      deviceInfo: getDeviceUserAgent(),
+    })
     setSessionTokens(data)
     const profile = data.userProfile || {}
     return {
@@ -36,8 +43,8 @@ export const authService = {
 
   async registro(datos) {
     const { data } = await api.post('/auth/register', {
-      firstName: datos.nombre || datos.nombres || 'Usuario',
-      lastName: datos.apellido || datos.apellidos || 'Drivique',
+      firstName: (datos.nombre || datos.nombres || '').trim(),
+      lastName: (datos.apellido || datos.apellidos || '').trim(),
       email: datos.correo,
       password: datos.contrasena,
     })
@@ -79,7 +86,7 @@ export const authService = {
       codeVerifier: source.codeVerifier || null,
       redirectUri: source.redirectUri || null,
       nonce: source.nonce || null,
-      deviceInfo: source.deviceInfo || navigator.userAgent,
+      deviceInfo: source.deviceInfo || getDeviceUserAgent(),
       email: source.email || null,
       firstName: source.firstName || null,
       lastName: source.lastName || null,
@@ -147,4 +154,3 @@ export const authService = {
     return data
   },
 }
-
