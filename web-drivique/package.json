@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "test": "node --test src/__tests__/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage src/__tests__/*.test.js",
     "check:no-mocks": "node scripts/check-no-simulated-data.mjs",
     "lint": "eslint .",
     "preview": "vite preview"

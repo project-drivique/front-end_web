@@ -1,18 +1,30 @@
-name: Sin datos simulados
+name: CI Web — Pruebas, Seguridad y Compilación
 
 on:
   pull_request:
   push:
-    branches: [develop, qa, main]
+    branches: [develop, qa, main, HU-INT-22-dev]
 
 jobs:
-  escaneo:
+  ci-web:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web-drivique
+    env:
+      VITE_API_URL: https://drivique.tech/api/v1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: web-drivique/package-lock.json
+      - name: Instalar dependencias
+        run: npm ci
       - name: Buscar datos simulados en código productivo
-        working-directory: web-drivique
-        run: node scripts/check-no-simulated-data.mjs
+        run: npm run check:no-mocks
+      - name: Ejecutar pruebas automatizadas (login, reserva y pago Wompi)
+        run: npm run test:coverage
+      - name: Compilar aplicación para producción
+        run: npm run build

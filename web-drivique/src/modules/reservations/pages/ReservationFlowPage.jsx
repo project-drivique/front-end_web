@@ -63,11 +63,12 @@ export default function ReservationFlowPage() {
     handlePagarConWompi,
     totalReserva, cotizacion, appliedPromotion, aplicarPromocion, quitarPromocion,
     procesandoReserva,
+    cargandoVehiculo,
     usuario,
   } = flow
 
   useEffect(() => {
-    if (!vehiculo) navigate(usuario ? '/home' : '/catalogo', { replace: true })
+    if (!cargandoVehiculo && !vehiculo) navigate(usuario ? '/home' : '/catalogo', { replace: true })
   }, [vehiculo, usuario, navigate])
 
   // Redirección rápida automática a Mis Reservas cuando es fuera de horario (PENDING_SCHEDULE)
@@ -81,7 +82,16 @@ export default function ReservationFlowPage() {
     }
   }, [reservaCreada?.estado, vehiculo?.id, navigate])
 
-  if (!vehiculo) return null
+  if (!vehiculo) {
+    if (cargandoVehiculo) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-primary"></div>
+        </div>
+      )
+    }
+    return null
+  }
 
   // ─── Variables para datos de sucursal de pago en efectivo ─────────────────
   const sucursalPago = reservaCreada?.reservaDetalles?.sucursalPagoEfectivo || reserva.sucursalPagoEfectivo || vehiculo?.sucursal || ''

@@ -8,6 +8,7 @@ import { reservationManagementService } from '../../../services/reservationManag
 import { exportExcel, exportPdf, printTable } from '../../../utils/listExportUtils'
 import { showAlert, getErrorMessage } from '../../../utils/swalConfig'
 import { resolveDocumentUrl } from '../../../utils/documentUtils'
+import DocumentPreviewer from '../../../components/DocumentPreviewer'
 import MenuConfiguracion from '../../../components/MenuConfiguracion'
 import ManagementSidebar from '../components/ManagementSidebar'
 import './CityManagementPage.css'
@@ -45,6 +46,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   const [modalItem, setModalItem] = useState(null)
   const [observaciones, setObservaciones] = useState('')
   const [zoomPdf, setZoomPdf] = useState(null)
+  const [identidadBlobUrl, setIdentidadBlobUrl] = useState(null)
+  const [licenciaBlobUrl, setLicenciaBlobUrl] = useState(null)
 
   // Estado del Modal de 2 Columnas
   const [activeSection, setActiveSection] = useState('identidad') // 'identidad' | 'licencia' | 'reserva'
@@ -251,50 +254,15 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     return resolveDocumentUrl(url)
   }
 
-  const renderDocPreview = (url, titleLabel) => {
-    const safeUrl = getSafeDocUrl(url)
-    if (!safeUrl) {
-      return (
-        <div className="doc-preview-empty">
-          <FaFilePdf style={{ fontSize: 32, opacity: 0.4 }} />
-          <span>{t('admin.documents.modal.notAvailable', 'No disponible')}</span>
-        </div>
-      )
-    }
-
-    const isPdf = safeUrl.toLowerCase().includes('.pdf')
-
-    if (!isPdf) {
-      return (
-        <div className="doc-preview-container" onClick={() => setZoomPdf({ url: safeUrl, title: titleLabel })} title={t('admin.documents.modal.clickToZoom', 'Clic para ampliar documento')}>
-          <img src={safeUrl} alt={titleLabel} className="doc-preview-img" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          <div className="doc-preview-hover-overlay">
-            <FaEye /> {t('admin.documents.modal.zoomLabel', 'Ampliar')}
-          </div>
-        </div>
-      )
-    }
-
+  const renderDocPreview = (url, titleLabel, onBlob) => {
     return (
-      <div className="doc-preview-container" onClick={() => setZoomPdf({ url: safeUrl, title: titleLabel })} title={t('admin.documents.modal.clickToZoom', 'Clic para ampliar documento')}>
-        <object
-          data={`${safeUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-          type="application/pdf"
-          className="doc-preview-iframe"
-          style={{ width: '100%', height: '100%', border: 'none' }}
-        >
-          <iframe
-            src={`${safeUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-            title={titleLabel}
-            className="doc-preview-iframe"
-            scrolling="no"
-            style={{ width: '100%', height: '100%', border: 'none' }}
-          />
-        </object>
-        <div className="doc-preview-hover-overlay">
-          <FaEye /> {t('admin.documents.modal.zoomPdfLabel', 'Ampliar PDF')}
-        </div>
-      </div>
+      <DocumentPreviewer
+        url={url}
+        title={titleLabel}
+        onBlobReady={onBlob}
+        fallbackSubtitle={modalItem?.clienteNombre ? `${modalItem.clienteNombre} · ${modalItem.documentoIdentidad}` : ''}
+        fallbackDocNumber={modalItem?.documentoIdentidad}
+      />
     )
   }
 
@@ -944,7 +912,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       <div className="doc-page-switch-buttons">
                         {(modalItem.pdfCedulaUrl || modalItem.fotoCedulaFrente) && (
                           <a
-                            href={getSafeDocUrl(modalItem.pdfCedulaUrl || modalItem.fotoCedulaFrente)}
+                            href={identidadBlobUrl || getSafeDocUrl(modalItem.pdfCedulaUrl || modalItem.fotoCedulaFrente)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="doc-page-btn is-active"
@@ -972,7 +940,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       <div className="doc-page-switch-buttons">
                         {(modalItem.pdfLicenciaUrl || modalItem.fotoLicenciaFrente) && (
                           <a
-                            href={getSafeDocUrl(modalItem.pdfLicenciaUrl || modalItem.fotoLicenciaFrente)}
+                            href={licenciaBlobUrl || getSafeDocUrl(modalItem.pdfLicenciaUrl || modalItem.fotoLicenciaFrente)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="doc-page-btn is-active"
@@ -1489,69 +1457,12 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
               </div>
 
               <div className="doc-zoom-preview-box">
-                {getSafeDocUrl(zoomPdf.url) && !zoomPdf.url?.toLowerCase().includes('.pdf') ? (
-                  <img
-                    src={getSafeDocUrl(zoomPdf.url)}
-                    alt={zoomPdf.title}
-                    className="doc-zoom-img"
-                  />
-                ) : getSafeDocUrl(zoomPdf.url) ? (
-                  <object
-                    data={`${getSafeDocUrl(zoomPdf.url)}#toolbar=1&navpanes=0`}
-                    type="application/pdf"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      minHeight: '68vh',
-                      border: 'none',
-                      borderRadius: 8,
-                    }}
-                  >
-                    <iframe
-                      src={`${getSafeDocUrl(zoomPdf.url)}#toolbar=1&navpanes=0`}
-                      title={zoomPdf.title}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        minHeight: '68vh',
-                        border: 'none',
-                        borderRadius: 8,
-                      }}
-                    />
-                  </object>
-                ) : (
-                  <div style={{
-                    padding: '36px 24px',
-                    textAlign: 'center',
-                    background: 'var(--city-bg, #f8fafc)',
-                    borderRadius: 14,
-                    border: '1px solid var(--borde, #e2e8f0)',
-                    width: '100%',
-                    maxWidth: 580,
-                    margin: '20px auto',
-                  }}>
-                    <FaIdCard size={48} color="var(--brand-primary)" style={{ marginBottom: 14 }} />
-                    <h4 style={{ margin: '0 0 6px', fontSize: 16, fontWeight: 800, color: 'var(--city-text, #0f172a)' }}>
-                      {zoomPdf.title}
-                    </h4>
-                    <span style={{ fontSize: 12, color: 'var(--city-muted, #64748b)', display: 'block', marginBottom: 18 }}>
-                      Documento oficial digitalizado registrado en el expediente del cliente
-                    </span>
-                    <span style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      padding: '6px 16px',
-                      borderRadius: 20,
-                      background: '#dcfce7',
-                      color: '#15803d',
-                      fontSize: 12,
-                      fontWeight: 800,
-                    }}>
-                      <FaCheckCircle size={14} /> Validación de Identidad Registrada en Sucursal
-                    </span>
-                  </div>
-                )}
+                <DocumentPreviewer
+                  url={zoomPdf.url}
+                  title={zoomPdf.title}
+                  isZoomed={true}
+                  fallbackSubtitle={zoomPdf.title}
+                />
               </div>
             </div>
           </div>
