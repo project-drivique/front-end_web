@@ -959,7 +959,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
       const centavos = aCentavos(totalNum)
       const url = await construirUrlCheckout({
         reference: attemptRef,
-        contractId: contrato?.id || null,
+        contractId: resolvedContractId || null,
         amountInCents: centavos,
         redirectUrl: `${window.location.origin}/respuesta`,
       })
