@@ -1,9 +1,19 @@
 # Dependencias
 node_modules/
+**/node_modules/
 
-# Build
+# Build y cobertura
 dist/
 dist-ssr/
+coverage/
+.vite/
+
+# Binarios y artefactos comprimidos (no versionar en git)
+*.apk
+*.aab
+*.ipa
+*.zip
+*.tar.gz
 
 # Variables de entorno
 .env
@@ -16,9 +26,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Editor
+# Editor y caches de IDE
 .vscode/
 .idea/
+*.iml
 
 # Sistema operativo
 .DS_Store

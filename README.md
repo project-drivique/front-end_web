@@ -5,114 +5,111 @@ Tecnólogo en Análisis y Desarrollo de Software
 
 ---
 
-##  Descripción del Proyecto
-**Drivique** es una plataforma web moderna, segura y de alto rendimiento diseñada para la gestión integral del alquiler de vehículos. Ofrece experiencias optimizadas tanto para clientes (catálogo interactivo, cotizaciones en tiempo real, reserva paso a paso, firma digital de contratos y pasarela de pago) como para administradores y encargados de sucursal (panel operativo en tiempo real, control de entregas/devoluciones, gestión de flota, reportes financieros y auditoría).
+## Descripción del Proyecto
+**Drivique** es una plataforma web moderna, segura y de alto rendimiento diseñada para la gestión integral del alquiler de vehículos. Ofrece experiencias optimizadas tanto para clientes (catálogo interactivo, cotizaciones en tiempo real, reserva paso a paso, firma digital de contratos y pasarela de pago Wompi firmada en el servidor) como para administradores y encargados de sucursal (panel operativo en tiempo real, control de entregas/devoluciones, gestión de flota, reportes financieros y auditoría).
+
+* **Despliegue Web en Producción (Hostinger):** `https://drivique.tech`
+* **API Backend en Producción:** `https://drivique.tech/api/v1` (Healthcheck: `https://drivique.tech/api/actuator/health`)
 
 ---
 
-##  Stack Tecnológico
+## Stack Tecnológico
 * **Core:** [React 19](https://react.dev/) + [Vite 8](https://vite.dev/)
 * **Enrutamiento y Rendimiento:** [React Router 7](https://reactrouter.com/) con *Code Splitting* y *Lazy Loading* (`React.lazy` + `Suspense`)
 * **Gestión de Estado Global:** [Zustand 5](https://zustand-demo.pmnd.rs/)
 * **Peticiones HTTP & Asincronía:** Axios + `@tanstack/react-query`
+* **Pruebas Automatizadas:** Vitest (flujos de autenticación, reservas e iniciación de pago con Wompi)
 * **Estilizado & Diseño:** CSS3 Modular con variables/tokens, Tailwind CSS y diseño adaptable (*Responsive & Dark Mode*)
 * **Internacionalización (i18n):** `react-i18next` + `i18next` en 5 idiomas soportados (`es` Español, `en` Inglés, `fr` Francés, `pt` Portugués, `br` Portugués Brasileño)
-* **Personalización Dinámica de Marca & Temas:** Inyección de tokens CSS variables (`--brand-primary`, `--brand-secondary`, etc.) vía `brandService` y soporte completo de Modo Claro / Modo Oscuro
 * **Visualización de Datos:** Recharts + Gráficos SVG nativos
 * **Alertas & Feedback:** SweetAlert2 & Feedback toast accesible
 * **Iconografía:** `react-icons/fa` (FontAwesome Icons)
 
 ---
 
-##  Arquitectura y Patrones de Diseño
+## Variables de Entorno Obligatorias
+
+La aplicación exige la configuración explícita de la URL base del API mediante variables de entorno (validada en [`src/config/apiConfig.js`](file:///web-drivique/src/config/apiConfig.js)):
+
+| Variable | Obligatoria | Descripción | Ejemplo |
+| --- | :---: | --- | --- |
+| `VITE_API_URL` | **Sí** | URL base del API REST de Drivique (`/api/v1`). Si no se define, la aplicación detiene el arranque con error descriptivo. | `https://drivique.tech/api/v1` (producción) o `http://localhost:8080/api/v1` (local) |
+| `VITE_GOOGLE_CLIENT_ID` | No | Client ID público de Google OAuth 2.0. | `18960724578-...apps.googleusercontent.com` |
+| `VITE_FACEBOOK_APP_ID` | No | App ID público de Facebook Login. | `1072551762252390` |
+
+> **Seguridad de Pagos (Wompi):** El frontend **nunca** almacena ni utiliza `integrityKey`. Para iniciar un pago, el cliente invoca `POST /v1/payments/wompi/initiate` en el backend, el cual registra el pago `PENDING` en `billing.payments` y retorna la firma `integritySignature` generada en el servidor.
+
+---
+
+## Arquitectura y Patrones de Diseño
 
 El código sigue estrictos estándares de ingeniería de software y separación de responsabilidades (*Separation of Concerns*):
 
 1. **Patrón Strategy (Estrategia):**
-   * Implementado en [`src/modules/payments/strategies/`](file:///web-drivique/src/modules/payments/strategies/) para el procesamiento desacoplado de métodos de pago (`WompiPaymentStrategy`, `CashPaymentStrategy`), permitiendo añadir nuevas pasarelas sin alterar el flujo de checkout.
+   * Implementado en [`src/modules/payments/strategies/`](file:///web-drivique/src/modules/payments/strategies/) para el procesamiento desacoplado de métodos de pago (`WompiPaymentStrategy`, `CashPaymentStrategy`), delegando la firma e iniciación del checkout al backend (`POST /v1/payments/wompi/initiate`).
 2. **Patrón Factory (Fábrica):**
    * Centraliza la instanciación de procesadores de pago (`PaymentProcessorFactory`) y la generación/normalización de alertas operacionales en tiempo real (`useBranchNotifications`).
 3. **Patrón Container / Presentational:**
-   * Desacoplamiento total entre componentes inteligentes encargados del estado/servicios (ej. `BranchDashboard`, `VehicleManagementPage`) y componentes presentacionales puros (ej. `BranchNotificationPopover`, `KpiDetailModal`).
+   * Desacoplamiento entre componentes contenedores y subcomponentes modulares de menos de 500 líneas.
 4. **Patrón Facade (Fachada):**
-   * Interfaces unificadas y limpias que ocultan la complejidad de APIs y transformaciones de datos en la capa de servicios (`branchCategoryService`, `vehicleManagementService`, `branchManagementService`).
-5. **Separación de Roles & Seguridad Operativa:**
-   * **Administrador General:** Visión multi-sucursal global, gestión de sedes centrales, catálogo maestro de categorías con tarifas sugeridas, asignación de flota transversal y exportación completa (Excel/PDF/Impresión).
-   * **Encargado de Sucursal:** Control focalizado en su sede física asignada, activación selectiva de categorías ofrecidas mediante interruptores interactivos (*Sí/No*), gestión exclusiva de su flota local y exportación gobernada sin fuga de información de otras sedes.
-6. **Patrón Error Boundary:**
-   * Capturador global de excepciones en runtime (`ErrorBoundary`) para garantizar resiliencia y evitar pantallas blancas ante errores no controlados.
+   * Interfaces unificadas en la capa de servicios (`wompiService`, `reservationsService`, `authService`, `branchCategoryService`, `vehicleManagementService`, `branchManagementService`).
+5. **Seguridad en el Cliente:**
+   * Sesión gestionada en `sessionStorage` (fuera de `localStorage` persistente) y renderizado libre de inyección HTML (`dangerouslySetInnerHTML`).
 
 ---
 
-##  Estructura Modular del Proyecto
+## Instalación, Configuración y Ejecución Local
 
-```text
-front-end_web/
-└── web-drivique/
-    ├── src/
-    │   ├── components/       # Componentes transversales (ErrorBoundary, LoadingFallback, ChatBot, Modales)
-    │   ├── contexts/         # Contextos globales de UI y temas
-    │   ├── hooks/            # Custom Hooks de negocio y control
-    │   ├── i18n/             # Configuración y diccionarios de traducción (es, en, fr, pt, br)
-    │   ├── mocks/            # Datos locales de prueba y configuración Sandbox
-    │   ├── modules/          # Arquitectura por Dominios / Features:
-    │   │   ├── admin/        # Dashboard operativo, centro de notificaciones, vehículos, reportes y sedes
-    │   │   ├── auth/         # Login, registro, recuperación y 2FA
-    │   │   ├── catalog/      # Catálogo de vehículos, filtros y sedes
-    │   │   ├── contracts/    # Firma electrónica y previsualización de contratos
-    │   │   ├── landing/      # Página principal y secciones informativas
-    │   │   ├── notifications/# Centro de notificaciones de usuario y cupones
-    │   │   ├── payments/     # Pasarelas de pago, estrategias y respuestas
-    │   │   ├── profile/      # Perfil de usuario y edición de datos
-    │   │   ├── reservations/ # Flujo de reserva (3 pasos) y gestión de alquileres
-    │   │   └── support/      # Módulo de PQRS y soporte al cliente
-    │   ├── routes/           # Enrutamiento con Code Splitting (AppRouter)
-    │   ├── services/         # Servicios de integración (branchCategoryService, vehicleManagementService, etc.)
-    │   ├── store/            # Almacenamiento de estado global con Zustand
-    │   ├── styles/           # Variables, temas y diseño base
-    │   └── utils/            # Utilidades puras (formatos, exportación Excel/PDF, alertas)
-    └── package.json
-```
-
----
-
-##  Gobernanza de Ramas Git
-
-El repositorio se rige bajo el modelo de ramas controladas:
-* `main` → Código de producción estable, verificado y aprobado.
-* `qa` → Ambiente de pruebas, certificación y control de calidad.
-* `develop` → Rama central de integración para desarrollo activo.
-* `feature/*` → Ramas de características específicas desprendidas de su respectivo entorno (ej. `feature/administrador-surcursal-dev`).
-
----
-
-##  Instalación y Ejecución Local
-
-### 1. Clonar el repositorio:
+### 1. Clonar el repositorio
 ```bash
 git clone https://github.com/project-drivique/front-end_web.git
 cd front-end_web/web-drivique
 ```
 
-### 2. Instalar dependencias:
+### 2. Configurar variables de entorno (`.env`)
+Copie el archivo de ejemplo y defina `VITE_API_URL` (obligatoria):
+```bash
+cp .env.example .env
+```
+Contenido mínimo de `.env`:
+```env
+VITE_API_URL=http://localhost:8080/api/v1
+```
+*(Para conectar contra el backend productivo en Hostinger use `VITE_API_URL=https://drivique.tech/api/v1`).*
+
+### 3. Instalar dependencias
 ```bash
 npm install
 ```
 
-### 3. Iniciar servidor de desarrollo:
+### 4. Ejecutar servidor de desarrollo
 ```bash
 npm run dev
 ```
 
-### 4. Compilar para producción:
+### 5. Ejecutar pruebas automatizadas
+```bash
+npm test
+```
+
+### 6. Compilar para producción
 ```bash
 npm run build
 ```
 
 ---
 
-##  Equipo de Desarrollo
+## Gobernanza de Ramas Git
+
+El repositorio se rige bajo el modelo de ramas controladas:
+* `main` → Código de producción estable, verificado y aprobado.
+* `qa` → Ambiente de pruebas, certificación y control de calidad.
+* `develop` → Rama central de integración para desarrollo activo.
+* `HU-*` / `feature/*` → Ramas de características o historias de usuario integradas mediante Pull Request con revisión obligatoria y CI en verde.
+
+---
+
+## Equipo de Desarrollo
 * **Laura Vanessa Perez Perdomo**
 * **Danna Valentina Barrios Penagos**
 * **Emily Sharith Amezquita Saavedra**
-

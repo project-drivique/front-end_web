@@ -1,94 +1,17 @@
 import { useTranslation } from 'react-i18next'
-import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt, FaEye, FaHourglassHalf, FaInfoCircle, FaExclamationTriangle } from 'react-icons/fa'
+import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaCreditCard, FaPencilAlt, FaEye, FaHourglassHalf, FaExclamationTriangle } from 'react-icons/fa'
 import { useState, useEffect, useMemo } from 'react'
 import ReservationCalendar from './ReservationCalendar'
 import DomicilioModal from './DomicilioModal'
 import AlertModal from '../../catalog/components/AlertModal'
 import { SUCURSALES, CIUDADES } from '../../catalog/constants'
-function getHorarioSucursal(nombreSucursal) {
-  if (!nombreSucursal) return { apertura: '00:00', cierre: '23:30' }
-  const nombreLower = String(nombreSucursal).toLowerCase()
-  if (nombreLower.includes('aeropuerto') || nombreLower.includes('terminal') || nombreLower.includes('el dorado')) {
-    return { apertura: '00:00', cierre: '23:30' }
-  }
-  if (nombreLower.includes('domicilio') || nombreLower.includes('hotel') || nombreLower.includes('airbnb')) {
-    return { apertura: '07:00', cierre: '19:00' }
-  }
-  return { apertura: '00:00', cierre: '23:30' }
-}
-
-function getFechaHoyLocal() {
-  const d = new Date()
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
-function generarHoras(lugar, minHora, maxHora, fecha) {
-  const { apertura, cierre } = getHorarioSucursal(lugar)
-  const [hInicio, mInicio] = apertura.split(':').map(Number)
-  const [hFin, mFin] = cierre.split(':').map(Number)
-
-  const ahora = new Date()
-  const hoyStr = getFechaHoyLocal()
-  const cleanFecha = fecha ? String(fecha).split('T')[0] : null
-  const esHoy = cleanFecha === hoyStr
-  const esPasado = cleanFecha ? cleanFecha < hoyStr : false
-
-  // Minutos transcurridos en el día actual
-  const ahoraMinutos = ahora.getHours() * 60 + ahora.getMinutes()
-
-  let minMins = -1
-  if (minHora) {
-    const [mh, mm] = String(minHora).split(':').map(Number)
-    if (!isNaN(mh) && !isNaN(mm)) {
-      minMins = mh * 60 + mm
-    }
-  }
-
-  let maxMins = Infinity
-  if (maxHora) {
-    const [mh, mm] = String(maxHora).split(':').map(Number)
-    if (!isNaN(mh) && !isNaN(mm)) {
-      maxMins = mh * 60 + mm
-    }
-  }
-
-  if (esPasado) {
-    return []
-  }
-
-  const horas = []
-  for (let h = hInicio; h <= hFin; h++) {
-    for (const m of [0, 30]) {
-      if (h === hInicio && m < mInicio) continue
-      if (h === hFin && m > mFin) continue
-
-      const totalMins = h * 60 + m
-
-      // Si la fecha seleccionada es hoy, omitir horas anteriores o iguales a la hora actual
-      if (esHoy && totalMins <= ahoraMinutos) {
-        continue
-      }
-
-      if (minMins >= 0 && totalMins < minMins) continue
-      if (maxMins < Infinity && totalMins > maxMins) continue
-
-      horas.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`)
-    }
-  }
-  return horas
-}
-
-function formatHoraAmPm(hora24) {
-  if (!hora24) return ''
-  const [h, m] = hora24.split(':').map(Number)
-  const ampm = h >= 12 ? 'p. m.' : 'a. m.'
-  let hour12 = h % 12
-  if (hour12 === 0) hour12 = 12
-  return `${hour12}:${String(m).padStart(2, '0')} ${ampm}`
-}
+import {
+  generarHoras,
+  formatHoraAmPm,
+  calcularDuracionYAnticipada,
+  ComputoReservaBanner,
+  OneDayReservationModal,
+} from './UnifiedReservationHelpers'
 
 export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCambio, c }) {
   const { t } = useTranslation()
@@ -104,10 +27,8 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isModalReadOnly, setIsModalReadOnly] = useState(false)
   const [showOneDayModal, setShowOneDayModal] = useState(false)
-  const [conflictAlert, setConflictAlert] = useState(null) // { campo, valor, openDomicilio }
+  const [conflictAlert, setConflictAlert] = useState(null)
 
-
-  // Payment Options
   const metodoPago = reserva?.metodoPago
   const paymentOptions = [
     {
@@ -122,7 +43,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
     },
   ]
 
-  // Location Options
   const carBranch = vehiculo?.sucursal
   const branchObj = SUCURSALES.find(s => s.nombre === carBranch)
   const cityObj   = branchObj ? CIUDADES.find(city => city.nombre === branchObj.ciudad) : null
@@ -166,19 +86,12 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
     const fFinStr = reserva?.fechaFin ? String(reserva.fechaFin).split('T')[0] : ''
     const esMismoDia = Boolean(fInicioStr && fFinStr && fInicioStr === fFinStr)
 
-    // Si es el mismo día:
-    // minHora = horaInicio (la devolución no puede ser anterior a la hora de retiro)
-    // maxHora = null (puede devolver hasta el cierre de la sucursal)
-    // Si son días diferentes:
-    // minHora = null
-    // maxHora = horaInicio (límite del ciclo de 24h contratado; horas posteriores incurren en nuevo día)
     const minH = esMismoDia ? (reserva?.horaInicio || null) : null
     const maxH = !esMismoDia ? (reserva?.horaInicio || null) : null
 
     return generarHoras(reserva?.sucursalDevolucion, minH, maxH, reserva?.fechaFin)
   }, [reserva])
 
-  // Pre-seleccionar o sincronizar horaInicio si está vacía o ya no es válida (por ejemplo, hora en el pasado)
   useEffect(() => {
     if (reserva?.fechaInicio && horasRetiro?.length > 0) {
       if (!reserva?.horaInicio || !horasRetiro.includes(reserva.horaInicio)) {
@@ -190,7 +103,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
     }
   }, [reserva?.fechaInicio, horasRetiro]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Pre-seleccionar o sincronizar horaFin si está vacía o ya no es válida
   useEffect(() => {
     if (reserva?.fechaFin && horasDevolucion?.length > 0) {
       if (!reserva?.horaFin || !horasDevolucion.includes(reserva.horaFin)) {
@@ -205,13 +117,10 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
   }, [reserva?.fechaFin, reserva?.horaInicio, horasDevolucion]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLugarChange = (campo, valor) => {
-    // Mostrar alerta cuando ambos campos quedarían en 'domicilio'
     const otherValor = campo === 'sucursalRetiro' ? reserva?.sucursalDevolucion : reserva?.sucursalRetiro
-
     const hasConflict = valor === 'domicilio' && otherValor === 'domicilio'
 
     if (hasConflict) {
-      // Guardar el valor previo para restaurarlo si el usuario cancela
       const prevValue = campo === 'sucursalRetiro' ? (reserva?.sucursalRetiro || '') : (reserva?.sucursalDevolucion || '')
       setConflictAlert({
         campo,
@@ -229,57 +138,7 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
     }
   }
 
-  let diasReserva = 0
-  let devolucionAnticipadaText = ''
-
-  if (reserva?.fechaInicio && reserva?.fechaFin) {
-    const fInicioStr = reserva.fechaInicio.split('T')[0]
-    const fFinStr = reserva.fechaFin.split('T')[0]
-    const startDate = new Date(`${fInicioStr}T00:00:00`)
-    const endDate = new Date(`${fFinStr}T00:00:00`)
-    const diffTime = endDate - startDate
-    diasReserva = Math.max(1, Math.round(diffTime / 86400000))
-    if (fInicioStr === fFinStr) diasReserva = 1
-
-    if (reserva?.horaInicio && reserva?.horaFin) {
-      const [hR, mR] = reserva.horaInicio.split(':').map(Number)
-      const [hD, mD] = reserva.horaFin.split(':').map(Number)
-      const minutosRetiro = hR * 60 + mR
-      const minutosDevolucion = hD * 60 + mD
-
-      // Devolución anticipada solo si la hora de devolución es menor a la hora de retiro
-      if (minutosDevolucion < minutosRetiro) {
-        const diffEarlyMins = minutosRetiro - minutosDevolucion
-        const totalContractMins = diasReserva * 24 * 60
-        const totalEffectiveMins = totalContractMins - diffEarlyMins
-
-        if (totalEffectiveMins > 0) {
-          const antDias = Math.floor(totalEffectiveMins / (24 * 60))
-          const remainderMins = totalEffectiveMins % (24 * 60)
-          const antHoras = Math.floor(remainderMins / 60)
-          const antMins = remainderMins % 60
-
-          if (antDias > 0) {
-            const dayStr = `${antDias} ${antDias === 1 ? t('vehiculo.day', 'día') : t('vehiculo.days', 'días')}`
-            const timeParts = []
-            if (antHoras > 0) timeParts.push(`${antHoras} h`)
-            if (antMins > 0) timeParts.push(`${antMins} min`)
-
-            if (timeParts.length > 0) {
-              devolucionAnticipadaText = `${dayStr}, ${timeParts.join(' ')}`
-            } else {
-              devolucionAnticipadaText = dayStr
-            }
-          } else {
-            const timeParts = []
-            if (antHoras > 0) timeParts.push(`${antHoras} h`)
-            if (antMins > 0) timeParts.push(`${antMins} min`)
-            devolucionAnticipadaText = timeParts.join(' ')
-          }
-        }
-      }
-    }
-  }
+  const { diasReserva, devolucionAnticipadaText } = calcularDuracionYAnticipada(reserva, t)
 
   return (
     <div style={{ background: bg, padding: 20, borderRadius: 16, border: `1px solid ${border}`, display: 'flex', flexDirection: 'column', gap: 32 }}>
@@ -361,7 +220,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
 
       {/* SECCIÓN: LUGAR */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Lugar Retiro */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -412,13 +270,8 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
             {reserva?.sucursalDevolucion === 'domicilio' && (
               <div 
                 onClick={() => {
-                  if (reserva?.sucursalRetiro === 'domicilio') {
-                    setIsModalReadOnly(true)
-                    setIsModalOpen(true)
-                  } else {
-                    setIsModalReadOnly(false)
-                    setIsModalOpen(true)
-                  }
+                  setIsModalReadOnly(reserva?.sucursalRetiro === 'domicilio')
+                  setIsModalOpen(true)
                 }}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, fontSize: 11, color: accent, fontWeight: 700, cursor: 'pointer', padding: '4px 8px', background: 'rgba(var(--brand-primary-rgb),0.1)', borderRadius: 6, width: 'fit-content' }}
               >
@@ -457,7 +310,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           />
         </div>
 
-        {/* Tarjetas de fechas seleccionadas en la parte inferior */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
@@ -482,49 +334,16 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           </div>
         </div>
 
-        {/* INFO ALERT: CÓMPUTO DE DÍAS (OPCIÓN B) */}
-        {reserva?.horaInicio && diasReserva > 0 && (() => {
-          const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
-          let fInicioFmt = ''
-          let fFinFmt = ''
-          let fNextFmt = ''
-
-          if (reserva?.fechaInicio) {
-            const p = reserva.fechaInicio.split('T')[0].split('-').map(Number)
-            if (p.length === 3) fInicioFmt = `${p[2]} de ${meses[p[1] - 1]}`
-          }
-          if (reserva?.fechaFin) {
-            const p = reserva.fechaFin.split('T')[0].split('-').map(Number)
-            if (p.length === 3) {
-              fFinFmt = `${p[2]} de ${meses[p[1] - 1]}`
-              const nextDt = new Date(p[0], p[1] - 1, p[2])
-              nextDt.setDate(nextDt.getDate() + 1)
-              fNextFmt = `${nextDt.getDate()} de ${meses[nextDt.getMonth()]}`
-            }
-          }
-
-          const hAmPm = formatHoraAmPm(reserva.horaInicio)
-
-          return (
-            <div style={{ marginTop: 8, padding: 14, borderRadius: 12, backgroundColor: 'rgba(var(--brand-primary-rgb), 0.08)', border: '1px solid rgba(var(--brand-primary-rgb), 0.25)', display: 'flex', gap: 12 }}>
-              <div style={{ color: 'var(--brand-text)', marginTop: 2, flexShrink: 0 }}>
-                <FaInfoCircle size={18} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={{ fontSize: 13, fontWeight: 700, color: textPrimary }}>
-                  {t('vehiculo.computoReservaTitle', { count: diasReserva, defaultValue_one: 'Cómputo de tu {{count}} día de alquiler', defaultValue_other: 'Cómputo de tus {{count}} días de alquiler' })}
-                </span>
-                <span style={{ fontSize: 12, color: textSecond, lineHeight: 1.5 }}>
-                  {t('vehiculo.computoReservaDesc', { inicio: fInicioFmt, hora: hAmPm, dias: diasReserva, fin: fFinFmt, siguiente: fNextFmt, defaultValue: 'Tu reserva empieza el {{inicio}} a las {{hora}}. Cada día te otorga 24 horas completas: tu {{dias}}º día inicia el {{fin}} a las {{hora}} y sus 24 horas terminan el {{siguiente}} a las {{hora}}. Entregar antes registra tiempo de devolución anticipada.' })}
-                </span>
-              </div>
-            </div>
-          )
-        })()}
+        <ComputoReservaBanner
+          reserva={reserva}
+          diasReserva={diasReserva}
+          textPrimary={textPrimary}
+          textSecond={textSecond}
+          t={t}
+        />
 
         {/* SECCIÓN: HORAS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-          {/* Hora Retiro */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
               <FaClock color={accent} size={14} /> {t('vehiculo.selectPickupTime', 'Selecciona Hora de Retiro')}
@@ -547,7 +366,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
             </div>
           </div>
 
-          {/* Hora Devolución */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: titleColor }}>
               <FaClock color={accent} size={14} /> {t('vehiculo.selectReturnTime', 'Selecciona Hora de Devolución')}
@@ -590,7 +408,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         )}
       </div>
 
-
       <DomicilioModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -600,7 +417,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         isReadOnly={isModalReadOnly}
       />
 
-      {/* ALERTA: Misma ubicación domicilio */}
       {conflictAlert && (
         <AlertModal
           icon={<FaExclamationTriangle size={18} color="var(--texto-acento)" />}
@@ -608,7 +424,6 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
           mensaje={t('vehiculo.conflictLocationDesc', 'Al seleccionar domicilio en ambos campos, el retiro y la devolución se realizarán en la misma dirección.')}
           secondaryText={t('common.cancel', 'Cancelar')}
           onSecondary={() => {
-            // Restaurar el valor anterior para que el select vuelva a su estado previo
             onCambio(conflictAlert.campo, conflictAlert.prevValue)
             setConflictAlert(null)
           }}
@@ -630,31 +445,14 @@ export default function UnifiedReservationConfigCard({ vehiculo, reserva, onCamb
         />
       )}
 
-      {showOneDayModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: c?.bgSecundario || '#ffffff', borderRadius: 20, padding: 24, maxWidth: 320, margin: '0 auto', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-              <div style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(var(--brand-primary-rgb), 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: 'transparent', border: '2px solid var(--brand-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <FaInfoCircle size={22} color="var(--brand-primary)" />
-                </div>
-              </div>
-            </div>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: textPrimary, marginBottom: 12 }}>
-              {t('vehiculo.oneDayReservationTitle', 'Reserva de 1 día (24 horas)')}
-            </h3>
-            <p style={{ fontSize: 14, color: textSecond, lineHeight: 1.5, marginBottom: 24 }}>
-              {t('vehiculo.oneDayReservationDesc', 'Seleccionaste 1 día de reserva. Elige la hora de retiro y devolución; las 24 horas contarán a partir de la hora de retiro.')}
-            </p>
-            <button
-              onClick={() => setShowOneDayModal(false)}
-              style={{ width: '100%', padding: '12px 16px', backgroundColor: 'var(--brand-primary)', color: 'white', border: 'none', borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
-            >
-              Aceptar
-            </button>
-          </div>
-        </div>
-      )}
+      <OneDayReservationModal
+        show={showOneDayModal}
+        onClose={() => setShowOneDayModal(false)}
+        c={c}
+        textPrimary={textPrimary}
+        textSecond={textSecond}
+        t={t}
+      />
     </div>
   )
 }

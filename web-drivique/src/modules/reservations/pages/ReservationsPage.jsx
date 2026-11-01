@@ -13,7 +13,7 @@ import { SUCURSALES } from '@/modules/catalog/constants'
 import { construirUrlCheckout, aCentavos } from '@/services/wompiService'
 import logo from '@/assets/logo.png'
 import { useBrand } from '@/contexts/BrandContext'
-import { showAlert } from '@/utils/swalConfig'
+import { showAlert, getErrorMessage } from '@/utils/swalConfig'
 import './ReservationsPage.css'
 
 const CLASES_ESTADO = {
@@ -910,9 +910,43 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
       e.preventDefault()
       e.stopPropagation()
     }
+
+    if (
+      isPendingDocs ||
+      reserva.estado === 'PENDING_DOCUMENT_REVIEW' ||
+      reserva.status === 'PENDING_DOCUMENT_REVIEW' ||
+      reservaOriginal?.estado === 'PENDING_DOCUMENT_REVIEW' ||
+      reserva.estado === 'pendiente_documentos' ||
+      reserva.estadoDocumentos === 'PENDIENTE'
+    ) {
+      showAlert({
+        icon: 'info',
+        title: t('hc6.docs_en_revision_titulo', { defaultValue: 'Documentos en revisión' }),
+        text: t('hc6.docs_en_revision_alerta', {
+          defaultValue: 'La sucursal aún está revisando tus documentos. Podrás pagar una vez que sean aprobados por el encargado de la sucursal.'
+        })
+      })
+      return
+    }
+
+    if (
+      isPendingSchedule ||
+      reserva.estado === 'PENDING_SCHEDULE' ||
+      reserva.status === 'PENDING_SCHEDULE' ||
+      reserva.estado === 'pendiente_horario'
+    ) {
+      showAlert({
+        icon: 'info',
+        title: t('reservas.pendingScheduleTitle', { defaultValue: 'En espera de horario' }),
+        text: t('reservas.pendingScheduleText', {
+          defaultValue: 'Tu reserva fue registrada fuera del horario de atención de la sucursal. Se habilitará para pago al inicio de la jornada de atención.'
+        })
+      })
+      return
+    }
     setPagandoWompi(true)
     try {
-      const baseRef = reserva.id || reserva.referencia || reservaOriginal?.referencia
+      const baseRef = reserva.codigo || reserva.referencia || reserva.id || reservaOriginal?.referencia
       const attemptRef = `${baseRef}_${Date.now()}`
       sessionStorage.setItem('current_wompi_reference', baseRef)
       sessionStorage.setItem('current_wompi_attempt_ref', attemptRef)
@@ -921,6 +955,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
       const centavos = aCentavos(totalNum)
       const url = await construirUrlCheckout({
         reference: attemptRef,
+        contractId: contrato?.id || null,
         amountInCents: centavos,
         redirectUrl: `${window.location.origin}/respuesta`,
       })
@@ -931,7 +966,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
       showAlert({
         icon: 'error',
         title: t('common.error', 'Error'),
-        text: err?.message || t('reservas.wompiError', 'No se pudo conectar con la pasarela de pagos de Wompi. Por favor intenta nuevamente.')
+        text: getErrorMessage(err, t('reservas.wompiError', { defaultValue: 'No se pudo conectar con la pasarela de pagos de Wompi. Por favor intenta nuevamente.' }))
       })
     }
   }
@@ -1091,7 +1126,7 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
               </div>
               <div className="modal-dato-texto">
                 <span className="modal-dato-label">{t('reservas.reference', { defaultValue: 'Referencia' })}</span>
-                <strong className="modal-dato-val referencia-val" title={reserva.id}>{reserva.id}</strong>
+                <strong className="modal-dato-val referencia-val" title={reserva.codigo || reserva.referencia || reserva.id}>{reserva.codigo || reserva.referencia || reserva.id}</strong>
               </div>
             </div>
 
@@ -1714,7 +1749,7 @@ function TarjetaReserva({ reserva, moneda, onValorar, onReportar, onVerDetalle }
         <div className="reserva-head">
           <div>
             <div className="reserva-head-meta">
-              <span className="reserva-id">{t('reservas.reservationNumber', { id: reserva.id })}</span>
+              <span className="reserva-id">{t('reservas.reservationNumber', { id: reserva.codigo || reserva.referencia || reserva.id })}</span>
               {reserva.createdAt && (
                 <span className="reserva-creada-badge" title="Fecha en que se realizó la reserva">
                   <FaClock size={11} />
