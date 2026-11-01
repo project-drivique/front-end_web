@@ -2,13 +2,17 @@ import { createRoot } from 'react-dom/client'
 import AlertModal from '../modules/catalog/components/AlertModal'
 import { FaCheckCircle, FaExclamationTriangle, FaInfoCircle, FaQuestionCircle } from 'react-icons/fa'
 
-const sanitizeHtmlToText = (rawHtml) => {
-  if (typeof rawHtml !== 'string') return rawHtml
-  return rawHtml
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/p>/gi, '\n')
-    .replace(/<[^>]*>/g, '')
-    .trim()
+const sanitizeSafeHtml = (html) => {
+  if (typeof html !== 'string') return ''
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+    .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '')
+    .replace(/\son\w+="[^"]*"/gi, '')
+    .replace(/\son\w+='[^']*'/gi, '')
+    .replace(/\son\w+=\S+/gi, '')
+    .replace(/javascript:/gi, '')
 }
 
 export const showAlert = (options) => {
@@ -50,9 +54,11 @@ export const showAlert = (options) => {
     else if (iconType === 'error' || iconType === 'warning') IconComponent = <FaExclamationTriangle size={22} color={esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)'} />
     else if (iconType === 'question') IconComponent = <FaQuestionCircle size={22} color={esModoOscuro ? 'var(--brand-text-dark)' : 'var(--brand-secondary)'} />
 
-    const mensajeContent = options.html 
-      ? <span style={{ whiteSpace: 'pre-line' }}>{sanitizeHtmlToText(options.html)}</span> 
-      : options.text
+    const mensajeContent = options.content
+      ? options.content
+      : (options.html
+          ? <div dangerouslySetInnerHTML={{ __html: sanitizeSafeHtml(options.html) }} />
+          : (options.text ? <span style={{ whiteSpace: 'pre-line' }}>{options.text}</span> : null))
 
     root.render(
       <AlertModal
