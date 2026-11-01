@@ -46,7 +46,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   const [modalItem, setModalItem] = useState(null)
   const [observaciones, setObservaciones] = useState('')
   const [zoomPdf, setZoomPdf] = useState(null)
-  const [activeBlobUrl, setActiveBlobUrl] = useState(null)
+  const [identidadBlobUrl, setIdentidadBlobUrl] = useState(null)
+  const [licenciaBlobUrl, setLicenciaBlobUrl] = useState(null)
 
   // Estado del Modal de 2 Columnas
   const [activeSection, setActiveSection] = useState('identidad') // 'identidad' | 'licencia' | 'reserva'
@@ -253,13 +254,12 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
     return resolveDocumentUrl(url)
   }
 
-  const renderDocPreview = (url, titleLabel) => {
+  const renderDocPreview = (url, titleLabel, onBlob) => {
     return (
       <DocumentPreviewer
         url={url}
         title={titleLabel}
-        onZoom={(zoomData) => setZoomPdf(zoomData)}
-        onBlobReady={(blob) => setActiveBlobUrl(blob)}
+        onBlobReady={onBlob}
         fallbackSubtitle={modalItem?.clienteNombre ? `${modalItem.clienteNombre} · ${modalItem.documentoIdentidad}` : ''}
         fallbackDocNumber={modalItem?.documentoIdentidad}
       />
@@ -912,7 +912,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       <div className="doc-page-switch-buttons">
                         {(modalItem.pdfCedulaUrl || modalItem.fotoCedulaFrente) && (
                           <a
-                            href={activeBlobUrl || getSafeDocUrl(modalItem.pdfCedulaUrl || modalItem.fotoCedulaFrente)}
+                            href={identidadBlobUrl || getSafeDocUrl(modalItem.pdfCedulaUrl || modalItem.fotoCedulaFrente)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="doc-page-btn is-active"
@@ -940,7 +940,7 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
                       <div className="doc-page-switch-buttons">
                         {(modalItem.pdfLicenciaUrl || modalItem.fotoLicenciaFrente) && (
                           <a
-                            href={activeBlobUrl || getSafeDocUrl(modalItem.pdfLicenciaUrl || modalItem.fotoLicenciaFrente)}
+                            href={licenciaBlobUrl || getSafeDocUrl(modalItem.pdfLicenciaUrl || modalItem.fotoLicenciaFrente)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="doc-page-btn is-active"
