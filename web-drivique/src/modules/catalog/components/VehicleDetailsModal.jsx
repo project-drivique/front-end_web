@@ -182,9 +182,10 @@ export default function VehicleDetailsModal({
       setBannerVisible(true)
       return
     }
+    sessionStorage.setItem('drivique_selected_vehicle', JSON.stringify(vehiculo))
     sessionStorage.removeItem(`drivique_reservation_state_${vehiculo.id}`)
+    sessionStorage.removeItem(`drivique_reservation_state_v2_${vehiculo.id}`)
     const q = promo?.codigo ? `?promo=${promo.codigo}` : ''
-    onClose?.()
     navigate(`/reservas/${vehiculo.id}${q}`)
   }
 

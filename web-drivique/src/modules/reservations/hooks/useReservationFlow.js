@@ -56,7 +56,25 @@ export function useReservationFlow() {
 
   let selectedVehicle
   try { selectedVehicle = JSON.parse(sessionStorage.getItem('drivique_selected_vehicle') || 'null') } catch { selectedVehicle = null }
-  const baseVehiculo = vehicleManagementService.getById(id) || (String(selectedVehicle?.id) === String(id) ? selectedVehicle : null)
+  const [vehiculoFetched, setVehiculoFetched] = useState(null)
+  const [cargandoVehiculo, setCargandoVehiculo] = useState(!selectedVehicle && !vehicleManagementService.getById(id))
+
+  useEffect(() => {
+    if (!selectedVehicle && !vehicleManagementService.getById(id) && id) {
+      setCargandoVehiculo(true)
+      catalogService.getVehiculoById(id)
+        .then((data) => {
+          if (data) {
+            setVehiculoFetched(data)
+            try { sessionStorage.setItem('drivique_selected_vehicle', JSON.stringify(data)) } catch {}
+          }
+        })
+        .catch(() => {})
+        .finally(() => setCargandoVehiculo(false))
+    }
+  }, [id])
+
+  const baseVehiculo = vehicleManagementService.getById(id) || (String(selectedVehicle?.id) === String(id) ? selectedVehicle : null) || vehiculoFetched
   const limitedMileagePlan = mileagePlans.find((plan) => plan.includedKm != null) || null
   const unlimitedMileagePlan = mileagePlans.find((plan) => plan.includedKm == null || /unlimited|ilimitado/i.test(plan.name || '')) || null
   const vehiculo = baseVehiculo ? {
@@ -1033,6 +1051,7 @@ export function useReservationFlow() {
     appliedPromotion, aplicarPromocion, quitarPromocion,
     cotizacion,
     procesandoReserva,
+    cargandoVehiculo,
     usuario,
   }
 }

@@ -32,7 +32,9 @@ export default function RespuestaPagoPage() {
         .then(data => {
           const status = data?.data?.status;
           const wompiRef = data?.data?.reference;
-          const rawHold = wompiRef || refQuery || '';
+          const rawHold = (wompiRef && !String(wompiRef).startsWith('PAY-'))
+            ? wompiRef
+            : (refQuery || wompiRef || '');
           const holdId = rawHold.includes('_') ? rawHold.split('_')[0] : rawHold;
 
           if (status === 'APPROVED') {
@@ -97,4 +99,3 @@ export default function RespuestaPagoPage() {
     </div>
   );
 }
-

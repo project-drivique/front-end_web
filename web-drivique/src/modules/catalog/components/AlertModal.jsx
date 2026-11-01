@@ -33,9 +33,9 @@ const ESTILOS = {
   card: {
     position: 'relative',
     width: '100%',
-    maxWidth: '280px',
+    maxWidth: '420px',
     borderRadius: '16px',
-    padding: '20px 16px 16px',
+    padding: '24px 20px 20px',
     textAlign: 'center',
     boxShadow: '0 12px 30px rgba(0,0,0,0.35)',
     boxSizing: 'border-box',
@@ -140,7 +140,7 @@ export default function AlertModal({
         style={{
           ...ESTILOS.card,
           ...(width ? { width: typeof width === 'number' ? `${width}px` : width } : {}),
-          maxWidth: maxWidth || (width ? (typeof width === 'number' ? `${width}px` : width) : '280px'),
+          maxWidth: maxWidth || (width ? (typeof width === 'number' ? `${width}px` : width) : '420px'),
           background: t.cardBg,
           border: `1px solid ${t.cardBorder}`,
           ...cardStyle,
@@ -163,12 +163,14 @@ export default function AlertModal({
           </div>
         )}
 
-        <p style={{ ...ESTILOS.titulo, color: t.textPrimary }}>
-          {titulo}
-        </p>
-        <p style={{ ...ESTILOS.mensaje, color: t.textSecondary }}>
+        {titulo && (
+          <h3 style={{ ...ESTILOS.titulo, color: t.textPrimary }}>
+            {titulo}
+          </h3>
+        )}
+        <div style={{ ...ESTILOS.mensaje, color: t.textSecondary }}>
           {mensaje}
-        </p>
+        </div>
 
         {secondaryText ? (
           <div style={ESTILOS.botonesRow}>
