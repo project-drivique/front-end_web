@@ -2077,7 +2077,8 @@
       },
       "defaultApproveObs": "Documentos validados e aprovados com sucesso pela agência.",
       "exportTitle": "Validação de documentos de identidade e cartas de condução — Drivique",
-      "noObservations": "Sem observações"
+      "noObservations": "Sem observações",
+      "alreadyApproved": "Documentos já aprovados"
     },
     "delivery": {
       "title": "Gestão de Entregas",
@@ -2135,7 +2136,9 @@
         "cancelled": "Cancelado",
         "pendiente": "Pendente",
         "asignado": "Em caminho",
-        "completado": "Concluído"
+        "completado": "Concluído",
+        "cancelada": "Cancelada",
+        "programado": "Agendado"
       },
       "noDriver": "Não atribuído",
       "assignBtn": "Atribuir",
@@ -3335,7 +3338,8 @@
     "computoReservaTitle_other": "Cálculo do seu aluguer de {{count}} dias",
     "computoReservaDesc": "A sua reserva começa em {{inicio}} às {{hora}}. Cada dia dá-lhe 24 horas completas: o seu dia {{dias}} começa em {{fin}} às {{hora}} e as suas 24 horas terminam em {{siguiente}} às {{hora}}. Devolver antes do prazo fica registado como devolução antecipada.",
     "confirmNoticeText": "Ao confirmar a reserva, esta ficará guardada automaticamente na sua conta. Terá {{horas}} horas para concluir o pagamento antes do cancelamento automático.",
-    "vatLabel": "IVA"
+    "vatLabel": "IVA",
+    "processingReserve": "Confirmando reserva..."
   },
   "reservas": {
     "title": "As minhas reservas",
@@ -3567,7 +3571,12 @@
     "cancelledDesc": "A reserva foi cancelada com sucesso.",
     "cancelling": "A cancelar a reserva...",
     "cancelReservation": "Cancelar reserva",
-    "cancelError": "Não foi possível cancelar a sua reserva neste momento. Tente novamente dentro de alguns minutos."
+    "cancelError": "Não foi possível cancelar a sua reserva neste momento. Tente novamente dentro de alguns minutos.",
+    "createdDate": "Data da solicitação",
+    "pendingScheduleTitle": "Aguardando horário",
+    "pendingScheduleText": "Sua reserva foi registrada fora do horário de atendimento da filial. Ela será liberada para pagamento no início do expediente.",
+    "singleReservation": "reserva",
+    "multipleReservations": "reservas"
   },
   "perfil": {
     "title": "O meu perfil",
@@ -3678,7 +3687,9 @@
     "roles": {
       "usuario": "Utilizador",
       "cliente": "Cliente",
-      "admin": "Administrador"
+      "admin": "Administrador",
+      "administrador": "Administrador",
+      "encargado_sucursal": "Gerente da filial"
     },
     "docTypes": {
       "CC": "Cartão de Cidadão (CC)",
@@ -3707,7 +3718,18 @@
       "Japón": "Japón",
       "China": "China",
       "India": "Índia",
-      "Otro": "Outro"
+      "Otro": "Outro",
+      "Brazil": "Brasil",
+      "Canada": "Canadá",
+      "France": "França",
+      "Germany": "Alemanha",
+      "Italy": "Itália",
+      "Japan": "Japão",
+      "Mexico": "México",
+      "Peru": "Peru",
+      "Spain": "Espanha",
+      "United Kingdom": "Reino Unido",
+      "United States": "Estados Unidos"
     },
     "completeProfile": "Completar perfil",
     "address": "Morada",
@@ -4654,13 +4676,9 @@
       "pickupDate": "Data / Hora de Retirada",
       "pickupBranch": "Filial de Retirada",
       "step3Title": "3. Pagamento da Reserva",
-      "roadAssistance": "Assistência Rodoviária",
       "email": "E-mail",
       "taxes": "Impostos Legais (IVA 19%)",
-      "deposit": "Depósito de Segurança",
       "title": "Consulta de Reserva Registrada",
-      "babyEquipment": "Equipamento de Bebê",
-      "fuelPolicy": "Política de Combustível",
       "transmission": "Transmissão / Combustível",
       "financeTitle": "Detalhamento Financeiro Completo (COP)",
       "step4Scheduled": "Agendada para hoje às",
@@ -4672,12 +4690,10 @@
       "paymentMethod": "Método de Pagamento",
       "closeInquiry": "Fechar Consulta",
       "step5PendingBranch": "Pendente de recebimento na filial",
-      "totalCoverage": "Cobertura Total CDW",
       "phone": "Telefone / Celular",
       "model": "Modelo e Motor",
       "workflowTitle": "Fluxo Operacional (Progresso Atual)",
       "clientTitle": "Titular da Reserva",
-      "step3Desc": "Concluído: $ 499.800 COP cobrados e confirmados",
       "step1Desc": "Registrada com o código",
       "step2Pending": "Pendente: RG / CNH a serem verificados",
       "registrationDate": "Data de Registro",
@@ -4692,7 +4708,6 @@
       "itineraryTitle": "Itinerário e Filial",
       "license": "Carteira de Habilitação",
       "plate": "Matrícula",
-      "babySeatAddon": "Assento de Bebê Adicional",
       "returnBranch": "Filial de Devolução",
       "baseRental": "Aluguel Básico (3 dias x $120.000 COP)",
       "mileagePlan": "Plano de quilometragem",
@@ -4914,7 +4929,9 @@
   "coberturas": {
     "Basic Protection": "Proteção básica",
     "Standard Protection": "Proteção padrão",
-    "Premium Protection": "Proteção premium"
+    "Premium Protection": "Proteção premium",
+    "Protección Obligatoria": "Proteção obrigatória",
+    "Protección Total": "Proteção total"
   },
   "hc": {
     "algo_salio_mal": "Algo correu mal",
@@ -5168,7 +5185,14 @@
     "detalle_del_reporte": "Detalhe do relatório",
     "control_de_auditoria": "Controlo de auditoria:",
     "valido_para_supervision_interna_gestio": "Válido para supervisão interna, gestão financeira e contabilidade.",
-    "vehiculo_apartado_desc": "Outro cliente acabou de reservar este veículo para estas datas enquanto preenchia o formulário. Se não concluir o pagamento dentro do prazo, voltará a ficar disponível. Pode também explorar outros veículos disponíveis no catálogo."
+    "vehiculo_apartado_desc": "Outro cliente acabou de reservar este veículo para estas datas enquanto preenchia o formulário. Se não concluir o pagamento dentro do prazo, voltará a ficar disponível. Pode também explorar outros veículos disponíveis no catálogo.",
+    "abrir_pdf": "Abrir PDF",
+    "documento_ya_registrado": "Documento já registrado",
+    "el_numero_de_documento_ya_esta_asociado": "O número do documento informado já está registrado em outra conta de usuário. Verifique seus dados.",
+    "error_subir_documentos_gen": "Erro ao enviar os documentos de identidade ou carteira de habilitação.",
+    "error_subir_documentos": "Erro ao enviar documentos",
+    "vehiculo_no_disponible": "Veículo indisponível",
+    "ver_otros_vehiculos": "Ver outros veículos"
   },
   "docNames": {
     "CC": "Cédula de Cidadania",
