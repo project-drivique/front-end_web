@@ -46,8 +46,8 @@ export default function DocumentVerificationPage({ branchOnly = false }) {
   const [modalItem, setModalItem] = useState(null)
   const [observaciones, setObservaciones] = useState('')
   const [zoomPdf, setZoomPdf] = useState(null)
-  const [identidadBlobUrl, setIdentidadBlobUrl] = useState(null)
-  const [licenciaBlobUrl, setLicenciaBlobUrl] = useState(null)
+  const [identidadBlobUrl] = useState(null)
+  const [licenciaBlobUrl] = useState(null)
 
   // Estado del Modal de 2 Columnas
   const [activeSection, setActiveSection] = useState('identidad') // 'identidad' | 'licencia' | 'reserva'
