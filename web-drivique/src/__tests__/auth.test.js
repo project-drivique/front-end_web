@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import './setupTestEnv.js'
 import { describe, it, beforeEach } from 'node:test'
 import assert from 'node:assert/strict'
