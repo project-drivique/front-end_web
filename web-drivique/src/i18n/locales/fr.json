@@ -2077,7 +2077,8 @@
       },
       "defaultApproveObs": "Documents validés et approuvés avec succès par l’agence.",
       "exportTitle": "Validation des pièces d’identité et des permis — Drivique",
-      "noObservations": "Sans observations"
+      "noObservations": "Sans observations",
+      "alreadyApproved": "Documents déjà approuvés"
     },
     "delivery": {
       "title": "Gestion des Livraisons",
@@ -2135,7 +2136,9 @@
         "cancelled": "Annulé",
         "pendiente": "En attente",
         "asignado": "En chemin",
-        "completado": "Terminé"
+        "completado": "Terminé",
+        "cancelada": "Annulée",
+        "programado": "Programmée"
       },
       "noDriver": "Non attribué",
       "assignBtn": "Attribuer",
@@ -3135,7 +3138,6 @@
     "cashBranchCity": "Ville",
     "cashBranchAddress": "Adresse",
     "cashBranchNoAddress": "Vérifiez l'adresse auprès de l'agence lors de la confirmation",
-    "cashBranchFootnote": "",
     "deliveryTimeSectionTitle": "Prise en Charge, Restitution et Horaires",
     "dateRangeSectionTitle": "Sélectionnez une plage de dates dans le calendrier des disponibilités",
     "pickupAtBranch": "Prise en succursale ({{sucursal}})",
@@ -3335,7 +3337,8 @@
     "computoReservaTitle_other": "Calcul de votre location de {{count}} jours",
     "computoReservaDesc": "Votre réservation commence le {{inicio}} à {{hora}}. Chaque jour vous offre 24 heures complètes : votre jour {{dias}} commence le {{fin}} à {{hora}} et ses 24 heures se terminent le {{siguiente}} à {{hora}}. Un retour anticipé est enregistré comme tel.",
     "confirmNoticeText": "Lorsque vous confirmez la réservation, elle est enregistrée automatiquement dans votre compte. Vous disposez de {{horas}} heures pour effectuer le paiement avant son annulation automatique.",
-    "vatLabel": "TVA"
+    "vatLabel": "TVA",
+    "processingReserve": "Confirmation de la réservation..."
   },
   "reservas": {
     "title": "Mes réservations",
@@ -3567,7 +3570,12 @@
     "cancelledDesc": "La réservation a été annulée avec succès.",
     "cancelling": "Annulation en cours...",
     "cancelReservation": "Annuler la réservation",
-    "cancelError": "Nous n'avons pas pu annuler votre réservation pour le moment. Réessayez dans quelques minutes."
+    "cancelError": "Nous n'avons pas pu annuler votre réservation pour le moment. Réessayez dans quelques minutes.",
+    "createdDate": "Date de la demande",
+    "pendingScheduleTitle": "En attente des horaires d'ouverture",
+    "pendingScheduleText": "Votre réservation a été enregistrée en dehors des heures d'ouverture de la succursale. Elle sera disponible pour le paiement dès le début de la journée d'ouverture.",
+    "singleReservation": "réservation",
+    "multipleReservations": "réservations"
   },
   "perfil": {
     "title": "Mon profil",
@@ -3678,7 +3686,9 @@
     "roles": {
       "usuario": "Utilisateur",
       "cliente": "Client",
-      "admin": "Administrateur"
+      "admin": "Administrateur",
+      "administrador": "Administrateur",
+      "encargado_sucursal": "Responsable de succursale"
     },
     "docTypes": {
       "CC": "Carte d'identité (CC)",
@@ -3707,7 +3717,18 @@
       "Japón": "Japón",
       "China": "Chine",
       "India": "Inde",
-      "Otro": "Autre"
+      "Otro": "Autre",
+      "Brazil": "Brésil",
+      "Canada": "Canada",
+      "France": "France",
+      "Germany": "Allemagne",
+      "Italy": "Italie",
+      "Japan": "Japon",
+      "Mexico": "Mexique",
+      "Peru": "Pérou",
+      "Spain": "Espagne",
+      "United Kingdom": "Royaume-Uni",
+      "United States": "États-Unis"
     },
     "completeProfile": "Compléter le profil",
     "address": "Adresse",
@@ -4654,13 +4675,9 @@
       "pickupDate": "Date / Heure de Prise en Charge",
       "pickupBranch": "Succursale de Prise en Charge",
       "step3Title": "3. Paiement de la Réservation",
-      "roadAssistance": "Assistance Routière",
       "email": "E-mail",
       "taxes": "Taxes Légales (TVA 19%)",
-      "deposit": "Dépôt de Garantie",
       "title": "Consultation de Réservation Enregistrée",
-      "babyEquipment": "Équipement Bébé",
-      "fuelPolicy": "Politique de Carburant",
       "transmission": "Transmission / Carburant",
       "financeTitle": "Répartition Financière Complète (COP)",
       "step4Scheduled": "Prévue pour aujourd'hui à",
@@ -4672,12 +4689,10 @@
       "paymentMethod": "Mode de Paiement",
       "closeInquiry": "Fermer la Consultation",
       "step5PendingBranch": "En attente de réception en succursale",
-      "totalCoverage": "Couverture Totale CDW",
       "phone": "Téléphone / Mobile",
       "model": "Modèle et Moteur",
       "workflowTitle": "Flux Opérationnel (Progrès Actuel)",
       "clientTitle": "Titulaire de la Réservation",
-      "step3Desc": "Terminé: $ 499.800 COP encaissés et confirmés",
       "step1Desc": "Enregistrée avec le code",
       "step2Pending": "En attente: Carte d'identité / Permis à vérifier",
       "registrationDate": "Date d'Inscription",
@@ -4692,7 +4707,6 @@
       "itineraryTitle": "Itinéraire et Succursale",
       "license": "Permis de Conduire",
       "plate": "Plaque",
-      "babySeatAddon": "Siège Bébé Supplémentaire",
       "returnBranch": "Succursale de Retour",
       "baseRental": "Location de Base (3 jours x $120.000 COP)",
       "mileagePlan": "Formule de kilométrage",
@@ -4914,7 +4928,9 @@
   "coberturas": {
     "Basic Protection": "Protection de base",
     "Standard Protection": "Protection standard",
-    "Premium Protection": "Protection premium"
+    "Premium Protection": "Protection premium",
+    "Protección Obligatoria": "Protection obligatoire",
+    "Protección Total": "Protection totale"
   },
   "hc": {
     "algo_salio_mal": "Une erreur s’est produite",
@@ -5168,7 +5184,14 @@
     "detalle_del_reporte": "Détail du rapport",
     "control_de_auditoria": "Contrôle d’audit :",
     "valido_para_supervision_interna_gestio": "Valable pour la supervision interne, la gestion financière et la comptabilité.",
-    "vehiculo_apartado_desc": "Un autre client vient de réserver ce véhicule pour ces dates pendant que vous remplissiez le formulaire. S’il ne finalise pas son paiement dans le délai imparti, le véhicule sera de nouveau disponible. Vous pouvez aussi consulter d’autres véhicules disponibles dans le catalogue."
+    "vehiculo_apartado_desc": "Un autre client vient de réserver ce véhicule pour ces dates pendant que vous remplissiez le formulaire. S’il ne finalise pas son paiement dans le délai imparti, le véhicule sera de nouveau disponible. Vous pouvez aussi consulter d’autres véhicules disponibles dans le catalogue.",
+    "abrir_pdf": "Ouvrir le PDF",
+    "documento_ya_registrado": "Document déjà enregistré",
+    "el_numero_de_documento_ya_esta_asociado": "Le numéro de document saisi est déjà enregistré avec un autre compte utilisateur. Veuillez vérifier vos données.",
+    "error_subir_documentos_gen": "Erreur lors du téléversement des documents d'identité ou du permis.",
+    "error_subir_documentos": "Erreur lors du téléversement des documents",
+    "vehiculo_no_disponible": "Véhicule indisponible",
+    "ver_otros_vehiculos": "Voir d'autres véhicules"
   },
   "docNames": {
     "CC": "Carte d’identité",

@@ -1997,7 +1997,8 @@
       },
       "defaultApproveObs": "Documentos validados y aprobados correctamente por la sucursal.",
       "exportTitle": "Validación de Documentos de Identidad y Licencias — Drivique",
-      "noObservations": "Sin observaciones"
+      "noObservations": "Sin observaciones",
+      "alreadyApproved": "Documentos ya aprobados"
     },
     "delivery": {
       "title": "Domicilio Reserva",
@@ -2055,7 +2056,9 @@
         "cancelled": "Cancelado",
         "pendiente": "Pendiente",
         "asignado": "En Camino",
-        "completado": "Completado"
+        "completado": "Completado",
+        "cancelada": "Cancelada",
+        "programado": "Programado"
       },
       "noDriver": "Sin asignar",
       "assignBtn": "Asignar",
@@ -3286,7 +3289,6 @@
     "flightNumber": "Número de vuelo",
     "bookTitle": "Reservar",
     "cashBranchNoAddress": "Confirma la dirección en la sucursal al reservar",
-    "cashBranchFootnote": "",
     "domicilioCityPlaceholder": "ej.: Medellín",
     "documentVerificationNote": "Tus documentos se usan estrictamente para verificar tu identidad y crear el contrato digital.",
     "perDay": "día",
@@ -3345,7 +3347,8 @@
     "computoReservaTitle_one": "Cómputo de tu {{count}} día de alquiler",
     "computoReservaTitle_other": "Cómputo de tus {{count}} días de alquiler",
     "computoReservaDesc": "Tu reserva empieza el {{inicio}} a las {{hora}}. Cada día te otorga 24 horas completas: tu {{dias}}º día inicia el {{fin}} a las {{hora}} y sus 24 horas terminan el {{siguiente}} a las {{hora}}. Entregar antes registra tiempo de devolución anticipada.",
-    "confirmNoticeText": "Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de {{horas}} horas para completar el pago antes de su cancelación automática."
+    "confirmNoticeText": "Al confirmar la reserva, quedará guardada automáticamente en tu cuenta. Tendrás un plazo de {{horas}} horas para completar el pago antes de su cancelación automática.",
+    "processingReserve": "Confirmando reserva..."
   },
   "reservas": {
     "title": "Mis reservas",
@@ -3577,7 +3580,12 @@
     "cancelledDesc": "La reserva ha sido cancelada exitosamente.",
     "cancelling": "Cancelando reserva...",
     "cancelReservation": "Cancelar reserva",
-    "cancelError": "No pudimos cancelar tu reserva en este momento. Inténtalo de nuevo en unos minutos."
+    "cancelError": "No pudimos cancelar tu reserva en este momento. Inténtalo de nuevo en unos minutos.",
+    "createdDate": "Fecha de solicitud",
+    "pendingScheduleTitle": "En espera de horario",
+    "pendingScheduleText": "Tu reserva fue registrada fuera del horario de atención de la sucursal. Se habilitará para pago al inicio de la jornada de atención.",
+    "singleReservation": "reserva",
+    "multipleReservations": "reservas"
   },
   "perfil": {
     "title": "Mi perfil",
@@ -3688,7 +3696,9 @@
     "roles": {
       "usuario": "Usuario",
       "cliente": "Cliente",
-      "admin": "Administrador"
+      "admin": "Administrador",
+      "administrador": "Administrador",
+      "encargado_sucursal": "Encargado de sucursal"
     },
     "docTypes": {
       "CC": "Cédula de Ciudadanía",
@@ -3717,7 +3727,18 @@
       "Japón": "Japan",
       "China": "China",
       "India": "India",
-      "Otro": "Otro"
+      "Otro": "Otro",
+      "Brazil": "Brasil",
+      "Canada": "Canadá",
+      "France": "Francia",
+      "Germany": "Alemania",
+      "Italy": "Italia",
+      "Japan": "Japón",
+      "Mexico": "México",
+      "Peru": "Perú",
+      "Spain": "España",
+      "United Kingdom": "Reino Unido",
+      "United States": "Estados Unidos"
     },
     "completeProfile": "Completar perfil",
     "address": "Dirección",
@@ -4907,7 +4928,9 @@
   "coberturas": {
     "Basic Protection": "Protección básica",
     "Standard Protection": "Protección estándar",
-    "Premium Protection": "Protección premium"
+    "Premium Protection": "Protección premium",
+    "Protección Obligatoria": "Protección obligatoria",
+    "Protección Total": "Protección total"
   },
   "hc": {
     "algo_salio_mal": "Algo salió mal",
@@ -5161,7 +5184,14 @@
     "detalle_del_reporte": "Detalle del Reporte",
     "control_de_auditoria": "Control de Auditoría:",
     "valido_para_supervision_interna_gestio": "Válido para supervisión interna, gestión financiera y contabilidad.",
-    "vehiculo_apartado_desc": "Otro cliente acaba de apartar este vehículo para estas fechas mientras completabas el formulario. Si no completa su pago dentro del plazo, volverá a estar libre. También puedes explorar otros vehículos disponibles en el catálogo."
+    "vehiculo_apartado_desc": "Otro cliente acaba de apartar este vehículo para estas fechas mientras completabas el formulario. Si no completa su pago dentro del plazo, volverá a estar libre. También puedes explorar otros vehículos disponibles en el catálogo.",
+    "abrir_pdf": "Abrir PDF",
+    "documento_ya_registrado": "Documento ya registrado",
+    "el_numero_de_documento_ya_esta_asociado": "El número de documento ingresado ya se encuentra registrado con otra cuenta de usuario. Por favor verifica tus datos.",
+    "error_subir_documentos_gen": "Error al cargar los documentos de identidad o licencia.",
+    "error_subir_documentos": "Error al cargar documentos",
+    "vehiculo_no_disponible": "Vehículo no disponible",
+    "ver_otros_vehiculos": "Ver otros vehículos"
   },
   "docNames": {
     "CC": "Cédula de Ciudadanía",
