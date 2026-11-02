@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { configuredApiUrl } from '../config/apiConfig.js'
 
 export const AUTH_KEYS = {
   token: 'renta_token',
@@ -217,8 +218,20 @@ export const useAuthStore = create(
       },
 
       logout: () => {
-        set({ token: null, usuario: null, sesion2FA: null, requiere2FA: false, verificacionCorreo: null, recuperacionCorreo: null })
         const storage = getSafeSessionStorage()
+        // El servidor revoca el refresh token: sin esto seguiría válido hasta 7 días después de cerrar sesión
+        const refreshToken = storage?.getItem('drivique_refresh_token')
+        if (refreshToken && typeof fetch === 'function') {
+          fetch(`${configuredApiUrl}/auth/logout`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refreshToken }),
+            keepalive: true,
+          }).catch(() => {
+            // Sin conexión: el token caduca solo y ya no queda guardado en este navegador
+          })
+        }
+        set({ token: null, usuario: null, sesion2FA: null, requiere2FA: false, verificacionCorreo: null, recuperacionCorreo: null })
         storage?.removeItem(AUTH_KEYS.token)
         storage?.removeItem(AUTH_KEYS.usuario)
         storage?.removeItem('drivique_refresh_token')
