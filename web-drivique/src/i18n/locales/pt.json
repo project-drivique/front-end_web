@@ -3138,7 +3138,6 @@
     "cashBranchCity": "Cidade",
     "cashBranchAddress": "Endereço",
     "cashBranchNoAddress": "Confirme a morada na agência ao reservar",
-    "cashBranchFootnote": "",
     "deliveryTimeSectionTitle": "Recolha, Devolução e Horários",
     "dateRangeSectionTitle": "Selecione um intervalo de datas no calendário de disponibilidade",
     "pickupAtBranch": "Recolher na Filial ({{sucursal}})",

@@ -3138,7 +3138,6 @@
     "cashBranchCity": "Ville",
     "cashBranchAddress": "Adresse",
     "cashBranchNoAddress": "Vérifiez l'adresse auprès de l'agence lors de la confirmation",
-    "cashBranchFootnote": "",
     "deliveryTimeSectionTitle": "Prise en Charge, Restitution et Horaires",
     "dateRangeSectionTitle": "Sélectionnez une plage de dates dans le calendrier des disponibilités",
     "pickupAtBranch": "Prise en succursale ({{sucursal}})",
