@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import './setupTestEnv.js'
 import { describe, it, beforeEach } from 'node:test'
 import assert from 'node:assert/strict'
@@ -76,5 +77,36 @@ describe('Flujo de Autenticación y Sesión Segura (Login & sessionStorage)', ()
     assert.equal(globalThis.sessionStorage.getItem(AUTH_KEYS.token), validJwt)
     assert.equal(globalThis.localStorage.getItem(AUTH_KEYS.token), null)
   })
-})
+  it('al cerrar sesión avisa al servidor para revocar el refresh token y lo borra del navegador', async () => {
+    const llamadas = []
+    const fetchOriginal = globalThis.fetch
+    globalThis.fetch = async (url, opciones) => {
+      llamadas.push({ url: String(url), cuerpo: JSON.parse(opciones.body), metodo: opciones.method })
+      return { ok: true, status: 204 }
+    }
+    try {
+      globalThis.sessionStorage.setItem('drivique_refresh_token', 'refresh-tok-123')
+      useAuthStore.getState().logout()
+      assert.equal(llamadas.length, 1)
+      assert.ok(llamadas[0].url.endsWith('/auth/logout'))
+      assert.equal(llamadas[0].metodo, 'POST')
+      assert.equal(llamadas[0].cuerpo.refreshToken, 'refresh-tok-123')
+      assert.equal(globalThis.sessionStorage.getItem('drivique_refresh_token'), null)
+      assert.equal(useAuthStore.getState().token, null)
+    } finally {
+      globalThis.fetch = fetchOriginal
+    }
+  })
 
+  it('cerrar sesión sin refresh token no llama al servidor', () => {
+    let llamadas = 0
+    const fetchOriginal = globalThis.fetch
+    globalThis.fetch = async () => { llamadas += 1; return { ok: true } }
+    try {
+      useAuthStore.getState().logout()
+      assert.equal(llamadas, 0)
+    } finally {
+      globalThis.fetch = fetchOriginal
+    }
+  })
+})
