@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { FaCalendarAlt, FaCar, FaCheckCircle, FaChevronDown, FaEye, FaEyeSlash, FaFlag, FaLock, FaMapMarkerAlt, FaMoneyBillWave, FaRegCalendarCheck, FaScroll, FaShieldAlt, FaStar, FaTimes, FaCreditCard, FaFileSignature, FaClock, FaWhatsapp } from 'react-icons/fa'
+import { FaCalendarAlt, FaCar, FaEye, FaEyeSlash, FaFlag, FaLock, FaMapMarkerAlt, FaRegCalendarCheck, FaShieldAlt, FaStar, FaTimes, FaFileSignature, FaClock } from 'react-icons/fa'
 import { useLanding } from '../../landing/LandingContext'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/authStore'
@@ -11,10 +11,18 @@ import filtrosReservas from '@/config/datos/reservationsFilters.json'
 import CatalogTopHeader from '@/modules/catalog/components/CatalogTopHeader'
 import { SUCURSALES } from '@/modules/catalog/constants'
 import { construirUrlCheckout, aCentavos } from '@/services/wompiService'
-import logo from '@/assets/logo.png'
+
 import { useBrand } from '@/contexts/BrandContext'
 import { showAlert, getErrorMessage } from '@/utils/swalConfig'
 import './ReservationsPage.css'
+import PuedeCancelarModal from './ReservationsPage/PuedeCancelarModal'
+import EsFinalizadaModal from './ReservationsPage/EsFinalizadaModal'
+import EstaEnCursoModal from './ReservationsPage/EstaEnCursoModal'
+import EsDocumentosRechazados from './ReservationsPage/EsDocumentosRechazados'
+import EsPendienteWompi from './ReservationsPage/EsPendienteWompi'
+import EsPendienteEfectivo from './ReservationsPage/EsPendienteEfectivo'
+import EsDomicilio from './ReservationsPage/EsDomicilio'
+import ModalReservaInfoCard from './ReservationsPage/ModalReservaInfoCard'
 
 const CLASES_ESTADO = {
   ...Object.fromEntries(filtrosReservas.estados.map(({ valor, clase }) => [valor, clase])),
@@ -1012,486 +1020,21 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
         </div>
 
         {/* Tarjeta Padre: Contenedor de Galería y Datos */}
-        <div className="modal-reserva-info-card">
-          {/* 1. Tarjeta de galería / Imagen del carro */}
-          {imagenAuto && (
-            <div className="modal-reserva-img-box">
-              <img
-                src={imagenAuto}
-                alt={nombreAuto}
-                className="modal-reserva-img"
-              />
-            </div>
-          )}
-
-          {/* 2. Tarjeta de datos de la reserva (2 columnas) */}
-          <div className="modal-reserva-datos-grid">
-            {/* Fila 1: Vehículo / Fecha de retiro */}
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon">
-                <FaCar />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.vehicle', { defaultValue: 'Vehículo' })}</span>
-                <strong className="modal-dato-val">{nombreAuto}</strong>
-              </div>
-            </div>
-
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon">
-                <FaCalendarAlt />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.pickupDate', { defaultValue: 'Fecha de retiro' })}</span>
-                <strong className="modal-dato-val">{fechaBonita(reserva.fechaInicio, i18n.resolvedLanguage)}</strong>
-              </div>
-            </div>
-
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon">
-                <FaClock />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.pickupTime', { defaultValue: 'Hora de retiro' })}</span>
-                <strong className="modal-dato-val">{formatHoraAmPm(reserva.horaInicio) || 'N/A'}</strong>
-              </div>
-            </div>
-
-            {/* Fila 2: Fecha de devolución / Hora de devolución */}
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon">
-                <FaRegCalendarCheck />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.returnDate', { defaultValue: 'Fecha de devolución' })}</span>
-                <strong className="modal-dato-val">{fechaBonita(reserva.fechaFin, i18n.resolvedLanguage)}</strong>
-              </div>
-            </div>
-
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon">
-                <FaClock />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.returnTime', { defaultValue: 'Hora de devolución' })}</span>
-                <strong className="modal-dato-val">{formatHoraAmPm(reserva.horaFin) || 'N/A'}</strong>
-              </div>
-            </div>
-
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon">
-                <FaMapMarkerAlt />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.pickupLocation', { defaultValue: 'Lugar de retiro' })}</span>
-                <strong className="modal-dato-val" title={lugarRetiro}>{lugarRetiro}</strong>
-              </div>
-            </div>
-
-            {/* Fila 3: Lugar de devolución / Medio de pago */}
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon">
-                <FaMapMarkerAlt />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.returnLocation', { defaultValue: 'Lugar de devolución' })}</span>
-                <strong className="modal-dato-val" title={lugarDevolucion}>{lugarDevolucion}</strong>
-              </div>
-            </div>
-
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon">
-                <FaCreditCard />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.paymentMethod', { defaultValue: 'Medio de pago' })}</span>
-                <strong className="modal-dato-val" title={medioPagoTexto}>{medioPagoTexto}</strong>
-              </div>
-            </div>
-
-            {/* Fila 4: Protección / Referencia */}
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon">
-                <FaShieldAlt />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.protection', { defaultValue: 'Protección' })}</span>
-                <strong className="modal-dato-val">{proteccion}</strong>
-              </div>
-            </div>
-
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon">
-                <FaScroll />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.reference', { defaultValue: 'Referencia' })}</span>
-                <strong className="modal-dato-val referencia-val" title={reserva.codigo || reserva.referencia || reserva.id}>{reserva.codigo || reserva.referencia || reserva.id}</strong>
-              </div>
-            </div>
-
-            {reserva.createdAt && (
-              <div className="modal-reserva-dato-celda">
-                <div className="modal-dato-icon">
-                  <FaClock />
-                </div>
-                <div className="modal-dato-texto">
-                  <span className="modal-dato-label">{t('reservas.createdDate', { defaultValue: 'Fecha de solicitud' })}</span>
-                  <strong className="modal-dato-val">{formatFechaHora(reserva.createdAt, i18n.resolvedLanguage)}</strong>
-                </div>
-              </div>
-            )}
-
-            {/* Fila 5: Total / Estado */}
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon brand-tint">
-                <FaMoneyBillWave />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.total', { defaultValue: 'Total' })}</span>
-                <strong className="modal-dato-val">{formatCurrency(totalCalculado, moneda)}</strong>
-              </div>
-            </div>
-
-            <div className="modal-reserva-dato-celda">
-              <div className="modal-dato-icon brand-tint">
-                <FaCheckCircle />
-              </div>
-              <div className="modal-dato-texto">
-                <span className="modal-dato-label">{t('reservas.status', { defaultValue: 'Estado' })}</span>
-                <strong className="modal-dato-val status-val">{estado.texto}</strong>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ModalReservaInfoCard estado={estado} formatHoraAmPm={formatHoraAmPm} i18n={i18n} imagenAuto={imagenAuto} lugarDevolucion={lugarDevolucion} lugarRetiro={lugarRetiro} medioPagoTexto={medioPagoTexto} moneda={moneda} nombreAuto={nombreAuto} proteccion={proteccion} reserva={reserva} t={t} totalCalculado={totalCalculado} />
 
         {/* Tarjeta de Domicilio (Logo, Código Nequi sin vencimiento, Campos Completos + Hora) */}
         {esDomicilio && (
-          <div className="modal-wompi-card" style={{ marginTop: '16px', textAlign: 'left' }}>
-            <div className="modal-wompi-subcard" style={{ padding: '22px 20px 20px', alignItems: 'center' }}>
-              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid var(--borde, #e2e8f0)', textAlign: 'center' }}>
-                <h3 className="modal-wompi-titulo" style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: 'var(--texto-primary)' }}>
-                  {t('reservas.homeCardTitle', 'Domicilio')}
-                </h3>
-                <p className="modal-wompi-desc" style={{ fontSize: '12px', margin: '3px 0 0', textAlign: 'center', color: 'var(--texto-second)' }}>
-                  {t('reservas.homeCardSubtitle', 'Código de seguridad para validación al momento de la entrega.')}
-                </p>
-              </div>
-
-              {/* 1. LOGO ANTES DEL CÓDIGO (logo.png) */}
-              <div className="modal-cash-logo-badge" style={{ marginBottom: '14px', width: '80px', height: '80px', padding: '12px' }}>
-                <img
-                  src={brand?.logoDataUrl || logo}
-                  alt={brand?.name || 'Drivique'}
-                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                />
-              </div>
-
-              {/* 2. CÓDIGO NEQUI (SIN TIEMPO DE VENCIMIENTO) + OJO DE MOSTRAR/OCULTAR */}
-              <div className="modal-wompi-total-box" style={{ width: '100%', padding: '16px 18px', marginBottom: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div className="nequi-pin-boxes">
-                    {/* El código de entrega tiene 6 caracteres: se muestran todos, igual que en el correo del conductor */}
-                    {String(domicilioPin || '------').split('').map((char, i) => (
-                      <div key={i} className="nequi-pin-box">
-                        {revelarPin ? char : '•'}
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setRevelarPin(v => !v)}
-                    style={{ border: 'none', background: 'transparent', color: 'var(--texto-second, #64748b)', cursor: 'pointer', padding: '6px', fontSize: '20px', display: 'grid', placeItems: 'center' }}
-                    title={revelarPin ? t('hc2.ocultar_codigo', 'Ocultar Código') : t('hc2.ver_codigo', 'Ver Código')}
-                  >
-                    {revelarPin ? <FaEyeSlash /> : <FaEye />}
-                  </button>
-                </div>
-
-                <span style={{ fontSize: '11.5px', color: 'var(--texto-second)', textAlign: 'center', fontWeight: 500 }}>
-                  {t('reservas.homeCardHint', 'Confírmale este código al conductor encargado de entregar el vehículo.')}
-                </span>
-              </div>
-
-              {/* 3. INFORMACIÓN COMPLETA UNIFICADA EN UNA SOLA TARJETA BLANCA CON DESPLEGABLE */}
-              <div style={{
-                width: '100%',
-                background: 'var(--bg-tarjeta, #ffffff)',
-                borderRadius: '14px',
-                border: '1px solid var(--borde, #e2e8f0)',
-                padding: '14px 16px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-                marginBottom: '16px',
-                textAlign: 'left'
-              }}>
-                {/* Ciudad */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                    {t('reservas.homeCity', 'Ciudad')}:
-                  </span>
-                  <strong style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--texto-primary)' }}>
-                    {ciudadPago}
-                  </strong>
-                </div>
-
-                <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
-
-                {/* Estado del Domicilio (Ubicado antes de Conductor Asignado) */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                    {t('reservas.homeStatus', 'Estado del domicilio')}:
-                  </span>
-                  <strong style={{
-                    fontSize: '13.5px',
-                    fontWeight: 700,
-                    color: (domicilioEstado === 'ENTREGADO' || domicilioEstado === 'RECOGIDO')
-                      ? '#047857'
-                      : (domicilioEstado === 'EN_CAMINO' ? 'var(--brand-primary-hover)' : '#b45309')
-                  }}>
-                    {domicilioEstado === 'EN_PREPARACION' && t('reservas.homeStatusPreparing', 'En proceso')}
-                    {domicilioEstado === 'EN_CAMINO' && t('reservas.homeStatusOnTheWay', 'Agente en camino')}
-                    {domicilioEstado === 'ENTREGADO' && t('reservas.homeStatusDelivered', 'Entregado')}
-                    {domicilioEstado === 'RECOGIDO' && t('reservas.homeStatusPickedUp', 'Recogido')}
-                  </strong>
-                </div>
-
-                <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
-
-                {/* Conductor Asignado */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                    {t('reservas.homeDriver', 'Conductor asignado')}:
-                  </span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <strong style={{ fontSize: '13.5px', fontWeight: 700, color: domicilioConductor ? 'var(--texto-primary)' : '#b45309' }}>
-                      {domicilioConductor ? domicilioConductor : t('reservas.homeStatusPreparing', 'En proceso')}
-                    </strong>
-
-                    {domicilioTelefonoConductor && (
-                      <a
-                        href={`https://wa.me/${domicilioTelefonoConductor.replace(/[^0-9]/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-reporte"
-                        style={{ background: '#25d366', color: '#fff', border: 'none', textDecoration: 'none', padding: '6px 12px', fontSize: '11.5px', borderRadius: '8px', fontWeight: 800 }}
-                      >
-                        <FaWhatsapp size={13} /> WhatsApp
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                {/* Detalles completos desplegables (Información de Entrega y Recogida) */}
-                {verMasDomicilio && (
-                  <>
-                    <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />
-
-                    {/* Entrega a Domicilio */}
-                    {esDomicilioRetiro && (
-                      <>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                            {t('reservas.homeDeliveryInfo', 'Información de entrega')}:
-                          </span>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('hc.direccion_exacta', 'Dirección Exacta:')}</span>
-                            <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioRetiro || t('reservas.homeToArrange', 'A convenir')}</strong>
-                          </div>
-                          {(reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio) && (
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('reservas.homeNeighborhood', 'Barrio')}:</span>
-                              <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioBarrio || reservaOriginal?.domicilioBarrio}</strong>
-                            </div>
-                          )}
-                          {(reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias) && (
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('reservas.homeReferences', 'Indicaciones / Ref.')}</span>
-                              <strong style={{ fontSize: '12px', color: 'var(--texto-primary)' }}>{reserva.domicilioReferencias || reservaOriginal?.domicilioReferencias}</strong>
-                            </div>
-                          )}
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('hc.hora_de_entrega_retiro', 'Hora de Entrega (Retiro):')}</span>
-                            <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaInicio) || 'N/A'}</strong>
-                          </div>
-                        </div>
-                        {esDomicilioDevolucion && <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)' }} />}
-                      </>
-                    )}
-
-                    {/* Recogida a Domicilio */}
-                    {esDomicilioDevolucion && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                        <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--texto-second, #64748b)', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                          {t('reservas.homePickupInfo', 'Información de recogida')}:
-                        </span>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('hc.direccion_exacta', 'Dirección Exacta:')}</span>
-                          <strong style={{ fontSize: '13px', color: 'var(--texto-primary)' }}>{domicilioDevolucion || domicilioRetiro || t('reservas.homeToArrange', 'A convenir')}</strong>
-                        </div>
-                        {(reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio) && (
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('reservas.homeNeighborhood', 'Barrio')}:</span>
-                            <strong style={{ fontSize: '12.5px', color: 'var(--texto-primary)' }}>{reserva.domicilioDevolucionBarrio || reservaOriginal?.domicilioDevolucionBarrio || reserva.domicilioBarrio}</strong>
-                          </div>
-                        )}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px', paddingTop: '4px', borderTop: '1px dashed var(--borde, #cbd5e1)' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--texto-second)' }}>{t('hc.hora_de_recogida_devolucion', 'Hora de Recogida (Devolución):')}</span>
-                          <strong style={{ fontSize: '13px', color: 'var(--texto-primary, #0f172a)' }}>{formatHoraAmPm(reserva.horaFin) || 'N/A'}</strong>
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )}
-
-                {/* Botón Ver más / Ocultar detalles */}
-                <div style={{ borderTop: '1px solid var(--borde, #f1f5f9)', paddingTop: '6px', marginTop: '2px', textAlign: 'center' }}>
-                  <button
-                    type="button"
-                    onClick={() => setVerMasDomicilio(v => !v)}
-                    style={{
-                      border: 'none',
-                      background: 'transparent',
-                      color: 'var(--brand-primary, #2563eb)',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '4px 8px'
-                    }}
-                  >
-                    <span>{verMasDomicilio ? t('reservas.homeLessDetails', 'Ocultar detalles') : t('hc2.ver_mas_detalles', 'Ver más detalles')}</span>
-                    <FaChevronDown style={{ transform: verMasDomicilio ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} size={12} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <EsDomicilio brand={brand} ciudadPago={ciudadPago} domicilioConductor={domicilioConductor} domicilioDevolucion={domicilioDevolucion} domicilioEstado={domicilioEstado} domicilioPin={domicilioPin} domicilioRetiro={domicilioRetiro} domicilioTelefonoConductor={domicilioTelefonoConductor} esDomicilioDevolucion={esDomicilioDevolucion} esDomicilioRetiro={esDomicilioRetiro} formatHoraAmPm={formatHoraAmPm} reserva={reserva} reservaOriginal={reservaOriginal} revelarPin={revelarPin} setRevelarPin={setRevelarPin} setVerMasDomicilio={setVerMasDomicilio} t={t} verMasDomicilio={verMasDomicilio} />
         )}
 
         {/* Tarjeta de Pago en Efectivo por Sucursal */}
         {esPendienteEfectivo && (
-          <div className="modal-cash-card">
-            {/* SUBTARJETA QUE CONTIENE TODO EL CONTENIDO DESDE EL LOGO HASTA EL PLAZO */}
-            <div className="modal-cash-subcard">
-              {/* Logo Badge Circular */}
-              <div className="modal-cash-logo-badge">
-                <img
-                  src={brand?.logoDataUrl || logo}
-                  alt={brand?.name || 'Drivique'}
-                />
-              </div>
-
-              {/* Titulo */}
-              <h3 className="modal-cash-titulo">
-                {t('vehiculo.cashPaymentTitle', { defaultValue: 'Pago en sucursal' })}
-              </h3>
-
-              {/* Subtitulo */}
-              <p className="modal-cash-desc">
-                {t('vehiculo.cashReservationRegisteredDesc', {
-                  defaultValue: `Tu reserva quedó registrada. Para confirmarla, realiza el pago en efectivo en el punto autorizado ${sucursalPago}.`,
-                  sucursal: sucursalPago
-                })}
-              </p>
-
-              {/* Tarjeta de Resumen con datos */}
-              <div className="modal-cash-summary">
-                <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.reference', { defaultValue: 'Referencia' }).replace(/:$/, '')}:</span>
-                  <strong className="modal-cash-ref-val">{reserva.id}</strong>
-                </div>
-                <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.branch', { defaultValue: 'Sucursal' }).replace(/:$/, '')}:</span>
-                  <strong className="modal-cash-row-val">{sucursalPago}</strong>
-                </div>
-                <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.city', { defaultValue: 'Ciudad' }).replace(/:$/, '')}:</span>
-                  <strong className="modal-cash-row-val">{ciudadPago}</strong>
-                </div>
-                <div className="modal-cash-row">
-                  <span className="modal-cash-row-label">{t('reservas.address', { defaultValue: 'Dirección' }).replace(/:$/, '')}:</span>
-                  <strong className="modal-cash-row-val">{direccionPago}</strong>
-                </div>
-                <div className="modal-cash-divider" />
-                <div className="modal-cash-row total">
-                  <span className="modal-cash-total-label">{t('reservas.totalToPay', { defaultValue: 'TOTAL A PAGAR:' })}</span>
-                  <strong className="modal-cash-total-val">{formatCurrency(totalCalculado, moneda)}</strong>
-                </div>
-              </div>
-
-              {/* Plazo para pagar */}
-              <div className="modal-cash-deadline-box">
-                <p className="modal-cash-deadline-title">
-                  {t('reservas.paymentDeadline', { defaultValue: 'PLAZO PARA PAGAR' })}
-                </p>
-                <p className="modal-cash-deadline-text">
-                  {t('reservas.cashDeadlineNotice', {
-                    horas: reserva.horasLimitePago || 8,
-                    defaultValue: `Tienes aproximadamente ${reserva.horasLimitePago || 8} horas desde ahora para acercarte a la sucursal y realizar el pago. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.`
-                  })}
-                </p>
-              </div>
-            </div>
-          </div>
+          <EsPendienteEfectivo brand={brand} ciudadPago={ciudadPago} direccionPago={direccionPago} moneda={moneda} reserva={reserva} sucursalPago={sucursalPago} t={t} totalCalculado={totalCalculado} />
         )}
 
         {/* Tarjeta de Pago Digital Pendiente Wompi (si aplica) */}
         {esPendienteWompi && (
-          <div className="modal-wompi-card" ref={wompiCardRef}>
-            <div className="modal-wompi-subcard">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <FaCreditCard style={{ fontSize: '22px', color: 'var(--brand-primary, #1d4ed8)' }} />
-                <h3 className="modal-wompi-titulo" style={{ margin: 0 }}>
-                  {t('reservas.pendingDigitalPayment', { defaultValue: 'Pago Digital Pendiente' })}
-                </h3>
-              </div>
-              <p className="modal-wompi-desc">
-                {t('reservas.digitalPendingDesc', {
-                  defaultValue: 'Tus documentos fueron aprobados. Tu reserva está lista para pago. Completa el pago seguro en Wompi o confirma el pago para habilitar tu contrato de alquiler.'
-                })}
-              </p>
-
-              {/* Caja de Total a pagar */}
-              <div className="modal-wompi-total-box">
-                <span className="modal-wompi-total-label">
-                  {t('reservas.totalToPay', { defaultValue: 'TOTAL A PAGAR:' })}
-                </span>
-                <strong className="modal-wompi-total-val">
-                  {formatCurrency(totalCalculado, moneda)}
-                </strong>
-              </div>
-
-              {/* Botón de Pago en Wompi */}
-              <button
-                type="button"
-                id="btn-pagar-wompi"
-                onClick={handlePagarWompi}
-                disabled={pagandoWompi}
-                className="modal-wompi-btn"
-              >
-                <FaCreditCard size={16} />
-                <span>{pagandoWompi ? t('reservas.redirectingToWompi', { defaultValue: 'Redirigiendo a Wompi…' }) : t('reservas.payWithWompi', { defaultValue: 'Pagar con Wompi' })}</span>
-              </button>
-
-              {/* Plazo para pagar en Wompi */}
-              <div className="modal-cash-deadline-box" style={{ marginTop: '16px', width: '100%' }}>
-                <p className="modal-cash-deadline-title">
-                  {t('reservas.paymentDeadline', { defaultValue: 'PLAZO PARA PAGAR' })}
-                </p>
-                <p className="modal-cash-deadline-text">
-                  {t('reservas.wompiDeadlineNotice', {
-                    horas: reserva.horasLimitePago || 8,
-                    defaultValue: 'Tienes aproximadamente {{horas}} horas desde ahora para realizar el pago seguro en línea. Si no realizas el pago dentro de este plazo, la reserva se cancelará automáticamente.'
-                  })}
-                </p>
-              </div>
-
-            </div>
-          </div>
+          <EsPendienteWompi handlePagarWompi={handlePagarWompi} moneda={moneda} pagandoWompi={pagandoWompi} reserva={reserva} t={t} totalCalculado={totalCalculado} wompiCardRef={wompiCardRef} />
         )}
 
         {/* Tarjeta de Reserva en Espera de Horario de Atención */}
@@ -1536,123 +1079,23 @@ function ModalDetalle({ reserva, moneda, autoDesbloquear = false, onClose, onVal
 
         {/* Tarjeta de Documentación Rechazada */}
         {esDocumentosRechazados && (
-          <div className="modal-wompi-card" style={{ borderColor: 'rgba(239, 68, 68, 0.4)', background: 'linear-gradient(180deg, rgba(254, 242, 242, 0.7) 0%, rgba(255, 255, 255, 1) 100%)' }}>
-            <div className="modal-wompi-subcard">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                <FaTimes style={{ fontSize: '24px', color: '#dc2626' }} />
-                <h3 className="modal-wompi-titulo" style={{ margin: 0, color: '#b91c1c' }}>
-                  Documentación Requiere Corrección
-                </h3>
-              </div>
-              <p className="modal-wompi-desc" style={{ color: '#7f1d1d' }}>
-                La sucursal <strong>{reserva.sucursal || sucursalPago}</strong> revisó tus documentos e indicó que requieren corrección antes de continuar con la entrega del vehículo.
-                {reserva.motivoRechazoDocumentos && (
-                  <span style={{ display: 'block', marginTop: '8px', padding: '8px 12px', background: '#fee2e2', borderRadius: '8px', color: '#991b1b', fontWeight: 600 }}>
-                    Observación del encargado: {reserva.motivoRechazoDocumentos}
-                  </span>
-                )}
-              </p>
-              <button
-                type="button"
-                onClick={() => navigate('/perfil?tab=documentos')}
-                className="modal-wompi-btn"
-                style={{ background: '#dc2626', marginTop: '12px' }}
-              >
-                <FaShieldAlt size={16} />
-                <span>{t('hc.actualizar_documentos_en_mi_perfil', 'Actualizar Documentos en Mi Perfil')}</span>
-              </button>
-            </div>
-          </div>
+          <EsDocumentosRechazados navigate={navigate} reserva={reserva} sucursalPago={sucursalPago} t={t} />
         )}
 
         {(esConfirmadaModal || requiereFirmaModal) && <Contrato reserva={reserva} autoDesbloquear={autoDesbloquear} />}
 
         {estaEnCursoModal && onReportar && (
-          <div style={{ marginTop: '16px' }}>
-            <button
-              type="button"
-              className="btn-secundario"
-              onClick={() => onReportar(reserva)}
-              style={{
-                width: '100%',
-                padding: '12px 18px',
-                background: 'var(--brand-soft)',
-                color: 'var(--brand-text)',
-                borderColor: 'var(--brand-border)',
-                fontWeight: 800,
-                borderRadius: '14px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                fontSize: '13px',
-                cursor: 'pointer'
-              }}
-            >
-              <FaFlag color="var(--brand-primary)" size={15} />
-              <span>{t('reservas.reportIncident', { defaultValue: 'Soporte / Reportar Incidencia' })}</span>
-            </button>
-          </div>
+          <EstaEnCursoModal onReportar={onReportar} reserva={reserva} t={t} />
         )}
 
         {esFinalizadaModal && <MiResena eligibility={reserva.eligibility} />}
 
         {esFinalizadaModal && onValorar && resenaPendiente(reserva) && (
-          <div style={{ marginTop: '16px', textOverflow: 'ellipsis' }}>
-            <button
-              type="button"
-              className="btn-secundario"
-              onClick={() => onValorar(reserva)}
-              style={{
-                width: '100%',
-                padding: '12px 18px',
-                background: '#fffbeb',
-                color: '#b45309',
-                borderColor: '#fde68a',
-                fontWeight: 800,
-                borderRadius: '14px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                fontSize: '13px',
-                cursor: 'pointer'
-              }}
-            >
-              <FaStar color="#f59e0b" size={16} />
-              <span>{t('reservas.rateAndReview', { defaultValue: 'Calificar y reseñar mi experiencia' })}</span>
-            </button>
-          </div>
+          <EsFinalizadaModal onValorar={onValorar} reserva={reserva} t={t} />
         )}
 
         {puedeCancelarModal && onCancelar && (
-          <div style={{ marginTop: '16px' }}>
-            <button
-              type="button"
-              className="btn-secundario"
-              onClick={handleCancelarReserva}
-              disabled={cancelando}
-              style={{
-                width: '100%',
-                padding: '12px 18px',
-                background: '#fef2f2',
-                color: '#dc2626',
-                borderColor: '#fca5a5',
-                fontWeight: 800,
-                borderRadius: '14px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                fontSize: '13px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              <FaTimes color="#dc2626" size={15} />
-              <span>{cancelando ? t('reservas.cancelling', { defaultValue: 'Cancelando reserva...' }) : t('reservas.cancelReservation', { defaultValue: 'Cancelar reserva' })}</span>
-            </button>
-          </div>
+          <PuedeCancelarModal cancelando={cancelando} handleCancelarReserva={handleCancelarReserva} t={t} />
         )}
 
       </section>
