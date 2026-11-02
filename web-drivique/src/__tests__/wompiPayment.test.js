@@ -1,7 +1,7 @@
 import './setupTestEnv.js'
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { iniciarPagoWompi, construirUrlCheckout, wompiConfig, aCentavos } from '../services/wompiService.js'
+import { construirUrlCheckout, wompiConfig, aCentavos } from '../services/wompiService.js'
 import { WompiPaymentStrategy } from '../modules/payments/strategies/WompiPaymentStrategy.js'
 import { api } from '../services/httpClient.js'
 

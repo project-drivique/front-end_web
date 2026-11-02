@@ -2077,7 +2077,8 @@
       },
       "defaultApproveObs": "Documents validated and approved successfully by the branch.",
       "exportTitle": "Identity Document and License Validation — Drivique",
-      "noObservations": "No notes"
+      "noObservations": "No notes",
+      "alreadyApproved": "Documents already approved"
     },
     "delivery": {
       "title": "Delivery Management",
@@ -2135,7 +2136,9 @@
         "cancelled": "Cancelled",
         "pendiente": "Pending",
         "asignado": "En Route",
-        "completado": "Completed"
+        "completado": "Completed",
+        "cancelada": "Cancelled",
+        "programado": "Scheduled"
       },
       "noDriver": "Unassigned",
       "assignBtn": "Assign",
@@ -3145,7 +3148,6 @@
     "cashBranchCity": "City",
     "cashBranchAddress": "Address",
     "cashBranchNoAddress": "Confirm the address at the branch when booking",
-    "cashBranchFootnote": "",
     "deliveryTimeSectionTitle": "Pickup, Return & Schedules",
     "domicilioSectionTitle": "Home Delivery Details",
     "domicilioCity": "Coverage City",
@@ -3345,7 +3347,8 @@
     "computoReservaTitle_other": "Calculation of your {{count}}-day rental",
     "computoReservaDesc": "Your reservation starts on {{inicio}} at {{hora}}. Each day gives you 24 full hours: your day {{dias}} starts on {{fin}} at {{hora}} and its 24 hours end on {{siguiente}} at {{hora}}. Returning earlier is recorded as an early return.",
     "confirmNoticeText": "When you confirm the reservation, it will be saved automatically in your account. You will have {{horas}} hours to complete the payment before it is automatically cancelled.",
-    "vatLabel": "VAT"
+    "vatLabel": "VAT",
+    "processingReserve": "Confirming reservation..."
   },
   "reservas": {
     "title": "My reservations",
@@ -3577,7 +3580,12 @@
     "cancelledDesc": "The reservation was cancelled successfully.",
     "cancelling": "Cancelling reservation...",
     "cancelReservation": "Cancel reservation",
-    "cancelError": "We could not cancel your reservation right now. Please try again in a few minutes."
+    "cancelError": "We could not cancel your reservation right now. Please try again in a few minutes.",
+    "createdDate": "Request date",
+    "pendingScheduleTitle": "Waiting for opening hours",
+    "pendingScheduleText": "Your reservation was registered outside the branch's opening hours. It will be enabled for payment when the service day starts.",
+    "singleReservation": "reservation",
+    "multipleReservations": "reservations"
   },
   "perfil": {
     "title": "My Profile",
@@ -3688,7 +3696,9 @@
     "roles": {
       "usuario": "User",
       "cliente": "Client",
-      "admin": "Administrator"
+      "admin": "Administrator",
+      "administrador": "Administrator",
+      "encargado_sucursal": "Branch manager"
     },
     "docTypes": {
       "CC": "Citizenship ID (CC)",
@@ -3717,7 +3727,18 @@
       "Japón": "Japón",
       "China": "China",
       "India": "India",
-      "Otro": "Other"
+      "Otro": "Other",
+      "Brazil": "Brazil",
+      "Canada": "Canada",
+      "France": "France",
+      "Germany": "Germany",
+      "Italy": "Italy",
+      "Japan": "Japan",
+      "Mexico": "Mexico",
+      "Peru": "Peru",
+      "Spain": "Spain",
+      "United Kingdom": "United Kingdom",
+      "United States": "United States"
     },
     "completeProfile": "Complete profile",
     "address": "Address",
@@ -4907,7 +4928,9 @@
   "coberturas": {
     "Basic Protection": "Basic protection",
     "Standard Protection": "Standard protection",
-    "Premium Protection": "Premium protection"
+    "Premium Protection": "Premium protection",
+    "Protección Obligatoria": "Mandatory protection",
+    "Protección Total": "Full protection"
   },
   "hc": {
     "algo_salio_mal": "Something went wrong",
@@ -5161,7 +5184,14 @@
     "detalle_del_reporte": "Report detail",
     "control_de_auditoria": "Audit control:",
     "valido_para_supervision_interna_gestio": "Valid for internal supervision, financial management and accounting.",
-    "vehiculo_apartado_desc": "Another customer has just reserved this vehicle for these dates while you were filling in the form. If they do not complete the payment within the allowed time, it will be available again. You can also explore other available vehicles in the catalog."
+    "vehiculo_apartado_desc": "Another customer has just reserved this vehicle for these dates while you were filling in the form. If they do not complete the payment within the allowed time, it will be available again. You can also explore other available vehicles in the catalog.",
+    "abrir_pdf": "Open PDF",
+    "documento_ya_registrado": "Document already registered",
+    "el_numero_de_documento_ya_esta_asociado": "The document number you entered is already registered with another user account. Please check your details.",
+    "error_subir_documentos_gen": "Error uploading the identity or license documents.",
+    "error_subir_documentos": "Error uploading documents",
+    "vehiculo_no_disponible": "Vehicle not available",
+    "ver_otros_vehiculos": "See other vehicles"
   },
   "docNames": {
     "CC": "Citizenship ID Card",
