@@ -322,8 +322,9 @@ export default function useCashCollectionLogic1({ branchOnly }) {
   
       setProcesandoPago(true)
       try {
-        await reservationManagementService.confirmCashPayment(ref)
-        await cargarReservas()
+        const { refreshed } = await reservationManagementService.confirmCashPayment(ref)
+        // La lista del servicio ya viene recargada o, si la recarga falló, con esta reserva marcada como cobrada
+        setTodasLasReservas(reservationManagementService.list())
   
         setModalReserva((prev) => ({
           ...prev,
@@ -334,6 +335,14 @@ export default function useCashCollectionLogic1({ branchOnly }) {
         }))
   
         // El modal cambia automáticamente al estado de recibo al actualizarse el estado
+        if (!refreshed) {
+          showAlert({
+            icon: 'warning',
+            title: t('hc.cobro_registrado', 'Cobro registrado'),
+            text: t('hc.cobro_registrado_lista_pendiente', 'El cobro quedó registrado, pero no se pudo actualizar la lista. Recarga la página para ver el estado actual.'),
+            confirmButtonText: t('hc4.cerrar', 'Cerrar'),
+          })
+        }
       } catch (err) {
         console.error(err)
         showAlert({

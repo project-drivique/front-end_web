@@ -192,6 +192,16 @@ export const reservationManagementService = {
     } catch (error) {
       throw toError(error)
     }
-    return this.refresh()
+    // El cobro ya quedó registrado: si solo falla refrescar la lista, no es un error de cobro.
+    // Se marca esa reserva como cobrada en la copia local para no mostrar datos desactualizados y se informa aparte.
+    try {
+      await this.refresh()
+      return { refreshed: true }
+    } catch {
+      cache = cache.map((r) => (r.id === reserva.id
+        ? { ...r, estado: 'confirmada', estadoCodigo: 'CONFIRMED', pagoEstado: 'aprobado', estadoPago: 'aprobado', metodoPagoConfirmado: 'efectivo', fechaPagoConfirmado: new Date().toISOString() }
+        : r))
+      return { refreshed: false }
+    }
   },
 }
