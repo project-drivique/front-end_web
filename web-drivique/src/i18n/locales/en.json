@@ -5006,6 +5006,8 @@
     "responder_a_la_resena": "Reply to the review",
     "evidencia_de_foto_adjuntada": "ATTACHED PHOTO EVIDENCE",
     "error_al_registrar_cobro": "Error registering the payment",
+    "cobro_registrado": "Payment recorded",
+    "cobro_registrado_lista_pendiente": "The payment was recorded, but the list could not be refreshed. Reload the page to see the current status.",
     "atencion": "Attention",
     "comprobante_de_pago": "Payment receipt",
     "vehiculo": "Vehicle",

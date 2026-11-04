@@ -5006,6 +5006,8 @@
     "responder_a_la_resena": "Répondre à l’avis",
     "evidencia_de_foto_adjuntada": "PHOTO DE PREUVE JOINTE",
     "error_al_registrar_cobro": "Erreur lors de l’enregistrement de l’encaissement",
+    "cobro_registrado": "Encaissement enregistré",
+    "cobro_registrado_lista_pendiente": "L’encaissement a été enregistré, mais la liste n’a pas pu être actualisée. Rechargez la page pour voir l’état actuel.",
     "atencion": "Attention",
     "comprobante_de_pago": "Reçu de paiement",
     "vehiculo": "Véhicule",
