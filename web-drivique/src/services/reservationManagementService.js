@@ -192,6 +192,7 @@ export const reservationManagementService = {
     } catch (error) {
       throw toError(error)
     }
-    return this.refresh()
+    // El cobro ya quedó registrado: si solo falla refrescar la lista, no se debe mostrar un error de cobro
+    return this.refresh().catch(() => cache)
   },
 }
