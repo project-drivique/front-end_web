@@ -323,7 +323,8 @@ export default function useCashCollectionLogic1({ branchOnly }) {
       setProcesandoPago(true)
       try {
         const { refreshed } = await reservationManagementService.confirmCashPayment(ref)
-        const listaActualizada = refreshed && (await cargarReservas().then(() => true).catch(() => false))
+        // La lista del servicio ya viene recargada o, si la recarga falló, con esta reserva marcada como cobrada
+        setTodasLasReservas(reservationManagementService.list())
   
         setModalReserva((prev) => ({
           ...prev,
@@ -334,7 +335,7 @@ export default function useCashCollectionLogic1({ branchOnly }) {
         }))
   
         // El modal cambia automáticamente al estado de recibo al actualizarse el estado
-        if (!listaActualizada) {
+        if (!refreshed) {
           showAlert({
             icon: 'warning',
             title: t('hc.cobro_registrado', 'Cobro registrado'),
