@@ -5006,6 +5006,8 @@
     "responder_a_la_resena": "Responder a la reseña",
     "evidencia_de_foto_adjuntada": "EVIDENCIA DE FOTO ADJUNTADA",
     "error_al_registrar_cobro": "Error al registrar cobro",
+    "cobro_registrado": "Cobro registrado",
+    "cobro_registrado_lista_pendiente": "El cobro quedó registrado, pero no se pudo actualizar la lista. Recarga la página para ver el estado actual.",
     "atencion": "Atención",
     "comprobante_de_pago": "Comprobante de Pago",
     "vehiculo": "Vehículo",

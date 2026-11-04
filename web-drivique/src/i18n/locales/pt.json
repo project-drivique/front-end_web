@@ -5006,6 +5006,8 @@
     "responder_a_la_resena": "Responder à avaliação",
     "evidencia_de_foto_adjuntada": "FOTOGRAFIA DE EVIDÊNCIA ANEXADA",
     "error_al_registrar_cobro": "Erro ao registar a cobrança",
+    "cobro_registrado": "Cobrança registada",
+    "cobro_registrado_lista_pendiente": "A cobrança foi registada, mas não foi possível atualizar a lista. Recarregue a página para ver o estado atual.",
     "atencion": "Atenção",
     "comprobante_de_pago": "Comprovativo de pagamento",
     "vehiculo": "Veículo",
