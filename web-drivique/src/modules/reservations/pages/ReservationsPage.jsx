@@ -174,7 +174,11 @@ export default function ReservationsPage() {
     const mapa = new Map()
     for (const r of filtradas) {
       const rawDate = r.createdAt || r.created_at || r.fechaReserva || r.fechaCreacion || r.fechaInicio || ''
-      const fechaKey = String(rawDate).split('T')[0] || 'desconocida'
+      // Una fecha con hora (UTC del servidor) se agrupa por el día local, el mismo que muestra la tarjeta
+      const ts = typeof rawDate === 'string' && /T\d{2}:\d{2}/.test(rawDate) ? new Date(rawDate) : null
+      const fechaKey = ts && !Number.isNaN(ts.getTime())
+        ? `${ts.getFullYear()}-${String(ts.getMonth() + 1).padStart(2, '0')}-${String(ts.getDate()).padStart(2, '0')}`
+        : String(rawDate).split('T')[0] || 'desconocida'
       const lista = mapa.get(fechaKey) || []
       lista.push(r)
       mapa.set(fechaKey, lista)

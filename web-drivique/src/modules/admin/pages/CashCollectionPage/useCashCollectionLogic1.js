@@ -323,7 +323,7 @@ export default function useCashCollectionLogic1({ branchOnly }) {
       setProcesandoPago(true)
       try {
         await reservationManagementService.confirmCashPayment(ref)
-        await cargarReservas()
+        await cargarReservas().catch(() => {})
   
         setModalReserva((prev) => ({
           ...prev,
