@@ -91,28 +91,15 @@ export const construirUrlCheckout = async ({
     paymentMethodCode,
   });
 
-  const resolvedPublicKey =
-    checkout?.publicKey && !checkout.publicKey.toLowerCase().includes('drivique')
-      ? checkout.publicKey
-      : wompiConfig.publicKey;
-
+  const resolvedPublicKey = checkout?.publicKey;
   const resolvedCurrency = checkout?.currency || wompiConfig.currency || 'COP';
   const resolvedAmount = checkout?.amountInCents ?? amountInCents;
   const resolvedReference = checkout?.reference || reference;
-  let resolvedSignature = checkout?.integritySignature;
+  const resolvedSignature = checkout?.integritySignature;
 
-  // Si la llave del backend es el placeholder 'pub_test_drivique', Wompi exige la llave y firma del Sandbox oficial
-  if (checkout?.publicKey?.toLowerCase().includes('drivique') && resolvedPublicKey === 'pub_test_Xq9JLHZllsreCdWcFQoubBvUZUQ61sFC') {
-    const raw = `${resolvedReference}${resolvedAmount}${resolvedCurrency}test_integrity_atd8mLC87VadjQvpBEZASMdr9HfUTyP7`;
-    if (typeof crypto !== 'undefined' && crypto.subtle) {
-      const enc = new TextEncoder().encode(raw);
-      const hashBuf = await crypto.subtle.digest('SHA-256', enc);
-      resolvedSignature = Array.from(new Uint8Array(hashBuf))
-        .map((b) => b.toString(16).padStart(2, '0'))
-        .join('');
-    }
+  if (!resolvedPublicKey) {
+    throw new Error('[Wompi] El servidor no devolvió la llave pública del pago.');
   }
-
   if (!resolvedSignature) {
     throw new Error('[Wompi] El servidor no devolvió la firma de integridad del pago.');
   }
